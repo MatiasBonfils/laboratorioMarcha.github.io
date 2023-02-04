@@ -1,0 +1,59 @@
+<body style="background-color: rgb(16, 16, 16);">
+  <style>
+    .square-box {
+      width: 33%;
+      height: 0;
+      padding-top: 33%;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+    }
+ 
+    
+  </style>
+   
+  <div class="container">
+   
+    <video class="input_video"> </video>
+    <canvas class="output_canvas" width="1280px" height="720px"> </canvas>
+    
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="message">
+        Loading
+      </div>
+    </div>
+   
+    <a class="abs logo" href="http://www.mediapipe.dev" target="_blank">
+      <div style="display: flex;align-items: center;bottom: 0;right: 10px;">
+        <img class="logo" src="logo_white.png" alt="" style="
+          height: 50px;">
+      </div>
+    </a>
+  </div>
+ 
+  
+<div class="rectangles-container">
+    <div class="rectangle" id="rectangulo_lm"    style="display:none;">Inclinación de mandibula de <p id="ang_linea_mandibula"> ° en lado derecho</p> </div>
+    <div class="rectangle" id="rectangulo_lh"    style="display:none;">Inclinación de hombro de <p id="ang_linea_hombro"> ° </p> </div>
+    <div class="rectangle" id="rectangulo_lc"    style="display:none;">Inclinación de cadera de <p id="ang_linea_cadera"> ° en lado derecho  </p> </div>
+    <div class="rectangle" id="rectangulo_arotd" style="display:none;"  >Ángulo de Rotación Interna de Cadera Derecha: <p id="ang_rot_cad_der"> ° </p> </div>   
+    <div class="rectangle" id="rectangulo_aroti" style="display:none;">Ángulo de Rotación Interna de Cadera Izquierda: <p id="ang_rot_cad_izq"> ° </p> </div>
+    <div class="rectangle" id="rectangulo_aci"   style="display:none;">Ángulo Cadera Izquierdo:  <p id="ang_cad_iz"> ° </p> </div>
+    <div class="rectangle" id="rectangulo_ari"   style="display:none;">Ángulo Rodilla Izquierdo: <p id="ang_rod_iz"> ° </p> </div>
+    <div class="rectangle" id="rectangulo_acd"   style="display:none;">Ángulo Cadera Derecho:    <p id="ang_cad_de"> ° </p> </div>
+    <div class="rectangle" id="rectangulo_ard"   style="display:none;">Ángulo Rodilla Derecho:   <p id="ang_rod_de"> ° </p> </div>
+    <div class="rectangle" style="display:none;">Rectangle 4</div>
+</div>
+
+
+
+     
+ 
+  <div class="control-panel">
+  </div>
+  
+  <div class='square-box'>
+    <div class="landmark-grid-container">
+    </div>
+  </div>
