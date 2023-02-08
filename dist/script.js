@@ -9,7 +9,7 @@ const options = {
 };
 
 document.getElementById("myButton").addEventListener("click", function() {
-    window.location.href = "jj";
+    window.location.href = "jj.html";
   });
   
 // Our input frames will come from here.
@@ -91,6 +91,10 @@ const fpsControl = new controls.FPS();
 
 //Variables que guardan los angulos durante la marcha
 let ang_izq_cad_grafico = [];
+let ang_der_cad_grafico = [];
+let ang_izq_rod_grafico = [];
+let ang_der_rod_grafico = [];
+
 
 
 // Optimization: Turn off animated spinner after its hiding animation is done.
@@ -392,39 +396,12 @@ function onResults(results) {
             ang_izq_cad_grafico = [];
             document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
         }
-         //Grafica de angulo de cadera izquierda:
-         var xValues = Array.from({ length: ang_izq_cad_grafico.length }, (_, i) => i * 100 / (ang_izq_cad_grafico.length - 1));
-         document.getElementById("showGraphBtn").addEventListener("click", function () {
-             document.getElementById("chartContainer").style.display = "block";
-             var ctx = document.getElementById("myChart").getContext("2d");
-             var chart = new Chart(ctx, {
-                 type: "line",
-                 data: {
-                     labels: xValues,
-                     datasets: [{
-                             backgroundColor: "rgba(0,255,0,0.2)",
-                             borderColor: "green",
-                             data: ang_izq_cad_grafico
-                         }]
-                 },
-                 options: {
-                     scales: {
-                         yAxes: [{
-                                 scaleLabel: {
-                                     display: true,
-                                     labelString: "ang_izq_cad_grafico"
-                                 }
-                             }],
-                         xAxes: [{
-                                 scaleLabel: {
-                                     display: true,
-                                     labelString: "Porcentage (%)"
-                                 }
-                             }]
-                     }
-                 }
-             });
-         });
+        //b
+        document.getElementById("myButton").addEventListener("click", function() {
+            localStorage.setItem("ang_izq_cad_grafico", JSON.stringify(ang_izq_cad_grafico));
+            window.location.href = "jj.html";
+        });
+         
         //DER
         var angulo_cadera_d = Math.acos((rodilla_d_y - cadera_d_y) / (Math.sqrt(Math.pow(cadera_d_x - rodilla_d_x, 2) + Math.pow(cadera_d_y - rodilla_d_y, 2))));
         angulo_cadera_d = angulo_cadera_d * (180) / Math.PI;
@@ -433,8 +410,21 @@ function onResults(results) {
         }
         else {
             angulo_cadera_d = -1 * angulo_cadera_d.toFixed(0);
+        }   
+        if (solutionOptions.guardar_datos) {
+            ang_der_cad_grafico.push(angulo_cadera_d);
+            document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " ° " + "(" + ang_der_cad_grafico.length + ")";
         }
-        document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " °";
+        else {
+            ang_der_cad_grafico = [];
+            document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " ° " + "(" + ang_der_cad_grafico.length + ")";
+        }
+        //b
+        document.getElementById("myButton").addEventListener("click", function() {
+            localStorage.setItem("ang_der_cad_grafico", JSON.stringify(ang_der_cad_grafico));
+            window.location.href = "jj.html";
+        });
+         
         //Angulo rodilla
         //Izq
         var femur_iz = Math.sqrt(Math.pow(cadera_i_x - rodilla_i_x, 2) + Math.pow(cadera_i_y - rodilla_i_y, 2));
@@ -443,7 +433,20 @@ function onResults(results) {
         var sigma_rod_iz = Math.acos((-Math.pow(femur_iz, 2) - Math.pow(tibia_iz, 2) + Math.pow(fem_tob_iz, 2)) / (-2 * femur_iz * tibia_iz)) * (180) / Math.PI;
         var angulo_rodilla_iz = sigma_rod_iz;
         angulo_rodilla_iz = 180 - angulo_rodilla_iz.toFixed(0);
-        document.getElementById("ang_rod_iz").innerHTML = angulo_rodilla_iz + " °";
+       
+        if (solutionOptions.guardar_datos) {
+            ang_izq_rod_grafico.push(angulo_rodilla_iz);
+            document.getElementById("ang_rod_iz").innerHTML = angulo_rodilla_iz + " ° " + "(" + ang_izq_rod_grafico.length + ")";
+        }
+        else {
+            ang_izq_rod_grafico = [];
+            document.getElementById("ang_rod_iz").innerHTML = angulo_rodilla_iz + " ° " + "(" + ang_izq_rod_grafico.length + ")";
+        }
+        //b
+        document.getElementById("myButton").addEventListener("click", function() {
+            localStorage.setItem("ang_izq_rod_grafico", JSON.stringify(ang_izq_rod_grafico));
+            window.location.href = "jj.html";
+        });
         //Der
         var femur_de = Math.sqrt(Math.pow(cadera_d_x - rodilla_d_x, 2) + Math.pow(cadera_d_y - rodilla_d_y, 2));
         var tibia_de = Math.sqrt(Math.pow(rodilla_d_x - tobillo_d_x, 2) + Math.pow(rodilla_d_y - tobillo_d_y, 2));
@@ -451,7 +454,20 @@ function onResults(results) {
         var sigma_rod_de = Math.acos((-Math.pow(femur_de, 2) - Math.pow(tibia_de, 2) + Math.pow(fem_tob_de, 2)) / (-2 * femur_de * tibia_de)) * (180) / Math.PI;
         var angulo_rodilla_de = sigma_rod_de;
         angulo_rodilla_de = 180-angulo_rodilla_de.toFixed(0);
-        document.getElementById("ang_rod_de").innerHTML = angulo_rodilla_de + " °";
+        
+        if (solutionOptions.guardar_datos) {
+            ang_der_rod_grafico.push(angulo_rodilla_de);
+            document.getElementById("ang_rod_de").innerHTML = angulo_rodilla_de + " ° " + "(" + ang_der_rod_grafico.length + ")";
+        }
+        else {
+            ang_der_rod_grafico = [];
+            document.getElementById("ang_rod_de").innerHTML = angulo_rodilla_de + " ° " + "(" + ang_der_rod_grafico.length + ")";
+        }
+        //b
+        document.getElementById("myButton").addEventListener("click", function() {
+            localStorage.setItem("ang_der_rod_grafico", JSON.stringify(ang_der_rod_grafico));
+            window.location.href = "jj.html";
+        });
     }
     canvasCtx.restore();
     if (results.poseWorldLandmarks) {
@@ -473,7 +489,7 @@ new controls
     .add([
     new controls.StaticText({ title: 'CONTROLES' }),
     fpsControl,
-    new controls.Toggle({ title: 'Modo Selfi', field: 'selfieMode' }),
+    new controls.Toggle({ title: 'Modo Selfie', field: 'selfieMode' }),
     new controls.SourcePicker({
         onSourceChanged: () => {
             // Se resetea asi anda mejor el codigo

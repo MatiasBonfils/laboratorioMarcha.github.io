@@ -1,29 +1,45 @@
-<!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>CodePen - MediaPipe - Pose</title>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.2/landmark_grid.css" crossorigin="anonymous">
-  <meta charset="utf-8">
-  <link rel="icon" href="favicon.ico">
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <style>
+      #graph-container {
+        width: 800px;
+        height: 800px;
+      }
+      #graph-container-cd {
+        width: 800px;
+        height: 800px;
+        top: 100%;
+        left: 20%;
+      }
+      #graph-container-ri {
+        width: 800px;
+        height: 800px;
+        top: 100%;
+        left: 20%;
+      }
+      #graph-container-rd {
+        width: 800px;
+        height: 800px;
+        top: 100%;
+        left: 20%;
+      }
 
-  <link rel="stylesheet" type="text/css" href="demo.css" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.2/control_utils_3d.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.4/pose.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="./jjd.css">
-
-</head>
-
-<button id="incrementButton1">Aumentar contador 1</button>
-<button id="incrementButton2">Aumentar contador 2</button>
-<br><br>
-Contador 1: <span id="counter1">0</span>
-<br>
-Contador 2: <span id="counter2">0</span>
-
-
-<script  src="./jjj.js"></script>
+    </style>
+  </head>
+  <body>
+    <div id="graph-container">
+      <canvas id="myChart"></canvas>
+    </div>
+    <div id="graph-container-cd">
+      <canvas id="myChartcd"></canvas>
+    </div>
+    <div id="graph-container-ri">
+      <canvas id="myChartri"></canvas>
+    </div>
+    <div id="graph-container-rd">
+      <canvas id="myChartrd"></canvas>
+    </div>
+    <script src="jjj.js"></script>
+  </body>
+</html>

@@ -78,7 +78,7 @@ body {
   width: 33.33%;
   height: 100%;
   position: absolute;
-  left: 50px;
+  left: 100px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -186,9 +186,7 @@ button:active {
   color: lightgray;
   cursor: pointer;
 }
-
-
-.button_mostrar_grafica
+.boton_pasar_pagina
 {
   background-color: #228B22;
   color: white;
@@ -199,17 +197,8 @@ button:active {
   font-size: 20px;
   margin: 10px 0;
   position: absolute;
-  bottom: 10%;
-  left: 67%;
+  bottom: 90%;
+  left: 90%;
   transform: translate(-50%, 0);
 }
 
-#chartContainer {
-  background-color: white;
-  width: 500px;
-  height: 500px;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
