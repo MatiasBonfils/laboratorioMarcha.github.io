@@ -9,7 +9,7 @@ const options = {
 };
 
 document.getElementById("myButton").addEventListener("click", function() {
-    window.location.href = "jj.html";
+    window.location.href = "analizar.html";
   });
   
 // Our input frames will come from here.
@@ -36,8 +36,7 @@ const solutionOptions = {
 };
 //SECCION PARA TOMAR CAPTURA DE PANTALLA
 const captureButton = document.getElementById("capture-button");
-const showScreenshotsButton = document.getElementById("show-screenshots-button");
-const screenshotContainer = document.querySelector(".screenshot-container");
+
 let screenshots = [];
 captureButton.addEventListener("click", () => {
     captureButton.style.backgroundColor = "#228B22";
@@ -47,34 +46,11 @@ captureButton.addEventListener("click", () => {
     html2canvas(document.body).then((canvas) => {
         const base64image = canvas.toDataURL("image/png");
         screenshots.push(base64image);
+        localStorage.setItem("screenshots", JSON.stringify(screenshots));
     });
 });
-showScreenshotsButton.addEventListener("click", () => {
-    showScreenshotsButton.style.backgroundColor = "#228B22";
-    setTimeout(() => {
-        showScreenshotsButton.style.backgroundColor = "";
-    }, 200);
-    screenshotContainer.innerHTML = "";
-    for (const screenshot of screenshots) {
-        const screenshotElement = document.createElement("div");
-        screenshotElement.classList.add("screenshot");
-        const screenshotImage = new Image();
-        screenshotImage.src = screenshot;
-        screenshotElement.appendChild(screenshotImage);
-        const deleteButton = document.createElement("div");
-        deleteButton.classList.add("delete-button");
-        deleteButton.textContent = "x";
-        deleteButton.addEventListener("click", () => {
-            const index = screenshots.indexOf(screenshot);
-            if (index >= 0) {
-                screenshots.splice(index, 1);
-            }
-            screenshotContainer.removeChild(screenshotElement);
-        });
-        screenshotElement.appendChild(deleteButton);
-        screenshotContainer.appendChild(screenshotElement);
-    }
-});
+
+  
 //Rectangulos que muestran los datos
 const rectangulo_lm = document.getElementById("rectangulo_lm");
 const rectangulo_lh = document.getElementById("rectangulo_lh");
@@ -399,7 +375,7 @@ function onResults(results) {
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_izq_cad_grafico", JSON.stringify(ang_izq_cad_grafico));
-            window.location.href = "jj.html";
+            window.location.href = "analizar.html";
         });
          
         //DER
@@ -422,7 +398,7 @@ function onResults(results) {
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_der_cad_grafico", JSON.stringify(ang_der_cad_grafico));
-            window.location.href = "jj.html";
+            window.location.href = "analizar.html";
         });
          
         //Angulo rodilla
@@ -445,7 +421,7 @@ function onResults(results) {
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_izq_rod_grafico", JSON.stringify(ang_izq_rod_grafico));
-            window.location.href = "jj.html";
+            window.location.href = "analizar.html";
         });
         //Der
         var femur_de = Math.sqrt(Math.pow(cadera_d_x - rodilla_d_x, 2) + Math.pow(cadera_d_y - rodilla_d_y, 2));
@@ -466,7 +442,7 @@ function onResults(results) {
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_der_rod_grafico", JSON.stringify(ang_der_rod_grafico));
-            window.location.href = "jj.html";
+            window.location.href = "analizar.html";
         });
     }
     canvasCtx.restore();

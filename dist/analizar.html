@@ -1,0 +1,77 @@
+<nav class="navbar">
+  <a href="./index.html" style="flex: 1 1 20%; text-align: left;">Volver</a>
+  <div style="flex: 1 1 20%;"></div>
+  <p style="flex: 1 1 20%; text-align: center;">Matías Bonfils, 22 años</p>
+  <div style="flex: 1 1 20%;"></div>
+  <a href="./guardar_analisis.html" style="flex: 1 1 20%; text-align: right; padding-right: 80px;">Guardar</a>
+
+</nav>
+<div class="container">
+  <h1 style="color: white;">Elegir la prueba efectuada</h1>
+  <div class="chips">
+    <div class="chip" id="Postural">Postural</div>
+    <div class="chip" id="Rotación interna/externa">Rotación interna/externa</div>
+    <div class="chip" id="Análisis de la marcha humana lado izquierdo">Análisis de la marcha humana lado izquierdo</div>
+    <div class="chip" id="Análisis de la marcha humana lado derecho">Análisis de la marcha humana lado derecho</div>
+  </div>
+  <p id="selectedTest"></p>
+</div>
+
+<style>
+  body {
+    background-color: rgb(16, 16, 16);
+  }
+  .graph-container {
+    width: 1200px;
+    height: 1200px;
+    display: inline-block;
+    justify-content: right;
+  }
+  #top-container {
+    margin-top: 20px;
+  }
+  #bottom-container {
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+ 
+   
+<div id="top-container">
+  <div class="graph-container">
+    <div style="position: relative;">
+      <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+      <canvas id="myChart"></canvas>
+      <canvas id="myChartri"></canvas>
+      <canvas id="myChartcd"></canvas>
+      <canvas id="myChartrd"></canvas>
+    </div>
+  </div>
+</div>
+<div id="bottom-container">
+</div>
+<button class="button_mostrar_captura" id="show-screenshots-button">Mostrar Capturas</button>
+
+<div class="screenshot-container">
+</div>
+ 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+ // code to change the line thickness
+ Chart.defaults.global.elements.line.borderWidth = 4;
+
+  // code to change the label size and color
+  Chart.defaults.global.defaultFontColor = 'black';
+  Chart.defaults.global.defaultFontSize = 18;
+
+  // code to change the thickness of 0 horizontal axis line
+  Chart.scaleService.updateScaleDefaults('linear', {
+    gridLines: {
+      borderWidth: 4
+    }
+  });
+</script>
+
+<link rel="stylesheet" href="./pag_ang_izq_css.css">
+<script src="pag_ang_izq_js.js"></script>

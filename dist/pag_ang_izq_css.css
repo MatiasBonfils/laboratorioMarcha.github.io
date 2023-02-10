@@ -1,0 +1,133 @@
+body {
+
+  background-color: rgb(16, 16, 16);
+  }
+  
+  .navbar {
+  background-color: rgb(37, 120, 14);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  color: white;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  font-size: 1.2rem;
+  }
+  
+  .navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  }
+  
+  .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8rem;
+  }
+  
+  .chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2rem;
+  }
+  
+  .chip {
+  background-color: rgb(37, 120, 14);
+  color: white;
+  border-radius: 1.5rem;
+  padding: 1rem 2rem;
+  margin: 2rem;
+  text-align: center;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  border: 0.2rem solid black;
+  font-size: 1.2rem;
+  }
+  
+  .chip:hover {
+  background-color: rgb(43, 138, 17);
+  }
+  
+  .chip.selected {
+  background-color: rgb(16, 63, 8);
+  }
+  
+  #selectedTest {
+  color: white;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  }
+
+
+#graphContainer {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  justify-content: center;
+}
+#graphContainer-cd {
+  width: 1100px;
+  height: 1100px;
+  position: relative;
+  
+  top: 100%;
+  left: 80%;
+}
+
+
+.button_mostrar_captura {
+  background-color: rgb(37, 120, 14);
+  color: white;
+  padding: 15px;
+  border: 6px solid black;
+  border-radius: 25px;
+  text-align: center;
+  font-size: 20px;
+  margin: 10px 0;
+  position: absolute;
+  bottom: 10%;
+  left: 57%;
+  transform: translate(-50%, 0);
+}
+.button_mostrar_captura:hover {
+  background-color:  rgb(16, 63, 8);
+  }
+
+.screenshot-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  width: 60%;
+}
+
+.screenshot {
+  position: relative;
+  margin: 10px;
+  width: 1200px;
+  height: 550px;
+  background-color: white;
+  border: 1px solid lightgray;
+  overflow: hidden;
+}
+
+.screenshot img {
+  width: 100%;
+  height: 100%;
+}
+
+.screenshot .delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 20px;
+  color: lightgray;
+  cursor: pointer;
+}
