@@ -131,3 +131,14 @@ body {
   color: lightgray;
   cursor: pointer;
 }
+
+#displayContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#displayedFrame {
+  max-width: 80%;
+}

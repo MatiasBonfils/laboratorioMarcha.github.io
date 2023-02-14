@@ -36,19 +36,20 @@ const solutionOptions = {
 };
 //SECCION PARA TOMAR CAPTURA DE PANTALLA
 const captureButton = document.getElementById("capture-button");
-
 let screenshots = [];
+
 captureButton.addEventListener("click", () => {
-    captureButton.style.backgroundColor = "#228B22";
-    setTimeout(() => {
-        captureButton.style.backgroundColor = "";
-    }, 200);
-    html2canvas(document.body).then((canvas) => {
-        const base64image = canvas.toDataURL("image/png");
-        screenshots.push(base64image);
-        localStorage.setItem("screenshots", JSON.stringify(screenshots));
-    });
+  captureButton.style.backgroundColor = "#228B22";
+  setTimeout(() => {
+    captureButton.style.backgroundColor = "";
+  }, 200);
+  html2canvas(document.body).then((canvas) => {
+    const base64image = canvas.toDataURL("image/png");
+    screenshots.push(base64image);
+    localStorage.setItem("screenshots", JSON.stringify(screenshots));
+  });
 });
+
 
   
 //Rectangulos que muestran los datos
@@ -116,6 +117,8 @@ function onResults(results) {
     else {
         canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
     }
+    
+
     if (results.poseLandmarks) {
         //DIBUJAR RECTANGULOS
         //Lineas
@@ -456,6 +459,46 @@ function onResults(results) {
         grid.updateLandmarks([]);
     }
 }
+
+
+
+function getBase64Image(img) {
+   
+    canvasElement.width = img.width;
+    canvasElement.height = img.height;
+
+    var ctx = canvasElement.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+
+    var dataURL = canvasElement.toDataURL("image/png");
+
+    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+}
+
+
+var frameArray = [];
+document.getElementById("saveButton").addEventListener("click", function() {
+    var dataURL = canvasElement.toDataURL("image/png");
+    console.log(dataURL)
+    localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+    var count = localStorage.getItem("saveCount") || 0;
+    count++;
+    
+    if (count == 1) {
+      localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+    } else if (count == 2) {
+      localStorage.setItem("imgData2", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+    } else if (count == 3) {
+      localStorage.setItem("imgData3", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+    } else if (count == 4) {
+      localStorage.setItem("imgData4", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+    }
+    
+    localStorage.setItem("saveCount", count); 
+});
+
+
+
 const pose = new mpPose.Pose(options);
 pose.setOptions(solutionOptions);
 pose.onResults(onResults);

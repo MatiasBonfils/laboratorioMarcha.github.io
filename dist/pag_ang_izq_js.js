@@ -1,4 +1,30 @@
+document.addEventListener("DOMContentLoaded", function() {
+  var count = localStorage.getItem("saveCount") || 0;
+  var displayedFrame = document.getElementById('displayedFrame');
+  var currentFrame = 1;
 
+  function displayFrame(index) {
+    var dataImage = localStorage.getItem(`imgData${index}`);
+    if (!dataImage) return;
+
+    displayedFrame.src = "data:image/png;base64," + dataImage;
+    currentFrame = index;
+  }
+
+  document.getElementById("previousButton").addEventListener("click", function() {
+    displayFrame(currentFrame - 1);
+  });
+
+  document.getElementById("nextButton").addEventListener("click", function() {
+    displayFrame(currentFrame + 1);
+  });
+
+  displayFrame(0);
+});
+
+
+
+  
 const showScreenshotsButton = document.getElementById("show-screenshots-button");
 const screenshotContainer = document.querySelector(".screenshot-container");
 

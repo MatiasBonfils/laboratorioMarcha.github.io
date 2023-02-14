@@ -1,3 +1,19 @@
+document.getElementById("displayButton").addEventListener("click", function() {
+  const savedFrames = JSON.parse(localStorage.getItem("savedFrames")) || [];
+  // Display the saved frames
+  const displayElement = document.getElementById("displayedFrame");
+  displayElement.style.display = "none";
+  for (let i = 0; i < savedFrames.length; i++) {
+      const newImage = document.createElement("img");
+      newImage.src = savedFrames[i].src;
+      newImage.style.display = "block";
+      document.body.appendChild(newImage);
+  }
+});
+
+
+
+
 var ang_izq_cad_grafico = JSON.parse(localStorage.getItem("ang_izq_cad_grafico"));
 
 var xValues = [];
