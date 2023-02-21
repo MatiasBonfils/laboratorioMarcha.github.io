@@ -40,18 +40,20 @@
     
   </div>
 
-
+  
+  <p id="screen-log"></p>
+ 
   <button class="boton_pasar_pagina" id="myButton">Analizar</button>
 
 <div class=buttons style="width:100%; height:100px; position:absolute; bottom:0; left:0; text-align:center;">
   <button class="button_tomar_captura" id="capture-button">Tomar Captura</button>
+  <button class="boton_tomar_coord" id="coord-btn">Medir distancia</button>
+
  
- 
-  <canvas id="canvasElement"></canvas>
 </div>
 <div class="screenshot-container">
 </div>
-<button id="saveButton">Save Frame</button>
+<!-- button id="saveButton">Save Frame</button-->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
@@ -89,6 +91,7 @@
 <!-- partial -->
   <script  src="./script.js"></script>
   <script src="analizarj.js"></script>
+ <!--script src="./localdata.min.js"></script-->
 
 </body>
 </html>

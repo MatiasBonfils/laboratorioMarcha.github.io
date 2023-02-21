@@ -1,3 +1,5 @@
+//import ldb from './localdata.min.js'
+
 
 const controls = window;
 const drawingUtils = window;
@@ -34,22 +36,123 @@ const solutionOptions = {
     minDetectionConfidence: 0.5,
     minTrackingConfidence: 0.5,
 };
-//SECCION PARA TOMAR CAPTURA DE PANTALLA
-const captureButton = document.getElementById("capture-button");
-let screenshots = [];
 
-captureButton.addEventListener("click", () => {
-  captureButton.style.backgroundColor = "#228B22";
-  setTimeout(() => {
-    captureButton.style.backgroundColor = "";
-  }, 200);
-  html2canvas(document.body).then((canvas) => {
-    const base64image = canvas.toDataURL("image/png");
-    screenshots.push(base64image);
-    localStorage.setItem("screenshots", JSON.stringify(screenshots));
-  });
+//
+document.getElementById("capture-button").addEventListener("click", function() {
+    var dataURL = canvasElement.toDataURL("image/png");
+    console.log(dataURL)
+    localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      
 });
 
+//distancias:
+let screenLog = document.querySelector('#screen-log');
+let coordBtn = document.querySelector('#coord-btn');
+let showCoordsBtn = document.querySelector('#show-coords-btn');
+let savedCoords = [];
+let saveCoordsEnabled = false;
+let savedData = [];
+let coordsSaved = 0;
+let punto_x_zancada_inicial;
+let punto_x_zancada_final;
+let punto_x_referencia_inicial;
+let punto_x_referencia_final;
+
+document.addEventListener('mousemove', logMousePosition);
+
+function logMousePosition(e) {
+  screenLog.innerText = `
+    Screen X/Y: ${e.screenX}, ${e.screenY}`;
+}
+
+coordBtn.addEventListener('click', toggleSaveCoordinates);
+
+function toggleSaveCoordinates() {
+  saveCoordsEnabled = !saveCoordsEnabled;
+  if (saveCoordsEnabled) {
+    savedCoords = [];
+    coordsSaved = 0;
+    coordBtn.style.backgroundColor = "#0E6655";
+    coordBtn.innerText = "Midiendo distancia";
+    document.body.style.cursor = "crosshair";
+    document.documentElement.style.cursor = "crosshair";
+    document.addEventListener('click', saveCoordinates);
+    alert("Seleccione los puntos de referencia de la distancia en la pantalla");
+  } else {
+    coordBtn.innerText = "Medir distancia";
+    coordBtn.style.backgroundColor = "#228B22";
+    document.body.style.cursor = "";
+    document.documentElement.style.cursor = "";
+    document.removeEventListener('click', saveCoordinates);
+  }
+}
+
+function saveCoordinates(e) {
+  if (saveCoordsEnabled && coordsSaved < 4) {
+    if (e.target !== coordBtn && e.target !== showCoordsBtn) {
+      savedCoords.push({x: e.screenX, y: e.screenY});
+      coordsSaved++;
+      if (coordsSaved === 2) {
+        punto_x_referencia_inicial = savedCoords[0].x;
+        punto_x_referencia_final = savedCoords[1].x;
+        alert("Seleccione los puntos de referencia de la zancada en la pantalla");
+      } else if (coordsSaved === 4) {
+        punto_x_zancada_inicial = savedCoords[2].x;
+        punto_x_zancada_final = savedCoords[3].x;
+        document.body.style.cursor = "";
+        document.documentElement.style.cursor = "";
+        
+        
+        showPopup();
+      }
+    }
+  }
+}
+function showPopup() {
+  let distanceInput = prompt("Inserte la distancia en metros:");
+        let timeInput = prompt("Insertar el tiempo en segundos:");
+        let stepsInput = prompt("Cantidad de pasos:");
+        let savedData = {
+          coords: savedCoords,
+          distance: distanceInput,
+          time: timeInput,
+          steps: stepsInput
+          };
+  let distancia_referencia_pixel = Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
+  let distancia_zancada_pixel = Math.abs(punto_x_zancada_final - punto_x_zancada_inicial);
+  let distancia_zancada_metros= (savedData.distance*distancia_zancada_pixel)/distancia_referencia_pixel;
+  let distanceWalked = ((savedData.distance) * Math.abs(punto_x_zancada_final - punto_x_zancada_inicial)) / Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
+  let stepLength = distanceWalked / savedData.steps;
+  let strideLength = stepLength * 2;
+  let velocity = distanceWalked / savedData.time;
+  let cadencia= (savedData.steps)*60/ savedData.time;
+  //Guardo las variables para pasarla a la siguiente pagina
+  localStorage.setItem("distancia_caminada", JSON.stringify(distancia_zancada_metros.toFixed(2)));       
+  localStorage.setItem("velocidad_camina", JSON.stringify(velocity.toFixed(2)));
+  localStorage.setItem("cadencia_camina", JSON.stringify(cadencia.toFixed(2)));
+  localStorage.setItem("Longitud_paso", JSON.stringify(stepLength.toFixed(2)));
+  localStorage.setItem("Longitud_zancada", JSON.stringify(strideLength.toFixed(2)));
+  
+  let message = `Distancia caminada: ${distancia_zancada_metros.toFixed(2)} metros\n`;
+  message += `Velocidad: ${velocity.toFixed(2)} m/s\n`;
+  message += `Cadencia: ${cadencia.toFixed(2)} pasos/minutos\n`;
+  message += `Longitud de paso: ${stepLength.toFixed(2)} metros\n`;
+  message += `Longitud de zancada: ${strideLength.toFixed(2)} metros\n\n`;
+  message += `Saved Coordinates:\n`;
+  savedCoords.forEach((coord, i) => {
+    message += `Coordinate ${i +1}: (${coord.x}, ${coord.y})\n;`}); 
+    message += `Distancia en el eje X: ${punto_x_zancada_final - punto_x_zancada_inicial}\n`; 
+  message += `Distancia de referencia: ${distanceWalked.toFixed(2)} metros\n`; 
+  message += `Distancia ingresada: ${savedData.distance} metros\n`; 
+  message += `Tiempo ingresado: ${savedData.time} segundos\n`; 
+  message +=` Cantidad de pasos: ${savedData.steps}\n`; 
+  message += `Punto inicial de la zancada: ${punto_x_zancada_inicial}\n`; 
+  message += `Punto final de la zancada: ${punto_x_zancada_final}\n`;
+  message += `Punto inicial de la referencia: ${punto_x_referencia_inicial}\n`;
+  message += `Punto final de la referencia: ${punto_x_referencia_final}\n`;
+
+alert(message);
+}
 
   
 //Rectangulos que muestran los datos
@@ -208,6 +311,11 @@ function onResults(results) {
         let tobillo_i_y = canvasElement.height * results.poseLandmarks[27].y;
         let tobillo_d_x = canvasElement.width * results.poseLandmarks[28].x;
         let tobillo_d_y = canvasElement.height * results.poseLandmarks[28].y;
+        let talon_i_x =  results.poseLandmarks[29].x;
+        let talon_i_y = canvasElement.height * results.poseLandmarks[29].y;
+        let talon_d_x = canvasElement.width * results.poseLandmarks[30].x;
+        let talon_d_y = canvasElement.height * results.poseLandmarks[30].y;
+        
         //dibujar linea de mandibula
         let mdx = mandibula_d_x;
         let mdy = (mandibula_d_y - mandibula_i_y) / 2 + mandibula_i_y;
@@ -351,7 +459,7 @@ function onResults(results) {
         //Angulos de rotacion interna y externa de cadera
         let angulo_rot_int_cad_izq = (180 * Math.acos((tobillo_i_x - rodilla_i_x) / (Math.sqrt(Math.pow((tobillo_i_x - rodilla_i_x), 2) + Math.pow((tobillo_i_y - rodilla_i_y), 2)))) / Math.PI) - 90;
         angulo_rot_int_cad_izq = angulo_rot_int_cad_izq.toFixed(0) * -1;
-        document.getElementById("ang_rot_cad_izq").innerHTML = angulo_rot_int_cad_izq + " °";
+        document.getElementById("ang_rot_cad_izq").innerHTML = angulo_rot_int_cad_izq  + " °";
         let angulo_rot_int_cad_der = (180 * Math.acos((tobillo_d_x - rodilla_d_x) / (Math.sqrt(Math.pow((tobillo_d_x - rodilla_d_x), 2) + Math.pow((tobillo_d_y - rodilla_d_y), 2)))) / Math.PI) - 90;
         angulo_rot_int_cad_der = angulo_rot_int_cad_der.toFixed(0);
         document.getElementById("ang_rot_cad_der").innerHTML = angulo_rot_int_cad_der + " °";
@@ -361,10 +469,20 @@ function onResults(results) {
         angulo_cadera_i = angulo_cadera_i * (180) / Math.PI;
         //Chequea si la rodilla esta atras o adelante de la cadera en el eje x y en funcion a eso cambia de signo
         if (cadera_i_x > rodilla_i_x) {
+            if(solutionOptions.selfieMode){
             angulo_cadera_i = angulo_cadera_i.toFixed(0);
+            }
+            else{
+                angulo_cadera_i =-1* angulo_cadera_i.toFixed(0); 
+            }
         }
         else {
-            angulo_cadera_i = -1 * angulo_cadera_i.toFixed(0);
+            if(solutionOptions.selfieMode){
+                angulo_cadera_i = -1*angulo_cadera_i.toFixed(0);
+                }
+            else{
+                angulo_cadera_i = angulo_cadera_i.toFixed(0); 
+            }
         }
         
         if (solutionOptions.guardar_datos) {
@@ -384,11 +502,23 @@ function onResults(results) {
         //DER
         var angulo_cadera_d = Math.acos((rodilla_d_y - cadera_d_y) / (Math.sqrt(Math.pow(cadera_d_x - rodilla_d_x, 2) + Math.pow(cadera_d_y - rodilla_d_y, 2))));
         angulo_cadera_d = angulo_cadera_d * (180) / Math.PI;
-        if (cadera_d_x > rodilla_d_x) {
-            angulo_cadera_d = angulo_cadera_d.toFixed(0);
+        angulo_cadera_d.toFixed(0); 
+        if (cadera_d_x < rodilla_d_x) {
+            if(solutionOptions.selfieMode){
+                angulo_cadera_d = -1*angulo_cadera_d.toFixed(0);
+                }
+                else{
+                    angulo_cadera_d = angulo_cadera_d.toFixed(0); 
+                }
         }
         else {
-            angulo_cadera_d = -1 * angulo_cadera_d.toFixed(0);
+
+            if(solutionOptions.selfieMode){
+                angulo_cadera_d = angulo_cadera_d.toFixed(0);
+                }
+            else{
+                angulo_cadera_d = -1*angulo_cadera_d.toFixed(0); 
+            }
         }   
         if (solutionOptions.guardar_datos) {
             ang_der_cad_grafico.push(angulo_cadera_d);
@@ -447,6 +577,9 @@ function onResults(results) {
             localStorage.setItem("ang_der_rod_grafico", JSON.stringify(ang_der_rod_grafico));
             window.location.href = "analizar.html";
         });
+        
+        
+        
     }
     canvasCtx.restore();
     if (results.poseWorldLandmarks) {
@@ -462,42 +595,11 @@ function onResults(results) {
 
 
 
-function getBase64Image(img) {
-   
-    canvasElement.width = img.width;
-    canvasElement.height = img.height;
-
-    var ctx = canvasElement.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-
-    var dataURL = canvasElement.toDataURL("image/png");
-
-    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-}
-
-
-var frameArray = [];
-document.getElementById("saveButton").addEventListener("click", function() {
-    var dataURL = canvasElement.toDataURL("image/png");
-    console.log(dataURL)
-    localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-    var count = localStorage.getItem("saveCount") || 0;
-    count++;
-    
-    if (count == 1) {
-      localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-    } else if (count == 2) {
-      localStorage.setItem("imgData2", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-    } else if (count == 3) {
-      localStorage.setItem("imgData3", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-    } else if (count == 4) {
-      localStorage.setItem("imgData4", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-    }
-    
-    localStorage.setItem("saveCount", count); 
-});
-
-
+//document.getElementById("saveButton").addEventListener("click", function() {
+  //  var dataURL = canvasElement.toDataURL("image/png");
+    //console.log(dataURL)
+    //localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      //});
 
 const pose = new mpPose.Pose(options);
 pose.setOptions(solutionOptions);
@@ -562,3 +664,5 @@ new controls
     activeEffect = x['effect'];
     pose.setOptions(options);
 });
+
+

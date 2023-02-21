@@ -14,7 +14,9 @@
     <div class="chip" id="Análisis de la marcha humana lado izquierdo">Análisis de la marcha humana lado izquierdo</div>
     <div class="chip" id="Análisis de la marcha humana lado derecho">Análisis de la marcha humana lado derecho</div>
   </div>
-  <p id="selectedTest"></p>
+ <br>
+ <br>
+ <br>
 </div>
 
 <style>
@@ -24,39 +26,105 @@
   .graph-container {
     width: 1200px;
     height: 1200px;
-    display: inline-block;
-    justify-content: right;
+    margin: 0 auto;
+    justify-content: center;
   }
-  #top-container {
-    margin-top: 20px;
+  
+  #container-izq {
+    margin-top: 2px;
+    justify-content: center;
   }
   #bottom-container {
     margin-top: 20px;
   }
+  .graph-header {
+    background-color: rgb(43, 138, 17);
+    padding: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+  .graph-header h2 {
+    color: white;
+    font-size: 24px;
+    margin: 0;
+    text-align: center;
+  }
+  .graph-container:first-child {
+    margin-bottom: -400px;
+  }
+  .graph-container:nth-child(2) {
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
- 
+  <div id="marcha-humana-wrapper">
+    <div class="stripe">PARAMETROS DE LA MARCHA</div>
+    <ul id="marcha-humana">
+      <li>Velocidad de caminata: <span id="velocidad"></span></li>
+      <li>Cadencia de caminata: <span id="cadencia"></span></li>
+      <li>Longitud de paso: <span id="longitud_paso"></span></li>
+      <li>Longitud de zancada: <span id="longitud_zancada"></span></li>
+    </ul>
+  </div>
+  
+  
+  
+  
    
-<div id="top-container">
-  <div class="graph-container">
-    <div style="position: relative;">
-      <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
-      <canvas id="myChart"></canvas>
-      <canvas id="myChartri"></canvas>
-      <canvas id="myChartcd"></canvas>
-      <canvas id="myChartrd"></canvas>
+  <div id="container-izq">
+    <div class="graph-container">
+       <div id="grafico_titulo_ci">
+          <div class="graph-header">
+            <h2>Rango articular cadera izquierda</h2>
+          </div>
+        </div>  
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+    
+    <div class="graph-container">
+        <div id="grafico_titulo_ri">
+            <div class="graph-header">
+              <h2>Rango articular rodilla izquierda</h2>
+            </div>
+        </div>    
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChartri"></canvas>
+      </div>
     </div>
   </div>
-</div>
-<div id="bottom-container">
-</div>
-<button class="button_mostrar_captura" id="show-screenshots-button">Mostrar Capturas</button>
+  
+  <div id="container-der">
+    <div class="graph-container">
+        <div class="graph-header">
+          <h2>Rango articular cadera derecha</h2>
+        </div>  
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChartcd"></canvas>
+      </div>
+    </div>
+    
+    <div class="graph-container">
+            <div class="graph-header">
+              <h2>Rango articular rodilla derecha</h2>
+            </div>   
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChartrd"></canvas>
+      </div>
+    </div>
+  </div>
 
 <div id="displayContainer">
-  <img id="displayedFrame" />
-  <button id="previousButton">Previous</button>
-  <button id="nextButton">Next</button>
+  <div id="frameContainer">
+    <img id="displayedFrame" />
+    <span id="deleteButton">&#10006;</span>
+  </div>
 </div>
 
 <div class="screenshot-container">
@@ -79,5 +147,5 @@
   });
 </script>
 
-<link rel="stylesheet" href="./pag_ang_izq_css.css">
-<script src="pag_ang_izq_js.js"></script>
+<link rel="stylesheet" href="./analizar.css">
+<script src="analizar.js"></script>

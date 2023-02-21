@@ -1,0 +1,27 @@
+body {
+
+    background-color: rgb(17, 17, 17);
+    }
+    
+    .navbar {
+        background-color: rgb(37, 120, 14);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        position: fixed;
+        top: 0;
+        left: 0rem;
+        width: 100%;
+        z-index: 1;
+        font-size: 1.8rem;
+        height: 60px;
+        font-weight: bold;
+    }
+    
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }

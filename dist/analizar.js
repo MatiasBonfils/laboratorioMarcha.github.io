@@ -1,61 +1,24 @@
-document.addEventListener("DOMContentLoaded", function() {
-  var count = localStorage.getItem("saveCount") || 0;
-  var displayedFrame = document.getElementById('displayedFrame');
-  var currentFrame = 1;
+// get initial displayed frame from local storage
+var dataImage = localStorage.getItem('imgData');
+var bannerImg = document.getElementById('displayedFrame');
+localStorage.setItem("imgData2", dataImage);
+bannerImg.src = "data:image/png;base64," + dataImage;
 
-  function displayFrame(index) {
-    var dataImage = localStorage.getItem(`imgData${index}`);
-    if (!dataImage) return;
-
-    displayedFrame.src = "data:image/png;base64," + dataImage;
-    currentFrame = index;
-  }
-
-  document.getElementById("previousButton").addEventListener("click", function() {
-    displayFrame(currentFrame - 1);
-  });
-
-  document.getElementById("nextButton").addEventListener("click", function() {
-    displayFrame(currentFrame + 1);
-  });
-
-  displayFrame(0);
-});
-
-
-
-  
-const showScreenshotsButton = document.getElementById("show-screenshots-button");
-const screenshotContainer = document.querySelector(".screenshot-container");
-
-
-showScreenshotsButton.addEventListener("click", () => {
-  showScreenshotsButton.style.backgroundColor = "#228B22";
-  setTimeout(() => {
-      showScreenshotsButton.style.backgroundColor = "";
-  }, 200);
-  screenshotContainer.innerHTML = "";
-  const screenshots = JSON.parse(localStorage.getItem("screenshots")) || [];
-  for (const screenshot of screenshots) {
-      const screenshotElement = document.createElement("div");
-      screenshotElement.classList.add("screenshot");
-      const screenshotImage = new Image();
-      screenshotImage.src = screenshot;
-      screenshotElement.appendChild(screenshotImage);
-      const deleteButton = document.createElement("div");
-      deleteButton.classList.add("delete-button");
-      deleteButton.textContent = "x";
-      deleteButton.addEventListener("click", () => {
-          const index = screenshots.indexOf(screenshot);
-          if (index >= 0) {
-              screenshots.splice(index, 1);
-          }
-          screenshotContainer.removeChild(screenshotElement);
-      });
-      screenshotElement.appendChild(deleteButton);
-      screenshotContainer.appendChild(screenshotElement);
+// add event listener to delete button
+var deleteBtn = document.getElementById('deleteButton');
+deleteBtn.addEventListener('click', function() {
+  var confirmDelete = confirm('¿Quieres eliminar esta imagen?');
+  if (confirmDelete) {
+    localStorage.removeItem('imgData');
+    bannerImg.src = "";
+    deleteBtn.style.display = 'none';
   }
 });
+
+  document.getElementById("container-izq").style.display = "none";
+  document.getElementById("container-der").style.display = "none";
+  document.getElementById("marcha-humana-wrapper").style.display = "none";
+  document.getElementById("displayContainer").style.height = "90vh";
 
 
 const chips = document.querySelectorAll('.chip');
@@ -69,9 +32,29 @@ chips.forEach(chip => {
 
     selectedChip = event.currentTarget;
     selectedChip.classList.add('selected');
+    localStorage.setItem("prueba_realizada", JSON.stringify(selectedChip.id));
 
-    document.getElementById('selectedTest').innerText = `Selected test: ${selectedChip.id}`;
+    
     if (selectedChip.id === "Análisis de la marcha humana lado izquierdo") {
+
+      document.getElementById("displayContainer").style.height = "8vh";
+
+      document.getElementById("container-izq").style.display = "block";
+      document.getElementById("marcha-humana-wrapper").style.display = "block";
+      
+
+      var velocidad = JSON.parse(localStorage.getItem("velocidad_camina"));
+      var cadencia = JSON.parse(localStorage.getItem("cadencia_camina"));
+      var longitudPaso = JSON.parse(localStorage.getItem("Longitud_paso"));
+      var longitudZancada = JSON.parse(localStorage.getItem("Longitud_zancada"));
+
+      document.getElementById("velocidad").innerHTML = velocidad + " m/s";
+      document.getElementById("cadencia").innerHTML = cadencia + " pasos/minuto";
+      document.getElementById("longitud_paso").innerHTML = longitudPaso + " metros";
+      document.getElementById("longitud_zancada").innerHTML = longitudZancada + " metros";
+
+
+
       var ang_izq_cad_grafico = JSON.parse(localStorage.getItem("ang_izq_cad_grafico"));
       var ang_izq_rod_grafico = JSON.parse(localStorage.getItem("ang_izq_rod_grafico"));
        
@@ -89,6 +72,7 @@ chips.forEach(chip => {
         data: {
           labels: xValues,
           datasets: [{
+            label: 'Ángulo articular cadera izquierda',
             backgroundColor: "rgba(0,0,0,0)",
             borderColor: "green",
             data: ang_izq_cad_grafico
@@ -124,6 +108,7 @@ chips.forEach(chip => {
         data: {
           labels: xValuesri,
           datasets: [{
+            label: 'Ángulo articular rodilla izquierda',
             backgroundColor: "rgba(0,0,0,0)",
             borderColor: "green",
             data: ang_izq_rod_grafico
@@ -155,6 +140,9 @@ chips.forEach(chip => {
     } else {
       document.getElementById("myChart").style.display = "none";
       document.getElementById("myChartri").style.display = "none";
+      document.getElementById("marcha-humana-wrapper").style.display = "none";
+      document.getElementById("container-izq").style.display = "none";
+      document.getElementById("displayContainer").style.height = "90vh";
     }
     });
     });
@@ -169,8 +157,28 @@ chips.forEach(chip => {
         selectedChip = event.currentTarget;
         selectedChip.classList.add('selected');
     
-        document.getElementById('selectedTest').innerText = `Selected test: ${selectedChip.id}`;
+        
         if (selectedChip.id === "Análisis de la marcha humana lado derecho") {
+          
+          
+          document.getElementById("displayContainer").style.height = "8vh";
+          document.getElementById("marcha-humana-wrapper").style.display = "block";
+          document.getElementById("container-der").style.display = "block";
+
+          var velocidad = JSON.parse(localStorage.getItem("velocidad_camina"));
+          var cadencia = JSON.parse(localStorage.getItem("cadencia_camina"));
+          var longitudPaso = JSON.parse(localStorage.getItem("Longitud_paso"));
+          var longitudZancada = JSON.parse(localStorage.getItem("Longitud_zancada"));
+          
+          document.getElementById("velocidad").innerHTML = velocidad + " m/s";
+          document.getElementById("cadencia").innerHTML = cadencia + " pasos/minuto";
+          document.getElementById("longitud_paso").innerHTML = longitudPaso + " metros";
+          document.getElementById("longitud_zancada").innerHTML = longitudZancada + " metros";
+          
+          
+          
+          
+          
           var ang_der_cad_grafico = JSON.parse(localStorage.getItem("ang_der_cad_grafico"));
           var ang_der_rod_grafico = JSON.parse(localStorage.getItem("ang_der_rod_grafico"));
            
@@ -188,6 +196,7 @@ chips.forEach(chip => {
             data: {
               labels: xValuescd,
               datasets: [{
+                label: 'Ángulo articular cadera derecha',
                 backgroundColor: "rgba(0,0,0,0)",
                 borderColor: "green",
                 data: ang_der_cad_grafico
@@ -223,6 +232,7 @@ chips.forEach(chip => {
             data: {
               labels: xValuesrd,
               datasets: [{
+                label: 'Ángulo articular rodilla derecha',
                 backgroundColor: "rgba(0,0,0,0)",
                 borderColor: "green",
                 data: ang_der_rod_grafico
@@ -254,6 +264,8 @@ chips.forEach(chip => {
         } else {
           document.getElementById("myChartcd").style.display = "none";
           document.getElementById("myChartrd").style.display = "none";
+          document.getElementById("container-der").style.display = "none";
+         
         }
         });
         });

@@ -1,0 +1,354 @@
+
+ 
+<nav class="navbar" style="height: 60px; font-weight: bold;">
+  <a href="./analizar.css" style="flex: 1 1 20%; text-align: left;margin-left: 20px;">Volver</a>
+  <p style="flex: 1 1 20%; text-align: center; margin-left: 350px;">Ficha Técnica</p>
+  <div style="flex: 1 1 20%;"></div>
+  <a href="#" onclick="printPage()" style="flex: 1 1 20%; text-align: right; margin-left: 20px;padding-right: 30px; color: white; text-decoration: none; display: block; line-height: 60px; background-color: rgb(37, 120, 14);">Generar PDF</a>
+</nav>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+ <br>
+ <br>
+  <head>
+    <title>Ficha Técnica</title>
+    <style>
+     
+      h2 {
+        font-size: 28px;
+        font-weight: bold;
+        text-decoration: underline;
+        margin-bottom: 10px;
+        color: #fff;
+        font-size: 24px;
+      }
+  
+      .text-line {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+  
+      .text-line label {
+        width: 300px;
+        font-weight: bold;
+        font-size: 20px;
+        color: #fff;
+      }
+      .text-line input[type="text"] {
+      flex: 1;
+      margin-left: 10px;
+      font-size: 20px;
+      border: none;
+      border-bottom: 2px solid #fff;
+      background-color: transparent;
+      color: #fff;
+      padding: 5px 0;
+      outline: none;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+      .text-line input, .text-line span {
+        flex: 1;
+        margin-left: 10px;
+        font-size: 20px;
+        background-color: transparent;
+        color: #fff;
+        padding: 5px 0;
+        outline: none;
+        border: none;
+        border-bottom: 2px solid #fff;
+      }
+  
+      .text-line:last-child input, .text-line:last-child span {
+        border: none;
+      }
+      .text-line label[for="observaciones"] {
+  width: 300px;
+}
+
+.text-line textarea#observaciones {
+  flex: 1;
+  margin-left: 10px;
+  font-size: 20px;
+  background-color: transparent;
+  color: #fff;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #fff;
+  resize: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 750px;
+  max-height: 395px;
+  overflow: auto;
+}
+
+.text-line textarea#observaciones::-webkit-scrollbar {
+  width: 5px;
+}
+
+.text-line textarea#observaciones::-webkit-scrollbar-thumb {
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.text-line textarea#observaciones::placeholder {
+  color: #fff;
+  font-style: italic;
+}
+
+.text-line textarea#observaciones:focus {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #fff;
+}
+
+.text-line textarea#observaciones {
+  height: auto;
+  line-height: 30px;
+  padding: 5px;
+}
+
+.text-line textarea#observaciones > div {
+  height: 150px;
+  overflow-y: scroll;
+}
+
+.text-line textarea#observaciones > div > div {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  white-space: pre-wrap;
+}
+
+.text-line textarea#observaciones > div > div > span {
+  display: inline-block;
+  width: calc(100% - 1px);
+}
+
+.text-line textarea#observaciones > div > div > span:before {
+  content: attr(data-content) "\A";
+  white-space: pre-wrap;
+}
+
+.text-line textarea#observaciones > div > div > span:last-of-type:before {
+  content: attr(data-content);
+}
+
+.text-line textarea#observaciones:invalid {
+  border: 2px solid red;
+}
+
+.text-line textarea#observaciones:valid {
+  border: 2px solid rgb(255, 255, 255);
+}
+
+
+      .white-line {
+        border-bottom: 1px solid #fff;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <h2>Datos personales</h2>
+    <div class="text-line">
+      <label>Nombre:</label>
+      <input type="text" />
+    </div>
+    <div class="text-line">
+      <label>Edad:</label>
+      <input type="text" />
+    </div>
+    <div class="text-line">
+      <label>Sexo:</label>
+      <input type="text" />
+    </div>
+    <div class="text-line">
+      <label>Ocupación:</label>
+      <input type="text" />
+    </div>
+    
+    <div class="white-line"></div>
+    <h2>Datos de la prueba</h2>
+    <div class="text-line">
+      <label>Prueba realizada:</label>
+      <input type="text" id="prueba" value="" />
+    </div>
+    <div id="results">
+      <div class="text-line">
+        <label>Velocidad:</label>
+        <span id="velocidad"></span>
+      </div>
+      <div class="text-line">
+        <label>Cadencia:</label>
+        <span id="cadencia"></span>
+      </div>
+      <div class="text-line">
+        <label>Longitud de paso:</label>
+        <span id="longitud_paso"></span>
+      </div>
+      <div class="text-line">
+        <label>Longitud de zancada:</label>
+        <span id="longitud_zancada"></span>
+      </div>
+    </div>
+      <div  class="text-line">
+        <label for="observaciones">Observaciones:</label>
+        <textarea id="observaciones" rows="5"></textarea>
+      </div>
+      
+      <br>
+      <br>
+    
+  </body>
+  
+ 
+    <br>
+    <br>
+    <br>
+    <br>
+  <style>
+    #displayedFrame2 {
+          width: 700px; /* set the width to 300 pixels */
+          height: 500px; /* set the height to 200 pixels */
+        }
+        .frameContainer {
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }  
+   </style>
+    <div id="displayContainer">
+      <div class="frameContainer">
+        <img id="displayedFrame2" />
+      </div>
+    </div>
+    <br>
+    <br>
+    <br>
+ 
+    <br>
+    <br>
+    <br>
+    <br>
+   <br>
+   <br>
+   <br>
+    <br>
+    <br>
+    <br>
+   <br>
+   <br>
+
+  <style>
+   body {
+    background-color: rgb(16, 16, 16);
+  }
+  .container {
+    width: 1000px;
+    height: 100px;
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  #container {
+    margin-top: 2px;
+    justify-content: center;
+  }
+  .container2 {
+    width: 1000px;
+    height: 100px;
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  #container2 {
+    margin-top: 2px;
+    justify-content: center;
+  }
+  #bottom-container {
+    margin-top: 20px;
+  }
+  .graph-header {
+    background-color: rgb(43, 138, 17);
+    padding: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+  .graph-header h2 {
+    color: white;
+    font-size: 24px;
+    margin: 0;
+    text-align: center;
+  }
+ 
+  </style>
+  <div id="cont-der" class="container2" >
+    <div id="grafico_titulo_cd">
+      <div class="graph-header">
+        <h2>Rango articular cadera derecha</h2>
+      </div>
+    </div>
+    <div style="position: relative;">
+      <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0;background-color: white;"></div>
+      <canvas id="myChartcd" style="height: 300px; width: 550px;"></canvas>
+    </div>
+   <br>
+   <br>
+   <br>
+    
+   <br>
+   <br>
+   <br>
+    <div class="graph-container">
+      <div id="grafico_titulo_rd">
+        <div class="graph-header">
+          <h2>Rango articular rodilla derecha</h2>
+        </div>
+      </div>
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChartrd" style="height: 300px; width: 550px;"></canvas>
+      </div>
+    </div>
+  </div>
+ <div id="cont-izq" class="container">
+  <div id="grafico_titulo_ci">
+    <div class="graph-header">
+      <h2>Rango articular cadera izquierda</h2>
+    </div>
+  </div>
+  <div style="position: relative;">
+    <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0;background-color: white;"></div>
+    <canvas id="myChart" style="height: 300px; width: 550px;"></canvas>
+  </div>
+  <br>
+  <br>
+  <br>
+
+  <br>
+  <br>
+  <br>
+
+  <div class="graph-container">
+    <div id="grafico_titulo_ri">
+        <div class="graph-header">
+          <h2>Rango articular rodilla izquierda</h2>
+        </div>
+    </div>    
+  <div style="position: relative;">
+    <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+    <canvas id="myChartri" style="height: 300px; width: 550px;"></canvas>
+  </div>
+  </div>
+ </div>
+ 
+
+
+  <link rel="stylesheet" href="./guardar_analisis.css">
+  <script src="guardar_analisis.js"></script>
+  
