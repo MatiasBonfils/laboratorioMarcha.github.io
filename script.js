@@ -138,19 +138,8 @@ function showPopup() {
   message += `Cadencia: ${cadencia.toFixed(2)} pasos/minutos\n`;
   message += `Longitud de paso: ${stepLength.toFixed(2)} metros\n`;
   message += `Longitud de zancada: ${strideLength.toFixed(2)} metros\n\n`;
-  message += `Saved Coordinates:\n`;
-  savedCoords.forEach((coord, i) => {
-    message += `Coordinate ${i +1}: (${coord.x}, ${coord.y})\n;`}); 
-    message += `Distancia en el eje X: ${punto_x_zancada_final - punto_x_zancada_inicial}\n`; 
-  message += `Distancia de referencia: ${distanceWalked.toFixed(2)} metros\n`; 
-  message += `Distancia ingresada: ${savedData.distance} metros\n`; 
-  message += `Tiempo ingresado: ${savedData.time} segundos\n`; 
-  message +=` Cantidad de pasos: ${savedData.steps}\n`; 
-  message += `Punto inicial de la zancada: ${punto_x_zancada_inicial}\n`; 
-  message += `Punto final de la zancada: ${punto_x_zancada_final}\n`;
-  message += `Punto inicial de la referencia: ${punto_x_referencia_inicial}\n`;
-  message += `Punto final de la referencia: ${punto_x_referencia_final}\n`;
-
+  
+  
 alert(message);
 }
 
@@ -633,30 +622,19 @@ new controls
         },
     }),
     new controls.Slider({
-        title: 'Model Complexity',
+        title: 'Complejidad del Modelo',
         field: 'modelComplexity',
         discrete: ['Lite', 'Full', 'Heavy'],
     }),
-    new controls.Toggle({ title: 'Linea de valgo/varo', field: 'valgo_varo' }),
-    new controls.Toggle({ title: 'Linea de mandibula', field: 'lineaMandibula' }),
-    new controls.Toggle({ title: 'Linea de hombro', field: 'lineaHombro' }),
+    new controls.Toggle({ title: 'Linea de Valgo/Varo', field: 'valgo_varo' }),
+    new controls.Toggle({ title: 'Linea de Mandibula', field: 'lineaMandibula' }),
+    new controls.Toggle({ title: 'Linea de Hombro', field: 'lineaHombro' }),
     new controls.Toggle({ title: 'Linea de Cadera', field: 'lineaCadera' }),
     new controls.Toggle({ title: 'Rotacion Interna/Externa', field: 'rotIntExt' }),
     new controls.Toggle({ title: 'Mostrar Ángulos Izquierdos de la Marcha', field: 'angulosIzquierdos' }),
     new controls.Toggle({ title: 'Mostrar Ángulos Derechos de la Marcha', field: 'angulosDerechos' }),
-    new controls.Toggle({ title: 'Guardar datos', field: 'guardar_datos' }),
-    new controls.Slider({
-        title: 'Min Detection Confidence',
-        field: 'minDetectionConfidence',
-        range: [0, 1],
-        step: 0.01
-    }),
-    new controls.Slider({
-        title: 'Min Tracking Confidence',
-        field: 'minTrackingConfidence',
-        range: [0, 1],
-        step: 0.01
-    }),
+    new controls.Toggle({ title: 'Guardar Datos', field: 'guardar_datos' }),
+   
 ])
     .on(x => {
     const options = x;
