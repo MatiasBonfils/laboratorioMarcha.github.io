@@ -1,6 +1,3 @@
-//import ldb from './localdata.min.js'
-
-
 const controls = window;
 const drawingUtils = window;
 const mpPose = window;
@@ -13,12 +10,32 @@ const options = {
 document.getElementById("myButton").addEventListener("click", function() {
     window.location.href = "analizar.html";
   });
-  
 // Our input frames will come from here.
 const videoElement = document.getElementsByClassName('input_video')[0];
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
+const containerElement = document.getElementsByClassName('container')[0];
 const controlsElement = document.getElementsByClassName('control-panel')[0];
 const canvasCtx = canvasElement.getContext('2d');
+
+
+function resizeCanvas() {
+  if (videoElement.videoWidth > videoElement.videoHeight) {
+    
+    containerElement.left= "90%";
+  } else {
+    canvasElement.width = window.innerHeight * (videoElement.videoWidth / videoElement.videoHeight);
+    canvasElement.height = window.innerHeight;
+  }
+}
+
+videoElement.addEventListener('loadedmetadata', resizeCanvas);
+window.addEventListener('resize', resizeCanvas);
+
+
+
+
+
+
 //solution options
 const solutionOptions = {
     selfieMode: true,
@@ -164,8 +181,6 @@ let ang_der_cad_grafico = [];
 let ang_izq_rod_grafico = [];
 let ang_der_rod_grafico = [];
 
-
-
 // Optimization: Turn off animated spinner after its hiding animation is done.
 const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
 const grid = new LandmarkGrid(landmarkContainer, {
@@ -209,8 +224,6 @@ function onResults(results) {
     else {
         canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
     }
-    
-
     if (results.poseLandmarks) {
         //DIBUJAR RECTANGULOS
         //Lineas
@@ -300,11 +313,7 @@ function onResults(results) {
         let tobillo_i_y = canvasElement.height * results.poseLandmarks[27].y;
         let tobillo_d_x = canvasElement.width * results.poseLandmarks[28].x;
         let tobillo_d_y = canvasElement.height * results.poseLandmarks[28].y;
-        let talon_i_x =  results.poseLandmarks[29].x;
-        let talon_i_y = canvasElement.height * results.poseLandmarks[29].y;
-        let talon_d_x = canvasElement.width * results.poseLandmarks[30].x;
-        let talon_d_y = canvasElement.height * results.poseLandmarks[30].y;
-        
+
         //dibujar linea de mandibula
         let mdx = mandibula_d_x;
         let mdy = (mandibula_d_y - mandibula_i_y) / 2 + mandibula_i_y;
@@ -567,8 +576,6 @@ function onResults(results) {
             window.location.href = "analizar.html";
         });
         
-        
-        
     }
     canvasCtx.restore();
     if (results.poseWorldLandmarks) {
@@ -581,14 +588,6 @@ function onResults(results) {
         grid.updateLandmarks([]);
     }
 }
-
-
-
-//document.getElementById("saveButton").addEventListener("click", function() {
-  //  var dataURL = canvasElement.toDataURL("image/png");
-    //console.log(dataURL)
-    //localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-      //});
 
 const pose = new mpPose.Pose(options);
 pose.setOptions(solutionOptions);
