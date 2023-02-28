@@ -87,6 +87,7 @@ coordBtn.addEventListener('click', toggleSaveCoordinates);
 function toggleSaveCoordinates() {
   saveCoordsEnabled = !saveCoordsEnabled;
   if (saveCoordsEnabled) {
+    document.getElementById('capture-button').style.display = 'none';
     savedCoords = [];
     coordsSaved = 0;
     coordBtn.style.backgroundColor = "#0E6655";
@@ -105,6 +106,7 @@ function toggleSaveCoordinates() {
 }
 
 function saveCoordinates(e) {
+
   if (saveCoordsEnabled && coordsSaved < 4) {
     if (e.target !== coordBtn && e.target !== showCoordsBtn) {
       savedCoords.push({x: e.screenX, y: e.screenY});
@@ -126,39 +128,44 @@ function saveCoordinates(e) {
   }
 }
 function showPopup() {
-  let distanceInput = prompt("Inserte la distancia en metros:");
-        let timeInput = prompt("Insertar el tiempo en segundos:");
-        let stepsInput = prompt("Cantidad de pasos:");
-        let savedData = {
-          coords: savedCoords,
-          distance: distanceInput,
-          time: timeInput,
-          steps: stepsInput
-          };
-  let distancia_referencia_pixel = Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
-  let distancia_zancada_pixel = Math.abs(punto_x_zancada_final - punto_x_zancada_inicial);
-  let distancia_zancada_metros= (savedData.distance*distancia_zancada_pixel)/distancia_referencia_pixel;
-  let distanceWalked = ((savedData.distance) * Math.abs(punto_x_zancada_final - punto_x_zancada_inicial)) / Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
-  let stepLength = distanceWalked / savedData.steps;
-  let strideLength = stepLength * 2;
-  let velocity = distanceWalked / savedData.time;
-  let cadencia= (savedData.steps)*60/ savedData.time;
-  //Guardo las variables para pasarla a la siguiente pagina
-  localStorage.setItem("distancia_caminada", JSON.stringify(distancia_zancada_metros.toFixed(2)));       
-  localStorage.setItem("velocidad_camina", JSON.stringify(velocity.toFixed(2)));
-  localStorage.setItem("cadencia_camina", JSON.stringify(cadencia.toFixed(2)));
-  localStorage.setItem("Longitud_paso", JSON.stringify(stepLength.toFixed(2)));
-  localStorage.setItem("Longitud_zancada", JSON.stringify(strideLength.toFixed(2)));
+    let distanceInput = prompt("Inserte la distancia en metros:");
+          let timeInput = prompt("Insertar el tiempo en segundos:");
+          let stepsInput = prompt("Cantidad de pasos:");
+          let savedData = {
+            coords: savedCoords,
+            distance: distanceInput,
+            time: timeInput,
+            steps: stepsInput
+            };
+    let distancia_referencia_pixel = Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
+    let distancia_zancada_pixel = Math.abs(punto_x_zancada_final - punto_x_zancada_inicial);
+    let distancia_zancada_metros= (savedData.distance*distancia_zancada_pixel)/distancia_referencia_pixel;
+    let distanceWalked = ((savedData.distance) * Math.abs(punto_x_zancada_final - punto_x_zancada_inicial)) / Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
+    let stepLength = distanceWalked / savedData.steps;
+    let strideLength = stepLength * 2;
+    let velocity = distanceWalked / savedData.time;
+    let cadencia= (savedData.steps)*60/ savedData.time;
+    //Guardo las variables para pasarla a la siguiente pagina
+    localStorage.setItem("distancia_caminada", JSON.stringify(distancia_zancada_metros.toFixed(2)));       
+    localStorage.setItem("velocidad_camina", JSON.stringify(velocity.toFixed(2)));
+    localStorage.setItem("cadencia_camina", JSON.stringify(cadencia.toFixed(2)));
+    localStorage.setItem("Longitud_paso", JSON.stringify(stepLength.toFixed(2)));
+    localStorage.setItem("Longitud_zancada", JSON.stringify(strideLength.toFixed(2)));
+    
+    let message = `Distancia caminada: ${distancia_zancada_metros.toFixed(2)} metros\n`;
+    message += `Velocidad: ${velocity.toFixed(2)} m/s\n`;
+    message += `Cadencia: ${cadencia.toFixed(2)} pasos/minutos\n`;
+    message += `Longitud de paso: ${stepLength.toFixed(2)} metros\n`;
+    message += `Longitud de zancada: ${strideLength.toFixed(2)} metros\n\n`;
+    
+    
+  alert(message);
+  document.getElementById('capture-button').style.display = 'block';
+  coordBtn.innerText = "Medir distancia";
+  coordBtn.style.backgroundColor = "#228B22";
   
-  let message = `Distancia caminada: ${distancia_zancada_metros.toFixed(2)} metros\n`;
-  message += `Velocidad: ${velocity.toFixed(2)} m/s\n`;
-  message += `Cadencia: ${cadencia.toFixed(2)} pasos/minutos\n`;
-  message += `Longitud de paso: ${stepLength.toFixed(2)} metros\n`;
-  message += `Longitud de zancada: ${strideLength.toFixed(2)} metros\n\n`;
+  }
   
-  
-alert(message);
-}
 
   
 //Rectangulos que muestran los datos
