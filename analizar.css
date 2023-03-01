@@ -51,7 +51,7 @@ body {
     text-align: center;
     transition: background-color 0.2s ease;
     cursor: pointer;
-    border: 0.2rem solid black;
+    border: 6px solid black;
   }
   
   .chip:hover {

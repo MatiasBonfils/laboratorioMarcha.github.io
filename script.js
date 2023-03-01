@@ -98,7 +98,7 @@ function toggleSaveCoordinates() {
     alert("Seleccione los puntos de referencia de la distancia en la pantalla");
   } else {
     coordBtn.innerText = "Medir distancia";
-    coordBtn.style.backgroundColor = "#228B22";
+    coordBtn.style.backgroundColor = "rgb(37, 120, 14)";
     document.body.style.cursor = "";
     document.documentElement.style.cursor = "";
     document.removeEventListener('click', saveCoordinates);
@@ -162,7 +162,7 @@ function showPopup() {
   alert(message);
   document.getElementById('capture-button').style.display = 'block';
   coordBtn.innerText = "Medir distancia";
-  coordBtn.style.backgroundColor = "#228B22";
+  coordBtn.style.backgroundColor = "rgb(37, 120, 14)";
   
   }
   
