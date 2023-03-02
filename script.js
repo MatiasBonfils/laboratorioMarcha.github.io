@@ -33,12 +33,18 @@ window.addEventListener('resize', resizeCanvas);
 
 
 
+ 
+let max_angulo_rot_int_cad_izq = -200; // 
+let min_angulo_rot_int_cad_izq = 200; // 
+let max_angulo_rot_int_cad_der = -200; //
+let min_angulo_rot_int_cad_der = 200; // 
+
 
 
 
 //solution options
 const solutionOptions = {
-    selfieMode: true,
+    selfieMode: false,
     modelComplexity: 1,
     smoothLandmarks: true,
     lineaMandibula: false,
@@ -75,12 +81,7 @@ let punto_x_zancada_final;
 let punto_x_referencia_inicial;
 let punto_x_referencia_final;
 
-document.addEventListener('mousemove', logMousePosition);
 
-function logMousePosition(e) {
-  screenLog.innerText = `
-    Screen X/Y: ${e.screenX}, ${e.screenY}`;
-}
 
 coordBtn.addEventListener('click', toggleSaveCoordinates);
 
@@ -466,8 +467,51 @@ function onResults(results) {
         angulo_rot_int_cad_izq = angulo_rot_int_cad_izq.toFixed(0) * -1;
         document.getElementById("ang_rot_cad_izq").innerHTML = angulo_rot_int_cad_izq  + " °";
         let angulo_rot_int_cad_der = (180 * Math.acos((tobillo_d_x - rodilla_d_x) / (Math.sqrt(Math.pow((tobillo_d_x - rodilla_d_x), 2) + Math.pow((tobillo_d_y - rodilla_d_y), 2)))) / Math.PI) - 90;
-        angulo_rot_int_cad_der = angulo_rot_int_cad_der.toFixed(0);
+        angulo_rot_int_cad_der = angulo_rot_int_cad_der.toFixed(0)* 1;
         document.getElementById("ang_rot_cad_der").innerHTML = angulo_rot_int_cad_der + " °";
+        
+        //Guarda los valores maximos y minimos de la rotacion int/ext del lado izq y derecho
+        if (solutionOptions.rotIntExt) {
+            //Revisa si hay algun valor menor del lado izq al anterioremente guardado
+            if (angulo_rot_int_cad_izq < min_angulo_rot_int_cad_izq) {
+                // Actualiza el valor valor minimo si es necesario
+                min_angulo_rot_int_cad_izq = angulo_rot_int_cad_izq;
+              }
+            //Revisa si hay algun valor mayor del lado izq al anterioremente guardado
+            if (angulo_rot_int_cad_izq > max_angulo_rot_int_cad_izq) {
+                 // Actualiza el valor valor maximo si es necesario
+                max_angulo_rot_int_cad_izq = angulo_rot_int_cad_izq;
+              }
+              document.getElementById("myButton").addEventListener("click", function() {
+                localStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
+                localStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
+                window.location.href = "analizar.html";
+            });
+           
+            
+        }      
+        if (solutionOptions.rotIntExt) {
+            if (angulo_rot_int_cad_der < min_angulo_rot_int_cad_der) {
+                // Actualiza el valor valor minimo si es necesario
+                min_angulo_rot_int_cad_der = angulo_rot_int_cad_der;
+            }
+            //Revisa si hay algun valor mayor del lado der al anterioremente guardado
+            if (angulo_rot_int_cad_der > max_angulo_rot_int_cad_der) {
+                // Actualiza el valor valor maximo si es necesario
+                max_angulo_rot_int_cad_der = angulo_rot_int_cad_der;
+            }  
+             //b
+        document.getElementById("myButton").addEventListener("click", function() {
+            localStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
+            localStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
+            window.location.href = "analizar.html";
+        });
+      
+        }
+
+        
+        
+
         //Angulo cadera
         //IZQ
         var angulo_cadera_i = Math.acos((rodilla_i_y - cadera_i_y) / (Math.sqrt(Math.pow(cadera_i_x - rodilla_i_x, 2) + Math.pow(cadera_i_y - rodilla_i_y, 2))));

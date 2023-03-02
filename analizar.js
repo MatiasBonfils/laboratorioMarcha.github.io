@@ -18,6 +18,7 @@ deleteBtn.addEventListener('click', function() {
   document.getElementById("container-izq").style.display = "none";
   document.getElementById("container-der").style.display = "none";
   document.getElementById("marcha-humana-wrapper").style.display = "none";
+  document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
   document.getElementById("displayContainer").style.height = "90vh";
 
 
@@ -33,7 +34,21 @@ chips.forEach(chip => {
     selectedChip = event.currentTarget;
     selectedChip.classList.add('selected');
     localStorage.setItem("prueba_realizada", JSON.stringify(selectedChip.id));
+    
+    if (selectedChip.id === "Rotación interna/externa") {
+      document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
+      var rot_int_cad_izq_min = JSON.parse(localStorage.getItem("rot_int_cad_izq_min"));
+      var rot_int_cad_izq_max = JSON.parse(localStorage.getItem("rot_int_cad_izq_max"));
+      var rot_int_cad_der_min = JSON.parse(localStorage.getItem("rot_int_cad_der_min"));
+      var rot_int_cad_der_max = JSON.parse(localStorage.getItem("rot_int_cad_der_max"));
 
+      document.getElementById("rot_int_cad_izq_max").innerHTML = rot_int_cad_izq_min + "°";
+      document.getElementById("rot_ext_cad_izq_max").innerHTML = rot_int_cad_izq_max + "°";
+      document.getElementById("rot_int_cad_der_max").innerHTML = rot_int_cad_der_min + "°";
+      document.getElementById("rot_ext_cad_der_max").innerHTML = rot_int_cad_der_max + "°";
+    }else{
+      document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
+    }
     
     if (selectedChip.id === "Análisis de la marcha humana lado izquierdo") {
 

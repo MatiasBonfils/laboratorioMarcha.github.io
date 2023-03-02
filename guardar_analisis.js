@@ -11,10 +11,11 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
 		var cadencia = JSON.parse(localStorage.getItem("cadencia_camina"));
 		var longitudPaso = JSON.parse(localStorage.getItem("Longitud_paso"));
 		var longitudZancada = JSON.parse(localStorage.getItem("Longitud_zancada"));
-
+    
 		// Display results if prueba is "Análisis de la marcha humana lado izquierdo" or "Análisis de la marcha humana lado derecho"
 		if (prueba === "Análisis de la marcha humana lado izquierdo" || prueba === "Análisis de la marcha humana lado derecho") {
-			document.getElementById("results").style.display = "block";
+      document.getElementById("resultados_rotacion").style.display = "none";
+      document.getElementById("results").style.display = "block";
       document.getElementById("prueba").value = prueba;
 			document.getElementById("velocidad").innerHTML = velocidad + " m/s";
 			document.getElementById("cadencia").innerHTML = cadencia + " pasos/minuto";
@@ -25,10 +26,26 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
     else{
       document.getElementById("prueba").value = prueba;
       document.getElementById("results").style.display = "none";
-      document.getElementById("results").style.display = "none";
+     
       
     }
+    var rot_int_cad_izq_min = JSON.parse(localStorage.getItem("rot_int_cad_izq_min"));
+    var rot_int_cad_izq_max = JSON.parse(localStorage.getItem("rot_int_cad_izq_max"));
+    var rot_int_cad_der_min = JSON.parse(localStorage.getItem("rot_int_cad_der_min"));
+    var rot_int_cad_der_max = JSON.parse(localStorage.getItem("rot_int_cad_der_max"));
 
+
+
+    if (prueba === "Rotación interna/externa") {
+			document.getElementById("resultados_rotacion").style.display = "block";
+      document.getElementById("results").style.display = "none";
+      document.getElementById("prueba").value = prueba;
+			document.getElementById("rot_ext_max_izq").innerHTML = rot_int_cad_izq_min + "°";
+			document.getElementById("rot_int_max_izq").innerHTML = rot_int_cad_izq_max + "°";
+			document.getElementById("rot_ext_max_der").innerHTML = rot_int_cad_der_min + "°";
+			document.getElementById("rot_int_max_der").innerHTML = rot_int_cad_der_max + "°";
+      
+		}
 
   //canvas2.style.display = "block";
 
