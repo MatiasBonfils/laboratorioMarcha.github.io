@@ -72,42 +72,10 @@ body {
 
 
 
-.screenshot-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  align-items: center;
-  width: 60%;
-}
-
-.screenshot {
-  position: relative;
-  margin: 10px;
-  width: 1200px;
-  height: 550px;
-  background-color: white;
-  border: 1px solid lightgray;
-  overflow: hidden;
-}
-
-.screenshot img {
-  width: 100%;
-  height: 100%;
-}
-
-.screenshot .delete-button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  font-size: 20px;
-  color: lightgray;
-  cursor: pointer;
-}
-
 
 #displayContainer {
-  margin: 0 auto;
-  right: -1000px;
+  margin-top: -5rem;
+  margin-left: 8rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -115,12 +83,15 @@ body {
   width: 240vh;
 }
 
-#frameContainer {
-  position: relative;
+#frameContainer{
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
 }
 
 #displayedFrame {
   max-width: 75%;
+  
 }
 
 #deleteButton {

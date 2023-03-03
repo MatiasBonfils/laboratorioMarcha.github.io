@@ -37,6 +37,8 @@ chips.forEach(chip => {
     
     if (selectedChip.id === "Rotación interna/externa") {
       document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
+      document.getElementById("displayContainer").style.marginTop = "-10rem";
+      document.getElementById("displayContainer").style.marginLeft = "0rem";
       var rot_int_cad_izq_min = JSON.parse(localStorage.getItem("rot_int_cad_izq_min"));
       var rot_int_cad_izq_max = JSON.parse(localStorage.getItem("rot_int_cad_izq_max"));
       var rot_int_cad_der_min = JSON.parse(localStorage.getItem("rot_int_cad_der_min"));
@@ -48,6 +50,8 @@ chips.forEach(chip => {
       document.getElementById("rot_ext_cad_der_max").innerHTML = rot_int_cad_der_max + "°";
     }else{
       document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
+      document.getElementById("displayContainer").style.marginTop = "-5rem";
+      document.getElementById("displayContainer").style.marginLeft = "8rem";
     }
     
     if (selectedChip.id === "Análisis de la marcha humana lado izquierdo") {
