@@ -294,13 +294,13 @@ function onResults(results) {
             rectangulo_arotd.style.display = "none";
         }
         ;
-        drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.65, color: 'white' });
+        drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
         drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.65, color: 'white', fillColor: 'rgb(255,138,0)' });
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#8b2222' });
         drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_RIGHT)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.65, color: 'white', fillColor: 'rgb(0,217,231)' });
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#228B22' });
         drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_NEUTRAL)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.65, color: 'white', fillColor: 'white' });
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: 'white' });
         let mandibula_i_x = canvasElement.width * results.poseLandmarks[7].x;
         let mandibula_i_y = canvasElement.height * results.poseLandmarks[7].y;
         let mandibula_d_x = canvasElement.width * results.poseLandmarks[8].x;
@@ -331,7 +331,7 @@ function onResults(results) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(mdx, mdy);
             canvasCtx.lineTo(mix, miy);
-            canvasCtx.strokeStyle = "red";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -344,7 +344,7 @@ function onResults(results) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(cdx, cdy);
             canvasCtx.lineTo(cix, ciy);
-            canvasCtx.strokeStyle = "red";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -364,7 +364,7 @@ function onResults(results) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(hdx, hdy);
             canvasCtx.lineTo(hix, hiy);
-            canvasCtx.strokeStyle = "red";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -385,7 +385,7 @@ function onResults(results) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(vvdx_pi, vvdy_pi);
             canvasCtx.lineTo(vvdx_pf, vvdy_pf);
-            canvasCtx.strokeStyle = "gray";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -397,7 +397,7 @@ function onResults(results) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(vvix_pi, vviy_pi);
             canvasCtx.lineTo(vvix_pf, vviy_pf);
-            canvasCtx.strokeStyle = "gray";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -413,7 +413,7 @@ function onResults(results) {
             canvasCtx.moveTo(punto_inicial_x_d, punto_inicial_y_d);
             canvasCtx.lineTo(punto_final_x_d, punto_final_y_d);
             canvasCtx.setLineDash([5, 5]);
-            canvasCtx.strokeStyle = "#000000";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -427,7 +427,7 @@ function onResults(results) {
             canvasCtx.moveTo(punto_inicial_x_d_v, punto_inicial_y_d_v);
             canvasCtx.lineTo(punto_final_x_d_v, punto_final_y_d_v);
             canvasCtx.setLineDash([5, 5]);
-            canvasCtx.strokeStyle = "#000000";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -443,7 +443,7 @@ function onResults(results) {
             canvasCtx.moveTo(punto_inicial_x_i, punto_inicial_y_i);
             canvasCtx.lineTo(punto_final_x_i, punto_final_y_i);
             canvasCtx.setLineDash([5, 5]);
-            canvasCtx.strokeStyle = "#000000";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -457,7 +457,7 @@ function onResults(results) {
             canvasCtx.moveTo(punto_inicial_x_i_v, punto_inicial_y_i_v);
             canvasCtx.lineTo(punto_final_x_i_v, punto_final_y_i_v);
             canvasCtx.setLineDash([5, 5]);
-            canvasCtx.strokeStyle = "#000000";
+            canvasCtx.strokeStyle = "white";
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }

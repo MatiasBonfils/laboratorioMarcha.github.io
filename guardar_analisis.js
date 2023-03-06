@@ -46,8 +46,10 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
 			document.getElementById("rot_int_max_der").innerHTML = rot_int_cad_der_max + "°";
       
 		}
-
-  //canvas2.style.display = "block";
+    if(prueba === "Postural"){
+      document.getElementById("results").style.display = "none";
+      document.getElementById("resultados_rotacion").style.display = "none";
+    }
 
 
 if (prueba === "Análisis de la marcha humana lado izquierdo") {
