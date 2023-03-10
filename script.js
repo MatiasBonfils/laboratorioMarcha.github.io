@@ -47,12 +47,13 @@ const solutionOptions = {
     selfieMode: false,
     modelComplexity: 1,
     smoothLandmarks: true,
-    lineaMandibula: false,
+    lineasPosturales: false,
     lineaCadera: false,
     lineaHombro: false,
+    lineaTronco: false,
+    lineaColumna: false,
     rotIntExt: false,
-    angulosIzquierdos: false,
-    angulosDerechos: false,
+    angulosMarcha: false,
     valgo_varo: false,
     guardar_datos: false,
     smoothSegmentation: true,
@@ -233,78 +234,12 @@ function onResults(results) {
         canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
     }
     if (results.poseLandmarks) {
-        //DIBUJAR RECTANGULOS
-        //Lineas
-        //Mandibula
-        if (solutionOptions.lineaMandibula) {
-            rectangulo_lm.style.display = "block";
-        }
-        else {
-            rectangulo_lm.style.display = "none";
-        }
-        ;
-        //Hombro
-        if (solutionOptions.lineaHombro) {
-            rectangulo_lh.style.display = "block";
-        }
-        else {
-            rectangulo_lh.style.display = "none";
-        }
-        ;
-        //Cadera
-        if (solutionOptions.lineaCadera) {
-            rectangulo_lc.style.display = "block";
-        }
-        else {
-            rectangulo_lc.style.display = "none";
-        }
-        ;
-        //
-        if (solutionOptions.rotIntExt) {
-            rectangulo_arotd.style.display = "block";
-            rectangulo_aroti.style.display = "block";
-        }
-        else {
-            rectangulo_arotd.style.display = "none";
-            rectangulo_aroti.style.display = "none";
-        }
-        ;
-        if (solutionOptions.angulosIzquierdos) {
-            rectangulo_aci.style.display = "block";
-            rectangulo_ari.style.display = "block";
-        }
-        else {
-            rectangulo_aci.style.display = "none";
-            rectangulo_ari.style.display = "none";
-        }
-        ;
-        if (solutionOptions.angulosDerechos) {
-            rectangulo_acd.style.display = "block";
-            rectangulo_ard.style.display = "block";
-        }
-        else {
-            rectangulo_acd.style.display = "none";
-            rectangulo_ard.style.display = "none";
-        }
-        ;
-        if (solutionOptions.rotIntExt) {
-            rectangulo_arotd.style.display = "block";
-        }
-        else {
-            rectangulo_arotd.style.display = "none";
-        }
-        ;
-        drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
-        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#8b2222' });
-        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_RIGHT)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#228B22' });
-        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_NEUTRAL)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: 'white' });
         let mandibula_i_x = canvasElement.width * results.poseLandmarks[7].x;
         let mandibula_i_y = canvasElement.height * results.poseLandmarks[7].y;
+        let mandibula_i_z=  results.poseLandmarks[7].z;
         let mandibula_d_x = canvasElement.width * results.poseLandmarks[8].x;
         let mandibula_d_y = canvasElement.height * results.poseLandmarks[8].y;
+        let mandibula_d_z= results.poseLandmarks[8].z;
         let hombro_i_x = canvasElement.width * results.poseLandmarks[11].x;
         let hombro_i_y = canvasElement.height * results.poseLandmarks[11].y;
         let hombro_d_x = canvasElement.width * results.poseLandmarks[12].x;
@@ -321,13 +256,67 @@ function onResults(results) {
         let tobillo_i_y = canvasElement.height * results.poseLandmarks[27].y;
         let tobillo_d_x = canvasElement.width * results.poseLandmarks[28].x;
         let tobillo_d_y = canvasElement.height * results.poseLandmarks[28].y;
-
+        //DIBUJAR RECTANGULOS
+        //Lineas posturales
+        //Mandibula
+        if (solutionOptions.lineasPosturales) {
+            rectangulo_lm.style.display = "block";
+            rectangulo_lh.style.display = "block";
+            rectangulo_lc.style.display = "block";
+        }
+        else {
+            rectangulo_lm.style.display = "none";
+            rectangulo_lh.style.display = "none";
+            rectangulo_lc.style.display = "none";
+        }
+        ;
+        // Angulo de rotacion
+        if (solutionOptions.rotIntExt) {
+            rectangulo_arotd.style.display = "block";
+            rectangulo_aroti.style.display = "block";
+        }
+        else {
+            rectangulo_arotd.style.display = "none";
+            rectangulo_aroti.style.display = "none";
+        }
+        ;
+        //Angulos de la marcha
+        //lado izquierdo
+        if (solutionOptions.angulosMarcha && (mandibula_i_z<mandibula_d_z)) {
+            rectangulo_aci.style.display = "block";
+            rectangulo_ari.style.display = "block";
+        }
+        else {
+            rectangulo_aci.style.display = "none";
+            rectangulo_ari.style.display = "none";
+        }
+        ;
+        //lado derecho
+        if (solutionOptions.angulosMarcha && (mandibula_i_z > mandibula_d_z)) {
+            rectangulo_acd.style.display = "block";
+            rectangulo_ard.style.display = "block";
+        }
+        else {
+            rectangulo_acd.style.display = "none";
+            rectangulo_ard.style.display = "none";
+        }
+        ;
+       
+        drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#8b2222' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_RIGHT)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#228B22' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_NEUTRAL)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: 'white' });
+        
+        
         //dibujar linea de mandibula
         let mdx = mandibula_d_x;
         let mdy = (mandibula_d_y - mandibula_i_y) / 2 + mandibula_i_y;
         let mix = mandibula_i_x;
         let miy = (mandibula_d_y - mandibula_i_y) / 2 + mandibula_i_y;
-        if (solutionOptions.lineaMandibula) {
+        if (solutionOptions.lineasPosturales) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(mdx, mdy);
             canvasCtx.lineTo(mix, miy);
@@ -340,7 +329,7 @@ function onResults(results) {
         let cdy = (cadera_d_y - cadera_i_y) / 2 + cadera_i_y;
         let cix = cadera_i_x;
         let ciy = (cadera_d_y - cadera_i_y) / 2 + cadera_i_y;
-        if (solutionOptions.lineaCadera) {
+        if (solutionOptions.lineasPosturales) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(cdx, cdy);
             canvasCtx.lineTo(cix, ciy);
@@ -360,7 +349,7 @@ function onResults(results) {
         let hdy = (hombro_d_y - hombro_i_y) / 2 + hombro_i_y;
         let hix = hombro_i_x;
         let hiy = (hombro_d_y - hombro_i_y) / 2 + hombro_i_y;
-        if (solutionOptions.lineaHombro) {
+        if (solutionOptions.lineasPosturales) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(hdx, hdy);
             canvasCtx.lineTo(hix, hiy);
@@ -375,6 +364,48 @@ function onResults(results) {
         angulo_inclinacion_hombro = angulo_inclinacion_hombro * (180) / Math.PI;
         angulo_inclinacion_hombro = angulo_inclinacion_hombro.toFixed(0);
         document.getElementById("ang_linea_hombro").innerHTML = angulo_inclinacion_hombro + " °";
+        //dibujar linea de media frontal que divide el cuerpo en dos
+        let linea_media_punto_incial_x = (hombro_d_x - hombro_i_x) / 2 + hombro_i_x;
+        let linea_media_punto_incial_y = ((hombro_d_y - hombro_i_y) / 2 + hombro_i_y)-220;
+        let linea_media_punto_final_x = (cadera_d_x - cadera_i_x) / 2 + cadera_i_x;
+        let linea_media_punto_final_y = (tobillo_d_y - tobillo_i_y) / 2 + tobillo_i_y;
+        if (solutionOptions.lineasPosturales) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(linea_media_punto_incial_x, linea_media_punto_incial_y);
+            canvasCtx.lineTo(linea_media_punto_final_x, linea_media_punto_final_y);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //dibujar linea de media sagital que divide el cuerpo en dos
+        let linea_sagital_punto_incial_x = mandibula_i_x;
+        let linea_sagital_punto_incial_y = mandibula_i_y;
+        let linea_sagital_punto_final_x = tobillo_i_x;
+        let linea_sagital_punto_final_y  = tobillo_i_y;
+        //chequeo de que lado se analiza, si el punto izquierdo de la mandibula esta mas cerca de la camara
+        // que el punto derecho, quiere decir que se va a tomar los puntos del lado izquierdo para trazar la
+        // linea
+        if( mandibula_i_z < mandibula_d_z ){
+        linea_sagital_punto_incial_x = mandibula_i_x;
+        linea_sagital_punto_incial_y = mandibula_i_y;
+        linea_sagital_punto_final_x = tobillo_i_x;
+        linea_sagital_punto_final_y  = tobillo_i_y;
+        }else{
+        linea_sagital_punto_incial_x = mandibula_d_x;
+        linea_sagital_punto_incial_y = mandibula_d_y;
+        linea_sagital_punto_final_x = tobillo_d_x;
+        linea_sagital_punto_final_y  = tobillo_d_y;
+        }
+
+        if (solutionOptions.lineaColumna) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(linea_sagital_punto_incial_x, linea_sagital_punto_incial_y);
+            canvasCtx.lineTo(linea_sagital_punto_final_x, linea_sagital_punto_final_y);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        
         //Dibujar linea de valgo y varo
         //Valgo/varo derecho
         let vvdx_pi = cadera_d_x;
@@ -677,12 +708,10 @@ new controls
         discrete: ['Lite', 'Full', 'Heavy'],
     }),
     new controls.Toggle({ title: 'Linea de Valgo/Varo', field: 'valgo_varo' }),
-    new controls.Toggle({ title: 'Linea de Mandibula', field: 'lineaMandibula' }),
-    new controls.Toggle({ title: 'Linea de Hombro', field: 'lineaHombro' }),
-    new controls.Toggle({ title: 'Linea de Cadera', field: 'lineaCadera' }),
+    new controls.Toggle({ title: 'Postura Frontal', field: 'lineasPosturales' }),
+    new controls.Toggle({ title: 'Linea Media Sagital', field: 'lineaColumna' }),
     new controls.Toggle({ title: 'Rotacion Interna/Externa', field: 'rotIntExt' }),
-    new controls.Toggle({ title: 'Mostrar Ángulos Izquierdos de la Marcha', field: 'angulosIzquierdos' }),
-    new controls.Toggle({ title: 'Mostrar Ángulos Derechos de la Marcha', field: 'angulosDerechos' }),
+    new controls.Toggle({ title: 'Ángulos de la Marcha', field: 'angulosMarcha' }),
     new controls.Toggle({ title: 'Guardar Datos', field: 'guardar_datos' }),
    
 ])
