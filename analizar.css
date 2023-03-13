@@ -124,6 +124,17 @@ body {
   border-top-right-radius: 30px;
   
 }
+#postura-frontal-wrapper{
+  display: flex;
+  align-items: center;
+  height: 500px;
+  width: 750px;
+  margin: 0 auto;
+  background-color: rgba(16, 16, 16, 1);
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  
+}
 .stripe {
   background-color: rgb(37, 120, 14);
   color: #fff;
@@ -157,5 +168,17 @@ body {
   margin-top: -1px;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
+}
+#angulos_posturales {
+  list-style: none;
+  padding: 60px;
+  background-color: #202020;
+  color: #fff;
+  font-size: 30px;
+  text-align: center;
+  margin-top: -1px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+
 }
 

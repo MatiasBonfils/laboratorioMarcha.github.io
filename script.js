@@ -20,7 +20,7 @@ const canvasCtx = canvasElement.getContext('2d');
 
 function resizeCanvas() {
   if (videoElement.videoWidth > videoElement.videoHeight) {
-    
+    canvasElement.style.width="90px";
     containerElement.left= "90%";
   } else {
     canvasElement.width = window.innerHeight * (videoElement.videoWidth / videoElement.videoHeight);
@@ -38,7 +38,8 @@ let max_angulo_rot_int_cad_izq = -200; //
 let min_angulo_rot_int_cad_izq = 200; // 
 let max_angulo_rot_int_cad_der = -200; //
 let min_angulo_rot_int_cad_der = 200; // 
-
+let angulo_inclinacion_hombro_let=0;
+let angulo_inclinacion_cadera_let=0;
 
 
 
@@ -147,7 +148,8 @@ function showPopup() {
     let strideLength = stepLength * 2;
     let velocity = distanceWalked / savedData.time;
     let cadencia= (savedData.steps)*60/ savedData.time;
-    //Guardo las variables para pasarla a la siguiente pagina
+    //Guardo las variables para pasarlas a la siguiente pagina
+    localStorage.setItem("cantidad_pasos", JSON.stringify(steps));
     localStorage.setItem("distancia_caminada", JSON.stringify(distancia_zancada_metros.toFixed(2)));       
     localStorage.setItem("velocidad_camina", JSON.stringify(velocity.toFixed(2)));
     localStorage.setItem("cadencia_camina", JSON.stringify(cadencia.toFixed(2)));
@@ -189,6 +191,7 @@ let ang_izq_cad_grafico = [];
 let ang_der_cad_grafico = [];
 let ang_izq_rod_grafico = [];
 let ang_der_rod_grafico = [];
+let zancada_cantidad= [];
 
 // Optimization: Turn off animated spinner after its hiding animation is done.
 const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
@@ -281,8 +284,9 @@ function onResults(results) {
         }
         ;
         //Angulos de la marcha
-        //lado izquierdo
-        if (solutionOptions.angulosMarcha && (mandibula_i_z<mandibula_d_z)) {
+        //lado izquierd, Si se da que el lado izquiedo esta mas cerca de la pantalla que el lado derecho (coordenada z)
+        //Muestra los angulos del lado izquierdo.
+        if (solutionOptions.angulosMarcha && (mandibula_i_z < mandibula_d_z)) {
             rectangulo_aci.style.display = "block";
             rectangulo_ari.style.display = "block";
         }
@@ -338,11 +342,11 @@ function onResults(results) {
             canvasCtx.stroke();
         }
         //angulo cadera
-        var hipotenusa_cadera = Math.sqrt(Math.pow(cadera_d_x - (cadera_d_x - cadera_i_x) / 2, 2) + Math.pow(cadera_d_y - ((cadera_d_y - cadera_i_y) / 2 + cadera_i_y), 2));
-        var cateto_ad_cadera = Math.sqrt(Math.pow(cadera_d_x - (cadera_d_x - cadera_i_x) / 2, 2));
-        var angulo_inclinacion_cadera = Math.acos(cateto_ad_cadera / hipotenusa_cadera);
-        angulo_inclinacion_cadera = angulo_inclinacion_cadera * (180) / Math.PI;
-        angulo_inclinacion_cadera = angulo_inclinacion_cadera.toFixed(0);
+        let cateto_ad_cadera = Math.sqrt(Math.pow((cadera_i_y-ciy), 2));
+        let cateto_co_cadera = Math.sqrt(Math.pow((cadera_i_x-cadera_d_x)/2, 2));
+        let angulo_inclinacion_cadera = Math.atan(cateto_co_cadera / cateto_ad_cadera);
+        angulo_inclinacion_cadera = (angulo_inclinacion_cadera * (180) / Math.PI)-90;
+        angulo_inclinacion_cadera = -1*(angulo_inclinacion_cadera.toFixed(0));
         document.getElementById("ang_linea_cadera").innerHTML = angulo_inclinacion_cadera + " °";
         //dibujar linea de hombro
         let hdx = hombro_d_x;
@@ -358,12 +362,24 @@ function onResults(results) {
             canvasCtx.stroke();
         }
         //angulo de hombro
-        var hipotenusa_hombro = Math.sqrt(Math.pow(hombro_d_x - (hombro_d_x - hombro_i_x) / 2, 2) + Math.pow(hombro_d_y - ((hombro_d_y - hombro_i_y) / 2 + hombro_i_y), 2));
-        var cateto_ad_hombro = Math.sqrt(Math.pow(hombro_d_x - (hombro_d_x - hombro_i_x) / 2, 2));
-        var angulo_inclinacion_hombro = Math.acos(cateto_ad_hombro / hipotenusa_hombro);
-        angulo_inclinacion_hombro = angulo_inclinacion_hombro * (180) / Math.PI;
-        angulo_inclinacion_hombro = angulo_inclinacion_hombro.toFixed(0);
+        let cateto_ad_hombro = Math.sqrt(Math.pow((hombro_i_y-hiy), 2));
+        let cateto_co_hombro = Math.sqrt(Math.pow((hombro_i_x-hombro_d_x)/2, 2));
+        let angulo_inclinacion_hombro = Math.atan(cateto_co_hombro / cateto_ad_hombro);
+        angulo_inclinacion_hombro = (angulo_inclinacion_hombro * (180) / Math.PI)-90;
+        angulo_inclinacion_hombro = -1* angulo_inclinacion_hombro.toFixed(0);
+        angulo_inclinacion_hombro_let= angulo_inclinacion_hombro;
+        angulo_inclinacion_cadera_let = angulo_inclinacion_cadera;
         document.getElementById("ang_linea_hombro").innerHTML = angulo_inclinacion_hombro + " °";
+       if (solutionOptions.lineaTronco){
+        document.getElementById("myButton").addEventListener("click", function() {
+            localStorage.setItem("ang_linea_frontal_hombro_2", JSON.stringify(angulo_inclinacion_hombro_let.toFixed(1)));
+            localStorage.setItem("ang_linea_frontal_cadera_2", JSON.stringify(angulo_inclinacion_cadera_let.toFixed(1)));  
+            window.location.href = "analizar.html";
+        });
+        }
+
+
+
         //dibujar linea de media frontal que divide el cuerpo en dos
         let linea_media_punto_incial_x = (hombro_d_x - hombro_i_x) / 2 + hombro_i_x;
         let linea_media_punto_incial_y = ((hombro_d_y - hombro_i_y) / 2 + hombro_i_y)-220;
@@ -613,7 +629,9 @@ function onResults(results) {
             localStorage.setItem("ang_der_cad_grafico", JSON.stringify(ang_der_cad_grafico));
             window.location.href = "analizar.html";
         });
-         
+        document.getElementById("zancada-btn").addEventListener("click", function() {
+            zancada_cantidad.push(ang_der_rod_grafico.length);
+        });
         //Angulo rodilla
         //Izq
         var femur_iz = Math.sqrt(Math.pow(cadera_i_x - rodilla_i_x, 2) + Math.pow(cadera_i_y - rodilla_i_y, 2));
@@ -651,11 +669,32 @@ function onResults(results) {
         else {
             ang_der_rod_grafico = [];
             document.getElementById("ang_rod_de").innerHTML = angulo_rodilla_de + " ° " + "(" + ang_der_rod_grafico.length + ")";
+            zancada_cantidad= [] ;
         }
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_der_rod_grafico", JSON.stringify(ang_der_rod_grafico));
             window.location.href = "analizar.html";
+        });
+        document.getElementById("zancada-btn").addEventListener("click", function() {
+                zancada_cantidad.push(ang_der_rod_grafico.length);
+                function removeDuplicates(arr) {
+                    let uniqueValues = [];
+                  
+                    arr.forEach(function(value) {
+                      if (!uniqueValues.includes(value)) {
+                        uniqueValues.push(value);
+                      }
+                    });
+                  
+                    return uniqueValues;
+                  }
+                  
+                  zancada_cantidad = removeDuplicates(zancada_cantidad);
+                  document.getElementById("myButton").addEventListener("click", function() {
+                    localStorage.setItem("zancada_cantidad", JSON.stringify(zancada_cantidad));
+                    window.location.href = "analizar.html";
+                });
         });
         
     }

@@ -44,7 +44,8 @@ body {
 
 
 .output_canvas {
- 
+  width: 1200px;
+  height: 900px;
   display: flex;
   position: absolute ;
   justify-content: center;
@@ -108,10 +109,26 @@ body {
   margin: 10px 0;
   position: absolute;
   bottom: 10%;
-  left: 43%;
+  left: 37%;
   transform: translate(-50%, 0);
   cursor: pointer;
 }
+.boton_tomar_zancada{
+  background-color: rgb(37, 120, 14);
+  color: white;
+  padding: 15px;
+  border: 6px solid black;
+  border-radius: 25px;
+  text-align: center;
+  font-size: 20px;
+  margin: 10px 0;
+  position: absolute;
+  bottom: 10%;
+  left: 64%;
+  transform: translate(-50%, 0);
+  cursor: pointer;
+}
+
 .boton_tomar_coord{
   background-color: rgb(37, 120, 14);
   color: white;
@@ -123,7 +140,7 @@ body {
   margin: 10px 0;
   position: absolute;
   bottom: 10%;
-  left: 55%;
+  left: 50%;
   transform: translate(-50%, 0);
   cursor: pointer;
 }

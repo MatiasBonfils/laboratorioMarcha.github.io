@@ -15,6 +15,7 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
 		// Display results if prueba is "Análisis de la marcha humana lado izquierdo" or "Análisis de la marcha humana lado derecho"
 		if (prueba === "Análisis de la marcha humana lado izquierdo" || prueba === "Análisis de la marcha humana lado derecho") {
       document.getElementById("resultados_rotacion").style.display = "none";
+      document.getElementById("resultados_frontales").style.display = "none";
       document.getElementById("results").style.display = "block";
       document.getElementById("prueba").value = prueba;
 			document.getElementById("velocidad").innerHTML = velocidad + " m/s";
@@ -26,6 +27,7 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
     else{
       document.getElementById("prueba").value = prueba;
       document.getElementById("results").style.display = "none";
+      
      
       
     }
@@ -39,6 +41,7 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
     if (prueba === "Rotación interna/externa") {
 			document.getElementById("resultados_rotacion").style.display = "block";
       document.getElementById("results").style.display = "none";
+      document.getElementById("resultados_frontales").style.display = "none";
       document.getElementById("prueba").value = prueba;
 			document.getElementById("rot_ext_max_izq").innerHTML = rot_int_cad_izq_min + "°";
 			document.getElementById("rot_int_max_izq").innerHTML = rot_int_cad_izq_max + "°";
@@ -47,6 +50,14 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
       
 		}
     if(prueba === "Postural"){
+      document.getElementById("resultados_frontales").style.display = "block";
+
+      
+      var ang_inclinacion_hombro_frontal= JSON.parse(localStorage.getItem("ang_inclinacion_hombro_frontal"))
+      var ang_inclinacion_cadera_frontal= JSON.parse(localStorage.getItem("ang_inclinacion_cadera_frontal"))
+      document.getElementById("ang_incl_hombro_frontal_ficha_tecnica").innerHTML = ang_inclinacion_hombro_frontal + "°";
+			document.getElementById("ang_incl_cadera_frontal_ficha_tecnica").innerHTML = ang_inclinacion_cadera_frontal + "°";
+      
       document.getElementById("results").style.display = "none";
       document.getElementById("resultados_rotacion").style.display = "none";
     }
