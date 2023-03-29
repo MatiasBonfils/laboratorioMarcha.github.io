@@ -69,39 +69,48 @@ body {
   }
   
 
-
-
-
-
-#displayContainer {
-  margin-top: -5rem;
-  margin-left: 8rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 120vh;
-  width: 240vh;
-}
-
-#frameContainer{
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-}
-
-#displayedFrame {
-  max-width: 75%;
+  #displayContainer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
   
-}
-
-#deleteButton {
-  position: absolute;
+  #capturas-container {
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 75%;
+    width: 100%;
+  }
   
-  font-size: 24px;
-  color: white;
-  cursor: pointer;
-}
-
+  .imagePreview {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .imagePreview img {
+    max-width: 100%;
+  }
+  
+  .imagePreview .deleteButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    font-size: 1.5rem;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+  }
+  
+  
+  
 #marcha-humana-wrapper {
   display: flex;
   

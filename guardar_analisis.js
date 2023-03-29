@@ -1,4 +1,4 @@
-var dataImage2 = localStorage.getItem('imgData2');
+var dataImage2 = localStorage.getItem('imgData');
 var bannerImg = document.getElementById('displayedFrame2');
 bannerImg.src = "data:image/png;base64," + dataImage2;
 

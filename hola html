@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Subarreglos con porcentajes</title>
+  </head>
+  <body>
+    <div id="arreglos"></div>
+
+    <script>
+      function HomogenizarDatos(arreglo) {
+        const n = arreglo.length;
+        let subarreglo = [];
+        let subarregloPorcentaje = [];
+
+        for (let i = 0; i < n; i++) {
+          subarregloPorcentaje.push(((i / (n-1)) * 100).toFixed(2));
+          subarreglo.push(arreglo[i]);
+        }
+
+        let temporal = [];
+        let datos_grafico = [];
+        datos_grafico[0] = arreglo[0];
+
+        for (let i = 0; i < 10; i++) {
+          for (let j = 1; j < n; j++) {
+            if (
+              subarregloPorcentaje[j] >= 0.0000001 + 10 * i &&
+              subarregloPorcentaje[j] <= 9.999999999999999999 * (i + 1)
+            ) {
+              temporal.push(subarreglo[j]);
+            }
+          }
+
+          let suma = temporal.reduce(
+            (acumulador, valorActual) => acumulador + valorActual,
+            0
+          );
+          let promedio = suma / temporal.length;
+          datos_grafico.push(promedio);
+          temporal = [];
+        }
+        datos_grafico.push(arreglo[n - 1]);
+        return [subarreglo, datos_grafico];
+      }
+
+      const miArreglo = [28, 27, 27, 21, 17, 12, 9, 2, 12, 14, 23, 26, 25];
+      const homogenizado = HomogenizarDatos(miArreglo);
+
+      const arreglosDiv = document.getElementById("arreglos");
+
+      const arregloInputDiv = document.createElement("div");
+      arregloInputDiv.innerHTML =
+        "<h3>Arreglo de entrada:</h3>" + homogenizado[0];
+      arreglosDiv.appendChild(arregloInputDiv);
+
+      const subarregloPorcentajeDiv = document.createElement("div");
+      subarregloPorcentajeDiv.innerHTML =
+        "<h3>Subarreglo de porcentajes:</h3>" + homogenizado[1];
+      arreglosDiv.appendChild(subarregloPorcentajeDiv);
+
+    </script>
+  </body>
+</html>

@@ -1,26 +1,64 @@
-// get initial displayed frame from local storage
-var dataImage = localStorage.getItem('imgData');
-var bannerImg = document.getElementById('displayedFrame');
-localStorage.setItem("imgData", dataImage);
-bannerImg.src = "data:image/png;base64," + dataImage;
+var capturasContainer = document.getElementById('capturas-container');
+var dataImage;
+var imgElement, deleteBtnElement, imgContainer;
 
-// add event listener to delete button
-var deleteBtn = document.getElementById('deleteButton');
-deleteBtn.addEventListener('click', function() {
-  var confirmDelete = confirm('¿Quieres eliminar esta imagen?');
-  if (confirmDelete) {
-    localStorage.removeItem('imgData');
-    bannerImg.src = "";
-    deleteBtn.style.display = 'none';
+for (var i = 0; i < 4; i++) {
+  dataImage = localStorage.getItem('imgData' + i);
+  if (dataImage) {
+    imgElement = document.createElement('img');
+    imgElement.src = dataImage;
+
+    imgContainer = document.createElement('div');
+    imgContainer.className = 'imagePreview';
+    imgContainer.appendChild(imgElement);
+
+    deleteBtnElement = document.createElement('span');
+    deleteBtnElement.className = 'deleteButton';
+    deleteBtnElement.textContent = 'X';
+    deleteBtnElement.addEventListener('click', createDeleteHandler(i));
+
+    imgContainer.appendChild(deleteBtnElement);
+
+    capturasContainer.appendChild(createCapturaElement(imgContainer));
   }
-});
+}
+
+function createCapturaElement(imgContainer) {
+  var capturaElement = document.createElement('div');
+  capturaElement.className = 'captura';
+  capturaElement.appendChild(imgContainer);
+
+  capturaElement.addEventListener('mouseenter', function() {
+    deleteBtnElement.style.display = 'block';
+  });
+
+  capturaElement.addEventListener('mouseleave', function() {
+    deleteBtnElement.style.display = 'none';
+  });
+
+  return capturaElement;
+}
+
+function createDeleteHandler(index) {
+  return function() {
+    var confirmDelete = confirm('¿Quieres eliminar esta imagen?');
+    if (confirmDelete) {
+      localStorage.removeItem('imgData' + index);
+      var capturas = document.getElementsByClassName('captura');
+      capturasContainer.removeChild(capturas[index]);
+    }
+  }
+}
+
+
+
 
   document.getElementById("container-izq").style.display = "none";
   document.getElementById("container-der").style.display = "none";
   document.getElementById("marcha-humana-wrapper").style.display = "none";
   document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
   document.getElementById("postura-frontal-wrapper").style.display = "none";
-  document.getElementById("displayContainer").style.height = "90vh";
+  document.getElementById("capturas-container").style.height = "95vh";
 
 
 const chips = document.querySelectorAll('.chip');
@@ -40,7 +78,8 @@ chips.forEach(chip => {
       document.getElementById("postura-frontal-wrapper").style.display = "block";
       var ang_inclinacion_hombro_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_hombro_2"));
       var ang_inclinacion_cadera_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_cadera_2"));
-     
+      document.getElementById("capturas-container").style.marginTop = "-30rem";
+      document.getElementById("capturas-container").style.marginLeft = "16rem";
 
       document.getElementById("ang_lin_fro_hom").innerHTML = ang_inclinacion_hombro_frontal + "°";
       document.getElementById("ang_lin_fro_cad").innerHTML = ang_inclinacion_cadera_frontal + "°";
@@ -50,8 +89,8 @@ chips.forEach(chip => {
 
     if (selectedChip.id === "Rotación interna/externa") {
       document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
-      document.getElementById("displayContainer").style.marginTop = "-10rem";
-      document.getElementById("displayContainer").style.marginLeft = "0rem";
+      document.getElementById("capturas-container").style.marginTop = "-20rem";
+      document.getElementById("capturas-container").style.marginLeft = "16rem";
       var rot_int_cad_izq_min = JSON.parse(localStorage.getItem("rot_int_cad_izq_min"));
       var rot_int_cad_izq_max = JSON.parse(localStorage.getItem("rot_int_cad_izq_max"));
       var rot_int_cad_der_min = JSON.parse(localStorage.getItem("rot_int_cad_der_min"));
@@ -63,17 +102,19 @@ chips.forEach(chip => {
       document.getElementById("rot_ext_cad_der_max").innerHTML = rot_int_cad_der_max + "°";
     }else{
       document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
-      document.getElementById("displayContainer").style.marginTop = "-5rem";
-      document.getElementById("displayContainer").style.marginLeft = "0rem";
+      //document.getElementById("capturas-container").style.marginTop = "-30rem";
+      //document.getElementById("capturas-container").style.marginLeft = "16rem";
     }
     
     if (selectedChip.id === "Análisis de la marcha humana lado izquierdo") {
 
-      document.getElementById("displayContainer").style.height = "8vh";
-
+      //Mostrar y acomodar los elementos que se van a mostrar
+      document.getElementById("capturas-container").style.marginTop = " -60rem";
       document.getElementById("container-izq").style.display = "block";
       document.getElementById("marcha-humana-wrapper").style.display = "block";
       
+      //Importo los datos para mostrar las variables de la marcha
+      // Primero con respecto a los parametros espacio-temporales
       var zancada = JSON.parse(localStorage.getItem("zancada_cantidad"));
       var velocidad = JSON.parse(localStorage.getItem("velocidad_camina"));
       var cadencia = JSON.parse(localStorage.getItem("cadencia_camina"));
@@ -85,63 +126,255 @@ chips.forEach(chip => {
       document.getElementById("longitud_paso").innerHTML = longitudPaso + " metros";
       document.getElementById("longitud_zancada").innerHTML = longitudZancada + " metros";
 
-
-
+      //Segundo para los parametros angulares
       var ang_izq_cad_grafico = JSON.parse(localStorage.getItem("ang_izq_cad_grafico"));
       var ang_izq_rod_grafico = JSON.parse(localStorage.getItem("ang_izq_rod_grafico"));
-       
-      let subarrays = [];
-      let subarrays_rod_izq= [];
+      var posicion_pie_x_grafico_izq = JSON.parse(localStorage.getItem("posicion_pie_x_grafico_izq"));
+      
+      
+      //Esta funcion lo que hace es devolver varios subarreglos con dos valores cada uno
+      //El primero representa en que momento el pie empieza a moverse en el eje x
+      // y el segundo en que momento deja de moverse
+      function indicesPie(posicion_pie) {
+        let positiveChangeRateIndexes = [];
+      
+        for (let i = 1; i < posicion_pie.length; i++) {
+          const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
+          if (change_rate_i > 0.01) {
+            positiveChangeRateIndexes.push(i);
+          }
+        }
+        
 
-      let startIndex = 0;
-      for (let i = 0; i < zancada.length; i++) {
-        let endIndex = zancada[i];
-        let subarray = ang_izq_cad_grafico.slice(startIndex, endIndex);
-        let subarray_rod= ang_izq_rod_grafico.slice(startIndex, endIndex);
-        subarrays_rod_izq.push(subarray_rod);
-        subarrays.push(subarray);
-        startIndex = endIndex;
+        function divideArray(array) {
+          let result = [];
+          let subarray = [array[0]];
+          for (let i = 1; i < array.length; i++) {
+            if (array[i] - array[i - 1] > 1) {
+              subarray.push(array[i - 1]);
+              result.push(subarray);
+              subarray = [array[i]];
+            }
+          }
+          subarray.push(array[array.length - 1]);
+          result.push(subarray);
+          return result;
+        }
+        
+        let subarrays = divideArray(positiveChangeRateIndexes);
+        
+        
+        return subarrays;
+      }
+      //Esta funcion devuelve el arreglo con los angulos en distintos subarreglo tomando en cuenta los valores
+      // de los subarreglos de la funcion indicesPie. De esa manera queda separado en subarreglos que representa
+      //una zancada cada uno
+      function divideGraph(ang_grafico, subarrays) {
+        let result = [];
+        let lastEnd = 0;
+      
+        for (let i = 0; i < subarrays.length; i++) {
+          let subarray = ang_grafico.slice(lastEnd, subarrays[i][subarrays[i].length-1]);
+          if (i === subarrays.length - 1) {
+            subarray.push(ang_grafico[ang_grafico.length - 1]);
+          }
+          result.push(subarray);
+          lastEnd = subarrays[i][subarrays[i].length-1];
+        }
+      
+        return result;
       }
       
-      // Add last subarray after the last zancada index
-      if (startIndex < ang_izq_cad_grafico.length) {
-        let subarray = ang_izq_cad_grafico.slice(startIndex);
-        subarrays.push(subarray);
-        let  subarray_rod = ang_izq_rod_grafico.slice(startIndex);
-        subarrays_rod_izq.push(subarray_rod);
+      //Obtenemos los indice en los cuales hay zancadas
+      let subarreglos_indices_pie_izq = indicesPie(posicion_pie_x_grafico_izq);
+      //Dividimos el arreglo de angulos en base a eso indices
+      let ang_izq_cad_grafico_divido = divideGraph(ang_izq_cad_grafico,subarreglos_indices_pie_izq);
+      let ang_izq_rod_grafico_divido = divideGraph(ang_izq_rod_grafico,subarreglos_indices_pie_izq);
+      //Le quitamos las comas a los valores (sino no los grafica)
+      const ang_izq_cad_grafico_divido_sc = ang_izq_cad_grafico_divido.map(subarreglo => {
+        return subarreglo.map(elemento => parseInt(elemento));
+      });
+      const ang_izq_rod_grafico_divido_sc = ang_izq_rod_grafico_divido.map(subarreglo => {
+        return subarreglo.map(elemento => parseInt(elemento));
+      });
+
+      //Como los distintos subarreglos que conforman el arreglo de los angulos tienen distintas longitudes
+      //va a necesitar que queden homogenizados para poder graficarlos (poner en intervalos y promediarlos)
+      //De esa manera devuelve el arreglo con todos los subarreglos del mismo tamano
+      function HomogenizarDatos(arreglo) {
+        const n = arreglo.length;
+        let subarreglo = [];
+        let subarregloPorcentaje = [];
+        
+     
+        for (let i = 0; i < n; i++) {
+          subarregloPorcentaje.push(((i / (n - 1)) * 100).toFixed(2));
+          subarreglo.push(arreglo[i]);
+        }
+       
+        let temporal = [];
+        let datos_grafico = [];
+        datos_grafico[0] = arreglo[0];
+      
+        for (let i = 0; i < 10; i++) {
+          for (let j = 1; j < n; j++) {
+            if (
+              subarregloPorcentaje[j] >= 10 * i &&
+              subarregloPorcentaje[j] <= 9.999 * (i + 1)
+            ) {
+              temporal.push(subarreglo[j]);
+            }
+          }
+      
+          let suma = temporal.reduce(
+            (acumulador, valorActual) => acumulador + valorActual,
+            0
+          );
+          let promedio = suma / temporal.length;
+          datos_grafico.push(promedio);
+          temporal = [];
+        }
+        datos_grafico.push(arreglo[n - 1]);
+      
+        for (let k = 0; k < 11; k++) {
+          if (isNaN(datos_grafico[k])) {
+            datos_grafico[k] = (datos_grafico[k - 1] + datos_grafico[k + 1]) / 2;
+          }
+        }
+        return datos_grafico;
+      }
+
+      //Arma una matriz con los datos homogenizados para que despues sea mas facil calcular el promedio general
+      function armarMatriz(arreglo) {
+        const n = arreglo.length;
+        let subarregloPorcentaje = [];
+      
+        for (let i = 0; i < n; i++) {
+          subarregloPorcentaje.push(((i / (n - 1)) * 100).toFixed(2));
+        }
+      
+        let matriz = [];
+      
+        for (let i = 0; i < n; i++) {
+          matriz.push([arreglo[i], subarregloPorcentaje[i]]);
+        }
+        
+        return matriz;
       }
       
-      let colors = ['green', 'blue', 'red', 'purple', 'orange', 'pink', 'brown', 'gray', 'black'];
-      let datasets = [];
-      for (let i = 0; i < subarrays.length; i++) {
-        datasets.push({
-          label: `Zancada ${i+1}`,
-          backgroundColor: "rgba(0,0,0,0)",
-          borderColor: colors[i % colors.length],
-          data: subarrays[i]
+      
+      
+      
+      datos_grafico_cad_izq= ang_izq_cad_grafico_divido_sc.map(HomogenizarDatos);
+      datos_grafico_cad_izq_matriz= ang_izq_cad_grafico_divido_sc.map(armarMatriz);
+      datos_grafico_rod_izq= ang_izq_rod_grafico_divido_sc.map(HomogenizarDatos);
+      datos_grafico_rod_izq_matriz= ang_izq_rod_grafico_divido_sc.map(armarMatriz);
+      //datos_grafico_rod_izq= ang_izq_rod_grafico_divido_sc.map(HomogenizarDatos);
+      console.log(datos_grafico_rod_izq);
+      console.log(datos_grafico_rod_izq_matriz);
+      
+      
+      
+      const promedio_todos_angulos_cadera_izq= [];
+      
+      // Promedio del primer valor
+      const temporal_primero_ci = datos_grafico_cad_izq_matriz.map((fila) => fila[0][0]);
+      const suma_primer_ci = temporal_primero_ci.reduce((acum, valor) => acum + valor, 0);
+      const promedio_primer_ci = suma_primer_ci / temporal_primero_ci.length;
+      promedio_todos_angulos_cadera_izq.push(parseFloat(promedio_primer_ci.toFixed(2)));
+      
+      // Promedios de los valores del segundo al penúltimo
+      for (let i = 0; i < 10; i++) {
+        const temporal_ci = [];
+        datos_grafico_cad_izq_matriz.forEach((fila) => {
+          fila.slice(1, -1).forEach((valor) => {
+            if (valor[1] >= 10 * i && valor[1] <= 9.999 * (i + 1)) {
+              temporal_ci.push(valor[0]);
+            }
+          });
+          if (!temporal_ci.length) {
+            const lar = fila.length;
+            temporal_ci.push((fila[lar - 2][0] + fila[lar - 1][0]) / 2);
+          }
         });
-      }
-      let datasets_rod_izq = [];
-      for (let i = 0; i < subarrays_rod_izq.length; i++) {
-        datasets_rod_izq.push({
-          label: `Zancada ${i+1}`,
-          backgroundColor: "rgba(0,0,0,0)",
-          borderColor: colors[i % colors.length],
-          data: subarrays_rod_izq[i]
-        });
+        const suma_ci = temporal_ci.reduce((acum, valor) => acum + valor, 0);
+        const promedio_ci = suma_ci / temporal_ci.length;
+        promedio_todos_angulos_cadera_izq.push(parseFloat(promedio_ci.toFixed(2)));
       }
       
-      let largestSubarrayLength = Math.max(...subarrays.map(subarray => subarray.length));
-      let xValues = [];
-      for (let i = 0; i < largestSubarrayLength; i++) {
-        xValues.push((i * 100 / (largestSubarrayLength - 1)).toFixed(0));
+      // Promedio del último valor
+      const temporal_ultimo_ci = datos_grafico_cad_izq_matriz.map((fila) => fila[fila.length - 1][0]);
+      const suma_ultimo_ci = temporal_ultimo_ci.reduce((acum, valor) => acum + valor, 0);
+      const promedio_ultimo_ci = suma_ultimo_ci / temporal_ultimo_ci.length;
+      promedio_todos_angulos_cadera_izq.push(parseFloat(promedio_ultimo_ci.toFixed(2)));
+      
+      console.log(promedio_todos_angulos_cadera_izq);
+      
+      const promedio_todos_angulos_rodilla_izq = [];
+
+      // Promedio del primer valor
+      const temporal_primero_ri = datos_grafico_rod_izq_matriz.map((fila) => fila[0][0]);
+      const suma_primer_ri = temporal_primero_ri.reduce((acum, valor) => acum + valor, 0);
+      const promedio_primer_ri = suma_primer_ri / temporal_primero_ri.length;
+      promedio_todos_angulos_rodilla_izq.push(parseFloat(promedio_primer_ri.toFixed(2)));
+
+      // Promedios de los valores del segundo al penúltimo
+      for (let i = 0; i < 10; i++) {
+        const temporal_ri = [];
+        datos_grafico_rod_izq_matriz.forEach((fila) => {
+          fila.slice(1, -1).forEach((valor) => {
+            if (valor[1] >= 10 * i && valor[1] <= 9.999 * (i + 1)) {
+              temporal_ri.push(valor[0]);
+            }
+          });
+          if (!temporal_ri.length) {
+            const lar = fila.length;
+            temporal_ri.push((fila[lar - 2][0] + fila[lar - 1][0]) / 2);
+          }
+        });
+        const suma_ri = temporal_ri.reduce((acum, valor) => acum + valor, 0);
+        const promedio_ri = suma_ri / temporal_ri.length;
+        promedio_todos_angulos_rodilla_izq.push(parseFloat(promedio_ri.toFixed(2)));
       }
+
+      // Promedio del último valor
+      const temporal_ultimo_ri = datos_grafico_rod_izq_matriz.map((fila) => fila[fila.length - 1][0]);
+      const suma_ultimo_ri = temporal_ultimo_ri.reduce((acum, valor) => acum + valor, 0);
+      const promedio_ultimo_ri = suma_ultimo_ri / temporal_ultimo_ri.length;
+      promedio_todos_angulos_rodilla_izq.push(parseFloat(promedio_ultimo_ri.toFixed(2)));
+
+      console.log(promedio_todos_angulos_rodilla_izq);
+
+
+      const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
+
       let ctx = document.getElementById("myChart").getContext("2d");
+
+      let datasets_ci = ang_izq_cad_grafico_divido_sc.map((_, i) => {
+        return {
+          label: `Zancada ${i + 1}`,
+          data: datos_grafico_cad_izq[i],
+          borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
+          fill: false,
+        };
+      });
+      
+      if (ang_izq_cad_grafico_divido_sc.length > 1) {
+        datasets_ci.push({
+          label: "Promedio",
+          data: promedio_todos_angulos_cadera_izq,
+          borderColor: "black",
+          borderWidth: 10,
+          pointRadius: 2,
+          fill: false,
+        });
+      }
+      
       new Chart(ctx, {
         type: "line",
         data: {
-          labels: xValues,
-          datasets: datasets
+          labels: porcentajes,
+          datasets: datasets_ci,
         },
         options: {
           scales: {
@@ -165,17 +398,91 @@ chips.forEach(chip => {
           }
         }
       });
+      
       document.getElementById("myChart").style.display = "block";
-      let subarray_mas_largo = Math.max(...subarrays_rod_izq.map(subarray_rod => subarray_rod.length));
-      let xValuesri = [];
-      for (let i = 0; i < subarray_mas_largo; i++) {
-        xValuesri.push((i * 100 / (subarray_mas_largo - 1)).toFixed(0));
+      
+      
+      
+      //este codigo es para mostrar la mediciones manuales
+                                                  let subarrays_rod_izq = [];
+                                                
+                                                
+                                                      let startIndex_der = 0;
+                                                      for (let i = 0; i < zancada.length; i++) {
+                                                        let endIndex = zancada[i];
+                                                        let subarray_ri = ang_izq_rod_grafico.slice(startIndex_der, endIndex);
+                                                        subarrays_rod_izq.push(subarray_ri);
+                                                        startIndex_der = endIndex;
+                                                      }
+                                                      
+                                                      // Add last subarray after the last zancada index
+                                                      if (startIndex_der < ang_izq_rod_grafico.length) {
+                                                        let subarray_ri = ang_izq_rod_grafico.slice(startIndex_der);
+                                                        subarrays_rod_izq.push(subarray_ri);
+                                                      }
+                                                      
+                                                      let colors = ['green', 'blue', 'red', 'purple', 'orange', 'pink', 'brown', 'gray', 'black'];
+                                                      let datasetsri = [];
+                                                      for (let i = 0; i < subarrays_rod_izq.length; i++) {
+                                                        datasetsri.push({
+                                                          label: `Zancada ${i+1}`,
+                                                          backgroundColor: "rgba(0,0,0,0)",
+                                                          borderColor: colors[i % colors.length],
+                                                          data: subarrays_rod_izq[i]
+                                                        });
+                                                      }
+
+
+                                                  let subarray_mas_largo = Math.max(...subarrays_rod_izq.map(subarray_ri => subarray_ri.length));
+                                                  let xValuesri = [];
+                                                  for (let i = 0; i < subarray_mas_largo; i++) {
+                                                    xValuesri.push((i * 100 / (subarray_mas_largo - 1)).toFixed(0));
+                                                  }
+
+
+                                                  const maxLength = Math.max(...ang_izq_rod_grafico_divido.map(subarray => subarray.length));
+
+                                                  // Creamos un arreglo con los porcentajes relativos del subarreglo más grande
+                                                  const percentages_max = Array.from({ length: maxLength }, (_, i) => (i / (maxLength - 1)) * 100);
+
+                                                  // Creamos un arreglo de objetos que contienen los datos de cada subarreglo
+                                                  const datasets_divido_manual = ang_izq_rod_grafico_divido.map((subarray, index) => ({
+                                                    label: `Subarreglo ${index + 1}`,
+                                                    data: subarray,
+                                                    borderColor: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
+                                                    fill: false,
+                                                  }));
+
+
+      //Medir manual: labels: xValuesri, datasets: datasetsri;
+      //Medir automatico sin homogenizar: labels: percentages_max, datasets: datasets_divido_manual;
+      let ctx_ri = document.getElementById("myChartri").getContext("2d");
+
+      let datasets_ri = ang_izq_rod_grafico_divido_sc.map((_, i) => {
+        return {
+          label: `Zancada ${i + 1}`,
+          data: datos_grafico_rod_izq[i],
+          borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
+          fill: false,
+        };
+      });
+      
+      if (ang_izq_rod_grafico_divido_sc.length > 1) {
+        datasets_ri.push({
+          label: "Promedio",
+          data: promedio_todos_angulos_rodilla_izq,
+          borderColor: "black",
+          borderWidth: 10,
+          pointRadius: 2,
+          fill: false,
+        });
       }
-      new Chart("myChartri", {
+      
+      new Chart(ctx_ri, {
         type: "line",
         data: {
-          labels: xValuesri,
-          datasets: datasets_rod_izq
+          labels: porcentajes,
+          datasets: datasets_ri,
         },
         options: {
           scales: {
@@ -200,12 +507,13 @@ chips.forEach(chip => {
         }
       });
       document.getElementById("myChartri").style.display = "block";
+     
     } else {
       document.getElementById("myChart").style.display = "none";
       document.getElementById("myChartri").style.display = "none";
       document.getElementById("marcha-humana-wrapper").style.display = "none";
       document.getElementById("container-izq").style.display = "none";
-      document.getElementById("displayContainer").style.height = "90vh";
+      document.getElementById("capturas-container").style.height = "90vh";
     }
     });
     });
@@ -223,8 +531,8 @@ chips.forEach(chip => {
         
         if (selectedChip.id === "Análisis de la marcha humana lado derecho") {
           
-          
-          document.getElementById("displayContainer").style.height = "8vh";
+          document.getElementById("capturas-container").style.marginTop = " -110rem";
+          document.getElementById("capturas-container").style.height = "8vh";
           document.getElementById("marcha-humana-wrapper").style.display = "block";
           document.getElementById("container-der").style.display = "block";
 

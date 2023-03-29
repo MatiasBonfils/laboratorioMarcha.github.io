@@ -63,12 +63,32 @@ const solutionOptions = {
 };
 
 //
-document.getElementById("capture-button").addEventListener("click", function() {
-    var dataURL = canvasElement.toDataURL("image/png");
-    console.log(dataURL)
-    localStorage.setItem("imgData", dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-      
+var imagesCaptured = [];
+var captureButton = document.getElementById("capture-button");
+
+var contador = 0;
+
+captureButton.addEventListener("click", function() {
+  if (contador < 4) {
+    var dataURL = canvasElement.toDataURL("image/jpeg", 0.95); // JPEG para ahorrar espacio
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      var resizedDataUrl = canvas.toDataURL("image/jpeg", 0.5); // Escalar la imagen al 50% del tamaño original
+      localStorage.setItem("imgData" + contador, resizedDataUrl.replace(/^data:image\/(png|jpg);base64,/, ""));
+      contador++;
+    }
+    console.log(dataURL);
+    img.src = dataURL;
+  }
 });
+
+
+
 
 //distancias:
 let screenLog = document.querySelector('#screen-log');
@@ -192,7 +212,8 @@ let ang_der_cad_grafico = [];
 let ang_izq_rod_grafico = [];
 let ang_der_rod_grafico = [];
 let zancada_cantidad= [];
-
+let posicion_pie_x_grafico_izq= [];
+let posicion_pie_x_grafico_der= [];
 // Optimization: Turn off animated spinner after its hiding animation is done.
 const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
 const grid = new LandmarkGrid(landmarkContainer, {
@@ -259,6 +280,7 @@ function onResults(results) {
         let tobillo_i_y = canvasElement.height * results.poseLandmarks[27].y;
         let tobillo_d_x = canvasElement.width * results.poseLandmarks[28].x;
         let tobillo_d_y = canvasElement.height * results.poseLandmarks[28].y;
+        let pie_i_y     = canvasElement.height * results.poseLandmarks[31].y;
         //DIBUJAR RECTANGULOS
         //Lineas posturales
         //Mandibula
@@ -583,15 +605,18 @@ function onResults(results) {
         
         if (solutionOptions.guardar_datos) {
             ang_izq_cad_grafico.push(angulo_cadera_i);
+            posicion_pie_x_grafico_izq.push(tobillo_i_x);
             document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
         }
         else {
             ang_izq_cad_grafico = [];
+            posicion_pie_x_grafico_izq= [];
             document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
         }
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_izq_cad_grafico", JSON.stringify(ang_izq_cad_grafico));
+            localStorage.setItem("posicion_pie_x_grafico_izq", JSON.stringify(posicion_pie_x_grafico_izq));
             window.location.href = "analizar.html";
         });
          
@@ -618,15 +643,18 @@ function onResults(results) {
         }   
         if (solutionOptions.guardar_datos) {
             ang_der_cad_grafico.push(angulo_cadera_d);
+            posicion_pie_x_grafico_der.push(tobillo_d_x)
             document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " ° " + "(" + ang_der_cad_grafico.length + ")";
         }
         else {
             ang_der_cad_grafico = [];
+            posicion_pie_x_grafico_der = [];
             document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " ° " + "(" + ang_der_cad_grafico.length + ")";
         }
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_der_cad_grafico", JSON.stringify(ang_der_cad_grafico));
+            localStorage.setItem("posicion_pie_x_grafico_der", JSON.stringify(posicion_pie_x_grafico_der));
             window.location.href = "analizar.html";
         });
         document.getElementById("zancada-btn").addEventListener("click", function() {
@@ -652,8 +680,11 @@ function onResults(results) {
         //b
         document.getElementById("myButton").addEventListener("click", function() {
             localStorage.setItem("ang_izq_rod_grafico", JSON.stringify(ang_izq_rod_grafico));
-            window.location.href = "analizar.html";
+            window.location.href = "analizar.html";   
         });
+        const positiveChangeRateIndexes = [];
+
+
         //Der
         var femur_de = Math.sqrt(Math.pow(cadera_d_x - rodilla_d_x, 2) + Math.pow(cadera_d_y - rodilla_d_y, 2));
         var tibia_de = Math.sqrt(Math.pow(rodilla_d_x - tobillo_d_x, 2) + Math.pow(rodilla_d_y - tobillo_d_y, 2));
@@ -761,4 +792,4 @@ new controls
     pose.setOptions(options);
 });
 
-
+capture
