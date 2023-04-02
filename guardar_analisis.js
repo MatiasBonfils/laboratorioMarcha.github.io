@@ -1,10 +1,61 @@
-var dataImage2 = localStorage.getItem('imgData');
-var bannerImg = document.getElementById('displayedFrame2');
-bannerImg.src = "data:image/png;base64," + dataImage2;
+var capturasContainer = document.getElementById('capturas-container');
+var dataImage;
+var imgElement, deleteBtnElement, imgContainer;
+
+for (var i = 0; i < 4; i++) {
+  dataImage = localStorage.getItem('imgData' + i);
+  if (dataImage) {
+    imgElement = document.createElement('img');
+    imgElement.src = dataImage;
+
+    imgContainer = document.createElement('div');
+    imgContainer.className = 'imagePreview';
+    imgContainer.appendChild(imgElement);
+
+    deleteBtnElement = document.createElement('span');
+    deleteBtnElement.className = 'deleteButton';
+    deleteBtnElement.textContent = 'X';
+    deleteBtnElement.addEventListener('click', createDeleteHandler(i));
+
+    imgContainer.appendChild(deleteBtnElement);
+
+    capturasContainer.appendChild(createCapturaElement(imgContainer));
+  }
+}
+
+function createCapturaElement(imgContainer) {
+  var capturaElement = document.createElement('div');
+  capturaElement.className = 'captura';
+  capturaElement.appendChild(imgContainer);
+
+  capturaElement.addEventListener('mouseenter', function() {
+    deleteBtnElement.style.display = 'block';
+  });
+
+  capturaElement.addEventListener('mouseleave', function() {
+    deleteBtnElement.style.display = 'none';
+  });
+
+  return capturaElement;
+}
+
+function createDeleteHandler(index) {
+  return function() {
+    var confirmDelete = confirm('¿Quieres eliminar esta imagen?');
+    if (confirmDelete) {
+      localStorage.removeItem('imgData' + index);
+      var capturas = document.getElementsByClassName('captura');
+      capturasContainer.removeChild(capturas[index]);
+    }
+  }
+}
 
 function printPage() {
   window.print();
 }
+
+document.getElementById("container-izq").style.display = "none";
+document.getElementById("container-der").style.display = "none";
 var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
 
 		var velocidad = JSON.parse(localStorage.getItem("velocidad_camina"));
@@ -39,6 +90,8 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
 
 
     if (prueba === "Rotación interna/externa") {
+     
+     
 			document.getElementById("resultados_rotacion").style.display = "block";
       document.getElementById("results").style.display = "none";
       document.getElementById("resultados_frontales").style.display = "none";
@@ -51,10 +104,11 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
 		}
     if(prueba === "Postural"){
       document.getElementById("resultados_frontales").style.display = "block";
+     
 
       
-      var ang_inclinacion_hombro_frontal= JSON.parse(localStorage.getItem("ang_inclinacion_hombro_frontal"))
-      var ang_inclinacion_cadera_frontal= JSON.parse(localStorage.getItem("ang_inclinacion_cadera_frontal"))
+      var ang_inclinacion_hombro_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_hombro_2"));
+      var ang_inclinacion_cadera_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_cadera_2"));
       document.getElementById("ang_incl_hombro_frontal_ficha_tecnica").innerHTML = ang_inclinacion_hombro_frontal + "°";
 			document.getElementById("ang_incl_cadera_frontal_ficha_tecnica").innerHTML = ang_inclinacion_cadera_frontal + "°";
       
@@ -64,40 +118,24 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
 
 
 if (prueba === "Análisis de la marcha humana lado izquierdo") {
-  var ang_izq_cad_grafico = JSON.parse(localStorage.getItem("ang_izq_cad_grafico"));
-  var ang_izq_rod_grafico = JSON.parse(localStorage.getItem("ang_izq_rod_grafico"));
+  document.getElementById("capturas-container").style.marginTop = "-30rem";
+ 
+  document.getElementById("container-izq").style.display = "block";
+ 
 
-  var xValues = [];
-  for (var i = 0; i < ang_izq_cad_grafico.length; i++) {
-    xValues.push((i * 100 / (ang_izq_cad_grafico.length - 1)).toFixed(0));
-  }
+  const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
+ 
+    
+  var datasets_ci = JSON.parse(localStorage.getItem("datasets_ci"));
+  var datasets_ri = JSON.parse(localStorage.getItem("datasets_ri"));
+  console.log(datasets_ri)
 
-  var xValuesri = [];
-  for (var i = 0; i < ang_izq_rod_grafico.length; i++) {
-    xValuesri.push((i * 100 / (ang_izq_rod_grafico.length - 1)).toFixed(0));
-  }
-
-  var container = document.querySelector(".container");
-  var header = container.querySelector(".graph-header");
-  var canvas = container.querySelector("#myChart");
-  container.style.display ="block";
-  header.style.display = "block";
-  canvas.style.display = "block";
-  document.getElementById("cont-der").style.display = "none";
-
-
-
-  var ctx = canvas.getContext("2d");
+  let ctx = document.getElementById("myChart").getContext("2d");
   new Chart(ctx, {
     type: "line",
     data: {
-      labels: xValues,
-      datasets: [{
-        label: 'Ángulo articular cadera izquierda',
-        backgroundColor: "rgba(0,0,0,0)",
-        borderColor: "green",
-        data: ang_izq_cad_grafico
-      }]
+      labels: porcentajes,
+      datasets: datasets_ci,
     },
     options: {
       scales: {
@@ -115,22 +153,21 @@ if (prueba === "Análisis de la marcha humana lado izquierdo") {
         yAxes: [{
           scaleLabel: {
             display: true,
-            labelString: "Ángulo articular cadera izquierda"
+            labelString: "Ángulo articular en flexión y extensión de cadera izquierda"
           }
         }]
       }
     }
   });
-  new Chart("myChartri", {
+  
+  document.getElementById("myChart").style.display = "block";
+  let ctx_ri = document.getElementById("myChartri").getContext("2d");
+
+  new Chart(ctx_ri, {
     type: "line",
     data: {
-      labels: xValuesri,
-      datasets: [{
-        label: 'Ángulo articular rodilla izquierda',
-        backgroundColor: "rgba(0,0,0,0)",
-        borderColor: "green",
-        data: ang_izq_rod_grafico
-      }]
+      labels: porcentajes,
+      datasets: datasets_ri,
     },
     options: {
       scales: {
@@ -148,7 +185,7 @@ if (prueba === "Análisis de la marcha humana lado izquierdo") {
         yAxes: [{
           scaleLabel: {
             display: true,
-            labelString: "Ángulo articular rodilla izquierda"
+            labelString: "Ángulo articular en flexión y extensión de rodilla izquierda"
           }
         }]
       }
@@ -156,43 +193,29 @@ if (prueba === "Análisis de la marcha humana lado izquierdo") {
   });
 }
 else{
-  document.getElementById("cont-izq").style.display = "none";
+  document.getElementById("container-izq").style.display = "none";
 
 }
 
 if (prueba === "Análisis de la marcha humana lado derecho"){
-
-  var ang_der_cad_grafico = JSON.parse(localStorage.getItem("ang_der_cad_grafico"));
-  var ang_der_rod_grafico = JSON.parse(localStorage.getItem("ang_der_rod_grafico"));
-
-  var xValuescd = [];
-  for (var i = 0; i < ang_der_cad_grafico.length; i++) {
-    xValuescd.push((i * 100 / (ang_der_cad_grafico.length - 1)).toFixed(0));
-  }
-
-  var xValuesrd = [];
-  for (var i = 0; i < ang_der_rod_grafico.length; i++) {
-    xValuesrd.push((i * 100 / (ang_der_rod_grafico.length - 1)).toFixed(0));
-  }
-
-  var container2 = document.querySelector(".container2");
-  document.getElementById("cont-der").style.display = "block"
-  var canvas2 = container2.querySelector("#myChartcd");
-  container2.style.display ="block";
+  document.getElementById("capturas-container").style.marginTop = "-30rem";
  
-  canvas2.style.display = "block";
+  document.getElementById("container-der").style.display = "block";
+ 
 
-  var ctx = canvas2.getContext("2d");
-  new Chart(ctx, {
+  const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
+ 
+    
+  var datasets_cd = JSON.parse(localStorage.getItem("datasets_cd"));
+  var datasets_rd = JSON.parse(localStorage.getItem("datasets_rd"));
+  
+
+  let ctx_cd = document.getElementById("myChartcd").getContext("2d");
+  new Chart(ctx_cd, {
     type: "line",
     data: {
-      labels: xValuescd,
-      datasets: [{
-        label: 'Ángulo articular cadera derecha',
-        backgroundColor: "rgba(0,0,0,0)",
-        borderColor: "green",
-        data: ang_der_cad_grafico
-      }]
+      labels: porcentajes,
+      datasets: datasets_cd,
     },
     options: {
       scales: {
@@ -210,22 +233,21 @@ if (prueba === "Análisis de la marcha humana lado derecho"){
         yAxes: [{
           scaleLabel: {
             display: true,
-            labelString: "Ángulo articular cadera derecha"
+            labelString: "Ángulo articular en flexión y extensión de cadera derecha"
           }
         }]
       }
     }
   });
-  new Chart("myChartrd", {
+  
+  document.getElementById("myChartcd").style.display = "block";
+  let ctx_rd = document.getElementById("myChartrd").getContext("2d");
+
+  new Chart(ctx_rd, {
     type: "line",
     data: {
-      labels: xValuesrd,
-      datasets: [{
-        label: 'Ángulo articular rodilla derecha',
-        backgroundColor: "rgba(0,0,0,0)",
-        borderColor: "green",
-        data: ang_der_rod_grafico
-      }]
+      labels: porcentajes,
+      datasets: datasets_rd,
     },
     options: {
       scales: {
@@ -243,7 +265,7 @@ if (prueba === "Análisis de la marcha humana lado derecho"){
         yAxes: [{
           scaleLabel: {
             display: true,
-            labelString: "Ángulo articular rodilla derecha"
+            labelString: "Ángulo articular en flexión y extensión de rodilla derecha"
           }
         }]
       }
@@ -251,6 +273,6 @@ if (prueba === "Análisis de la marcha humana lado derecho"){
   });
 }
 else{
-  document.getElementById("cont-der").style.display = "none";
+  document.getElementById("container-der").style.display = "none";
 
 }

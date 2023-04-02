@@ -25,3 +25,47 @@ body {
         font-size: 1.5rem;
         font-weight: bold;
     }
+    
+    
+   
+    
+    #capturas-container {
+      max-width: 1280px;
+      margin: auto;
+    }
+    
+    #capturas-container img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 0px;
+    }
+    
+    .imagePreview {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .imagePreview img {
+      max-width: 100%;
+    }
+    .stripe {
+      background-color: rgb(37, 120, 14);
+      color: #fff;
+      padding: 20px;
+      font-size: 24px;
+      text-align: center;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 8rem;
+      }
+      

@@ -38,8 +38,7 @@ let max_angulo_rot_int_cad_izq = -200; //
 let min_angulo_rot_int_cad_izq = 200; // 
 let max_angulo_rot_int_cad_der = -200; //
 let min_angulo_rot_int_cad_der = 200; // 
-let angulo_inclinacion_hombro_let=0;
-let angulo_inclinacion_cadera_let=0;
+
 
 
 
@@ -214,6 +213,10 @@ let ang_der_rod_grafico = [];
 let zancada_cantidad= [];
 let posicion_pie_x_grafico_izq= [];
 let posicion_pie_x_grafico_der= [];
+//Variables que guardan los angulos durante la rotacion interna exterma
+let angulo_rot_int_cad_izq=[];
+let angulo_rot_int_cad_der=[];
+
 // Optimization: Turn off animated spinner after its hiding animation is done.
 const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
 const grid = new LandmarkGrid(landmarkContainer, {
@@ -230,6 +233,8 @@ const grid = new LandmarkGrid(landmarkContainer, {
 //
 let activeEffect = 'mask';
 function onResults(results) {
+    let angulo_inclinacion_hombro_let=[];
+    let angulo_inclinacion_cadera_let=[];
    
     // Update the frame rate.
     fpsControl.tick();
@@ -389,16 +394,25 @@ function onResults(results) {
         let angulo_inclinacion_hombro = Math.atan(cateto_co_hombro / cateto_ad_hombro);
         angulo_inclinacion_hombro = (angulo_inclinacion_hombro * (180) / Math.PI)-90;
         angulo_inclinacion_hombro = -1* angulo_inclinacion_hombro.toFixed(0);
-        angulo_inclinacion_hombro_let= angulo_inclinacion_hombro;
-        angulo_inclinacion_cadera_let = angulo_inclinacion_cadera;
+        
         document.getElementById("ang_linea_hombro").innerHTML = angulo_inclinacion_hombro + " °";
-       if (solutionOptions.lineaTronco){
+        
+        if(solutionOptions.guardar_datos){
+            angulo_inclinacion_hombro_let= angulo_inclinacion_hombro.toFixed(1);
+            angulo_inclinacion_cadera_let = angulo_inclinacion_cadera.toFixed(1);
+        }else{
+            angulo_inclinacion_hombro_let= [];
+            angulo_inclinacion_cadera_let = [];
+            
+        }
+
+
         document.getElementById("myButton").addEventListener("click", function() {
-            localStorage.setItem("ang_linea_frontal_hombro_2", JSON.stringify(angulo_inclinacion_hombro_let.toFixed(1)));
-            localStorage.setItem("ang_linea_frontal_cadera_2", JSON.stringify(angulo_inclinacion_cadera_let.toFixed(1)));  
+            localStorage.setItem("ang_linea_frontal_hombro_2", JSON.stringify(angulo_inclinacion_hombro_let));
+            localStorage.setItem("ang_linea_frontal_cadera_2", JSON.stringify(angulo_inclinacion_cadera_let));  
             window.location.href = "analizar.html";
         });
-        }
+       
 
 
 
@@ -532,15 +546,15 @@ function onResults(results) {
         }
         //Angulos
         //Angulos de rotacion interna y externa de cadera
-        let angulo_rot_int_cad_izq = (180 * Math.acos((tobillo_i_x - rodilla_i_x) / (Math.sqrt(Math.pow((tobillo_i_x - rodilla_i_x), 2) + Math.pow((tobillo_i_y - rodilla_i_y), 2)))) / Math.PI) - 90;
+         angulo_rot_int_cad_izq = (180 * Math.acos((tobillo_i_x - rodilla_i_x) / (Math.sqrt(Math.pow((tobillo_i_x - rodilla_i_x), 2) + Math.pow((tobillo_i_y - rodilla_i_y), 2)))) / Math.PI) - 90;
         angulo_rot_int_cad_izq = angulo_rot_int_cad_izq.toFixed(0) * -1;
         document.getElementById("ang_rot_cad_izq").innerHTML = angulo_rot_int_cad_izq  + " °";
-        let angulo_rot_int_cad_der = (180 * Math.acos((tobillo_d_x - rodilla_d_x) / (Math.sqrt(Math.pow((tobillo_d_x - rodilla_d_x), 2) + Math.pow((tobillo_d_y - rodilla_d_y), 2)))) / Math.PI) - 90;
+         angulo_rot_int_cad_der = (180 * Math.acos((tobillo_d_x - rodilla_d_x) / (Math.sqrt(Math.pow((tobillo_d_x - rodilla_d_x), 2) + Math.pow((tobillo_d_y - rodilla_d_y), 2)))) / Math.PI) - 90;
         angulo_rot_int_cad_der = angulo_rot_int_cad_der.toFixed(0)* 1;
         document.getElementById("ang_rot_cad_der").innerHTML = angulo_rot_int_cad_der + " °";
         
         //Guarda los valores maximos y minimos de la rotacion int/ext del lado izq y derecho
-        if (solutionOptions.rotIntExt) {
+        if (solutionOptions.guardar_datos) {
             //Revisa si hay algun valor menor del lado izq al anterioremente guardado
             if (angulo_rot_int_cad_izq < min_angulo_rot_int_cad_izq) {
                 // Actualiza el valor valor minimo si es necesario
@@ -557,9 +571,18 @@ function onResults(results) {
                 window.location.href = "analizar.html";
             });
            
-            
-        }      
-        if (solutionOptions.rotIntExt) {
+            console.log(min_angulo_rot_int_cad_izq);
+        }else{
+            min_angulo_rot_int_cad_izq= 200;
+            max_angulo_rot_int_cad_izq= -200;
+            console.log(min_angulo_rot_int_cad_izq);
+            document.getElementById("myButton").addEventListener("click", function() {
+                localStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
+                localStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
+                window.location.href = "analizar.html";
+            });
+        }   
+        if (solutionOptions.guardar_datos) {
             if (angulo_rot_int_cad_der < min_angulo_rot_int_cad_der) {
                 // Actualiza el valor valor minimo si es necesario
                 min_angulo_rot_int_cad_der = angulo_rot_int_cad_der;
@@ -576,7 +599,16 @@ function onResults(results) {
             window.location.href = "analizar.html";
         });
       
-        }
+        }else{
+            min_angulo_rot_int_cad_der= 200;
+            max_angulo_rot_int_cad_der= -200;
+            document.getElementById("myButton").addEventListener("click", function() {
+                localStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
+                localStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
+                window.location.href = "analizar.html";
+            });
+            
+        }   
 
         
         

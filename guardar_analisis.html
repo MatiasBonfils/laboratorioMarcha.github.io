@@ -4,7 +4,7 @@
   <a href="./analizar.html" style="flex: 1 1 20%; text-align: left;margin-left: 20px;">Volver</a>
   <p style="flex: 1 1 20%; text-align: center; margin-left: 350px;">Ficha Técnica</p>
   <div style="flex: 1 1 20%;"></div>
-  <a href="#" onclick="printPage()" style="flex: 1 1 20%; text-align: right; margin-left: 20px;padding-right: 30px; color: white; text-decoration: none; display: block; line-height: 60px; background-color: rgb(37, 120, 14);">Generar PDF</a>
+  <a href="#" onclick="printPage()" style="flex: 1 1 20%; text-align: right; margin-left: 20px;padding-right: 30px; color: white; text-decoration: none; display: block; line-height: 30px; background-color: rgb(37, 120, 14);">Generar PDF</a>
 </nav>
  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
  <br>
@@ -13,7 +13,9 @@
     <title>Ficha Técnica</title>
     <style>
      
-      h2 {
+     
+     
+     h2 {
         font-size: 28px;
         font-weight: bold;
         text-decoration: underline;
@@ -135,22 +137,14 @@
 }
 
 .text-line textarea#observaciones > div > div > span:last-of-type:before {
-  content: attr(data-content);
+  content: attr(data-placeholder);
+position: absolute;
+left: 0;
+top: 0;
+pointer-events: none;
+color: #888;
+font-size: 16px;
 }
-
-.text-line textarea#observaciones:invalid {
-  border: 2px solid red;
-}
-
-.text-line textarea#observaciones:valid {
-  border: 2px solid rgb(255, 255, 255);
-}
-
-
-      .white-line {
-        border-bottom: 1px solid #fff;
-        margin-bottom: 10px;
-      }
     </style>
   </head>
   <body>
@@ -229,83 +223,21 @@
         <label for="observaciones">Observaciones:</label>
         <textarea id="observaciones" rows="5"></textarea>
       </div>
-    
   </body>
   
-    <br>
-    <br>
-  <style>
-    
-    #displayContainer{
-      margin-top: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-   .frameContainer {
-    justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-    
-  }  
-  .displayedFrame2{
-    width: 200px;
-    height: 200px;
-  }
- 
-   </style>
-    <div id="displayContainer">
-      <div class="frameContainer">
-        <img id="displayedFrame2" />
-      </div>
-    </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-     <br>
-     <br>
-     <br>
-    <br>
-    <br>
- 
-    <br>
-    <br>
-    <br>
-    <br>
-   <br>
-   <br>
-   <br>
-    <br>
-    <br>
-    <br>
-   <br>
-   <br>
-
-  <style>
-   body {
+  
+<style>
+  body {
     background-color: rgb(16, 16, 16);
   }
-  .container {
-    width: 1000px;
-    height: 100px;
+  .graph-container {
+    width: 1200px;
+    height: 1200px;
     margin: 0 auto;
     justify-content: center;
   }
-
-  #container {
-    margin-top: 2px;
-    justify-content: center;
-  }
-  .container2 {
-    width: 1000px;
-    height: 100px;
-    margin: 0 auto;
-    justify-content: center;
-  }
-
-  #container2 {
+  
+  #container-izq {
     margin-top: 2px;
     justify-content: center;
   }
@@ -324,67 +256,91 @@
     margin: 0;
     text-align: center;
   }
- 
-  </style>
-  <div id="cont-der" class="container2" >
-    <div id="grafico_titulo_cd">
-      <div class="graph-header">
-        <h2>Rango articular cadera derecha</h2>
-      </div>
-    </div>
-    <div style="position: relative;">
-      <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0;background-color: white;"></div>
-      <canvas id="myChartcd" style="height: 300px; width: 550px;"></canvas>
-    </div>
-   <br>
-   <br>
-   <br>
-    
-   <br>
-   <br>
-   <br>
+  .graph-container:first-child {
+    margin-bottom: -400px;
+  }
+  .graph-container:nth-child(2) {
+    margin-top: 10px;
+  }
+</style>
+
+  <br></br>
+  <div id="container-izq">
     <div class="graph-container">
-      <div id="grafico_titulo_rd">
-        <div class="graph-header">
-          <h2>Rango articular rodilla derecha</h2>
-        </div>
-      </div>
+       <div id="grafico_titulo_ci">
+          <div class="graph-header">
+            <h2>Rango articular cadera izquierda en plano sagital</h2>
+          </div>
+        </div>  
       <div style="position: relative;">
         <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
-        <canvas id="myChartrd" style="height: 300px; width: 550px;"></canvas>
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+    
+    <div class="graph-container">
+        <div id="grafico_titulo_ri">
+            <div class="graph-header">
+              <h2>Rango articular rodilla izquierda en plano sagital</h2>
+            </div>
+        </div>    
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChartri"></canvas>
       </div>
     </div>
   </div>
- <div id="cont-izq" class="container">
-  <div id="grafico_titulo_ci">
-    <div class="graph-header">
-      <h2>Rango articular cadera izquierda</h2>
-    </div>
-  </div>
-  <div style="position: relative;">
-    <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0;background-color: white;"></div>
-    <canvas id="myChart" style="height: 300px; width: 550px;"></canvas>
-  </div>
-  <br>
-  <br>
-  <br>
-
-  <br>
-  <br>
-  <br>
-
-  <div class="graph-container">
-    <div id="grafico_titulo_ri">
+  
+  <div id="container-der">
+    <div class="graph-container">
+      <div id="grafico_titulo_cd"></div>
         <div class="graph-header">
-          <h2>Rango articular rodilla izquierda</h2>
-        </div>
-    </div>    
-  <div style="position: relative;">
-    <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
-    <canvas id="myChartri" style="height: 300px; width: 550px;"></canvas>
-  </div>
-  </div>
- </div>
+          <h2>Rango articular cadera derecha en plano sagital</h2>
+        </div>  
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChartcd"></canvas>
+      </div>
+    </div>
+    
+    <div class="graph-container">
+            <div class="graph-header">
+              <div id="grafico_titulo_rd"></div>
+              <h2>Rango articular rodilla derecha en plano sagital</h2>
+            </div>   
+      <div style="position: relative;">
+        <div style="position: absolute; z-index: -1; top: 0; left: 0; right: 0; bottom: 0; background-color: white;"></div>
+        <canvas id="myChartrd"></canvas>
+      </div>
+    </div>
+  </div> 
+
+
+  
+
+    <br></br>
+    <div id="capturas-container">
+      <div id="imageList"></div>
+    </div>
+ 
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+ // code to change the line thickness
+ Chart.defaults.global.elements.line.borderWidth = 4;
+
+  // code to change the label size and color
+  Chart.defaults.global.defaultFontColor = 'black';
+  Chart.defaults.global.defaultFontSize = 18;
+
+  // code to change the thickness of 0 horizontal axis line
+  Chart.scaleService.updateScaleDefaults('linear', {
+    gridLines: {
+      borderWidth: 4
+    }
+  });
+</script>
+ 
  
 
 
