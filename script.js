@@ -78,7 +78,7 @@ captureButton.addEventListener("click", function() {
       var ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       var resizedDataUrl = canvas.toDataURL("image/jpeg", 0.5); // Escalar la imagen al 50% del tamaño original
-      localStorage.setItem("imgData" + contador, resizedDataUrl.replace(/^data:image\/(png|jpg);base64,/, ""));
+      sessionStorage.setItem("imgData" + contador, resizedDataUrl.replace(/^data:image\/(png|jpg);base64,/, ""));
       contador++;
     }
     console.log(dataURL);
@@ -124,6 +124,7 @@ function toggleSaveCoordinates() {
     document.body.style.cursor = "";
     document.documentElement.style.cursor = "";
     document.removeEventListener('click', saveCoordinates);
+    document.getElementById('capture-button').style.display = 'block';
   }
 }
 
@@ -168,12 +169,12 @@ function showPopup() {
     let velocity = distanceWalked / savedData.time;
     let cadencia= (savedData.steps)*60/ savedData.time;
     //Guardo las variables para pasarlas a la siguiente pagina
-    localStorage.setItem("cantidad_pasos", JSON.stringify(steps));
-    localStorage.setItem("distancia_caminada", JSON.stringify(distancia_zancada_metros.toFixed(2)));       
-    localStorage.setItem("velocidad_camina", JSON.stringify(velocity.toFixed(2)));
-    localStorage.setItem("cadencia_camina", JSON.stringify(cadencia.toFixed(2)));
-    localStorage.setItem("Longitud_paso", JSON.stringify(stepLength.toFixed(2)));
-    localStorage.setItem("Longitud_zancada", JSON.stringify(strideLength.toFixed(2)));
+    sessionStorage.setItem("cantidad_pasos", JSON.stringify(stepsInput));
+    sessionStorage.setItem("distancia_caminada", JSON.stringify(distancia_zancada_metros.toFixed(2)));       
+    sessionStorage.setItem("velocidad_camina", JSON.stringify(velocity.toFixed(2)));
+    sessionStorage.setItem("cadencia_camina", JSON.stringify(cadencia.toFixed(2)));
+    sessionStorage.setItem("Longitud_paso", JSON.stringify(stepLength.toFixed(2)));
+    sessionStorage.setItem("Longitud_zancada", JSON.stringify(strideLength.toFixed(2)));
     
     let message = `Distancia caminada: ${distancia_zancada_metros.toFixed(2)} metros\n`;
     message += `Velocidad: ${velocity.toFixed(2)} m/s\n`;
@@ -210,9 +211,10 @@ let ang_izq_cad_grafico = [];
 let ang_der_cad_grafico = [];
 let ang_izq_rod_grafico = [];
 let ang_der_rod_grafico = [];
-let zancada_cantidad= [];
+
 let posicion_pie_x_grafico_izq= [];
 let posicion_pie_x_grafico_der= [];
+let p_p_pie_x= [];
 //Variables que guardan los angulos durante la rotacion interna exterma
 let angulo_rot_int_cad_izq=[];
 let angulo_rot_int_cad_der=[];
@@ -285,7 +287,7 @@ function onResults(results) {
         let tobillo_i_y = canvasElement.height * results.poseLandmarks[27].y;
         let tobillo_d_x = canvasElement.width * results.poseLandmarks[28].x;
         let tobillo_d_y = canvasElement.height * results.poseLandmarks[28].y;
-        let pie_i_y     = canvasElement.height * results.poseLandmarks[31].y;
+        let pie_i_x     = canvasElement.height * results.poseLandmarks[31].x;
         //DIBUJAR RECTANGULOS
         //Lineas posturales
         //Mandibula
@@ -408,8 +410,8 @@ function onResults(results) {
 
 
         document.getElementById("myButton").addEventListener("click", function() {
-            localStorage.setItem("ang_linea_frontal_hombro_2", JSON.stringify(angulo_inclinacion_hombro_let));
-            localStorage.setItem("ang_linea_frontal_cadera_2", JSON.stringify(angulo_inclinacion_cadera_let));  
+            sessionStorage.setItem("ang_linea_frontal_hombro_2", JSON.stringify(angulo_inclinacion_hombro_let));
+            sessionStorage.setItem("ang_linea_frontal_cadera_2", JSON.stringify(angulo_inclinacion_cadera_let));  
             window.location.href = "analizar.html";
         });
        
@@ -566,8 +568,8 @@ function onResults(results) {
                 max_angulo_rot_int_cad_izq = angulo_rot_int_cad_izq;
               }
               document.getElementById("myButton").addEventListener("click", function() {
-                localStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
-                localStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
+                sessionStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
+                sessionStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
                 window.location.href = "analizar.html";
             });
            
@@ -577,8 +579,8 @@ function onResults(results) {
             max_angulo_rot_int_cad_izq= -200;
             console.log(min_angulo_rot_int_cad_izq);
             document.getElementById("myButton").addEventListener("click", function() {
-                localStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
-                localStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
+                sessionStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
+                sessionStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
                 window.location.href = "analizar.html";
             });
         }   
@@ -594,8 +596,8 @@ function onResults(results) {
             }  
              //b
         document.getElementById("myButton").addEventListener("click", function() {
-            localStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
-            localStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
+            sessionStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
+            sessionStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
             window.location.href = "analizar.html";
         });
       
@@ -603,8 +605,8 @@ function onResults(results) {
             min_angulo_rot_int_cad_der= 200;
             max_angulo_rot_int_cad_der= -200;
             document.getElementById("myButton").addEventListener("click", function() {
-                localStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
-                localStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
+                sessionStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
+                sessionStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
                 window.location.href = "analizar.html";
             });
             
@@ -638,7 +640,10 @@ function onResults(results) {
         if (solutionOptions.guardar_datos) {
             ang_izq_cad_grafico.push(angulo_cadera_i);
             posicion_pie_x_grafico_izq.push(tobillo_i_x);
+            p_p_pie_x.push(pie_i_x);
             document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
+            console.log(posicion_pie_x_grafico_izq)
+            console.log(p_p_pie_x);
         }
         else {
             ang_izq_cad_grafico = [];
@@ -647,8 +652,8 @@ function onResults(results) {
         }
         //b
         document.getElementById("myButton").addEventListener("click", function() {
-            localStorage.setItem("ang_izq_cad_grafico", JSON.stringify(ang_izq_cad_grafico));
-            localStorage.setItem("posicion_pie_x_grafico_izq", JSON.stringify(posicion_pie_x_grafico_izq));
+            sessionStorage.setItem("ang_izq_cad_grafico", JSON.stringify(ang_izq_cad_grafico));
+            sessionStorage.setItem("posicion_pie_x_grafico_izq", JSON.stringify(posicion_pie_x_grafico_izq));
             window.location.href = "analizar.html";
         });
          
@@ -685,13 +690,11 @@ function onResults(results) {
         }
         //b
         document.getElementById("myButton").addEventListener("click", function() {
-            localStorage.setItem("ang_der_cad_grafico", JSON.stringify(ang_der_cad_grafico));
-            localStorage.setItem("posicion_pie_x_grafico_der", JSON.stringify(posicion_pie_x_grafico_der));
+            sessionStorage.setItem("ang_der_cad_grafico", JSON.stringify(ang_der_cad_grafico));
+            sessionStorage.setItem("posicion_pie_x_grafico_der", JSON.stringify(posicion_pie_x_grafico_der));
             window.location.href = "analizar.html";
         });
-        document.getElementById("zancada-btn").addEventListener("click", function() {
-            zancada_cantidad.push(ang_der_rod_grafico.length);
-        });
+       
         //Angulo rodilla
         //Izq
         var femur_iz = Math.sqrt(Math.pow(cadera_i_x - rodilla_i_x, 2) + Math.pow(cadera_i_y - rodilla_i_y, 2));
@@ -711,10 +714,10 @@ function onResults(results) {
         }
         //b
         document.getElementById("myButton").addEventListener("click", function() {
-            localStorage.setItem("ang_izq_rod_grafico", JSON.stringify(ang_izq_rod_grafico));
+            sessionStorage.setItem("ang_izq_rod_grafico", JSON.stringify(ang_izq_rod_grafico));
             window.location.href = "analizar.html";   
         });
-        const positiveChangeRateIndexes = [];
+ 
 
 
         //Der
@@ -732,34 +735,14 @@ function onResults(results) {
         else {
             ang_der_rod_grafico = [];
             document.getElementById("ang_rod_de").innerHTML = angulo_rodilla_de + " ° " + "(" + ang_der_rod_grafico.length + ")";
-            zancada_cantidad= [] ;
+           
         }
         //b
         document.getElementById("myButton").addEventListener("click", function() {
-            localStorage.setItem("ang_der_rod_grafico", JSON.stringify(ang_der_rod_grafico));
+            sessionStorage.setItem("ang_der_rod_grafico", JSON.stringify(ang_der_rod_grafico));
             window.location.href = "analizar.html";
         });
-        document.getElementById("zancada-btn").addEventListener("click", function() {
-                zancada_cantidad.push(ang_der_rod_grafico.length);
-                function removeDuplicates(arr) {
-                    let uniqueValues = [];
-                  
-                    arr.forEach(function(value) {
-                      if (!uniqueValues.includes(value)) {
-                        uniqueValues.push(value);
-                      }
-                    });
-                  
-                    return uniqueValues;
-                  }
-                  
-                  zancada_cantidad = removeDuplicates(zancada_cantidad);
-                  document.getElementById("myButton").addEventListener("click", function() {
-                    localStorage.setItem("zancada_cantidad", JSON.stringify(zancada_cantidad));
-                    window.location.href = "analizar.html";
-                });
-        });
-        
+       
     }
     canvasCtx.restore();
     if (results.poseWorldLandmarks) {

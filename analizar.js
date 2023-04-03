@@ -3,7 +3,7 @@ var dataImage;
 var imgElement, deleteBtnElement, imgContainer;
 
 for (var i = 0; i < 4; i++) {
-  dataImage = localStorage.getItem('imgData' + i);
+  dataImage = sessionStorage.getItem('imgData' + i);
   if (dataImage) {
     imgElement = document.createElement('img');
     imgElement.src = dataImage;
@@ -43,7 +43,7 @@ function createDeleteHandler(index) {
   return function() {
     var confirmDelete = confirm('¿Quieres eliminar esta imagen?');
     if (confirmDelete) {
-      localStorage.removeItem('imgData' + index);
+      sessionStorage.removeItem('imgData' + index);
       var capturas = document.getElementsByClassName('captura');
       capturasContainer.removeChild(capturas[index]);
     }
@@ -72,12 +72,12 @@ chips.forEach(chip => {
 
     selectedChip = event.currentTarget;
     selectedChip.classList.add('selected');
-    localStorage.setItem("prueba_realizada", JSON.stringify(selectedChip.id));
+    sessionStorage.setItem("prueba_realizada", JSON.stringify(selectedChip.id));
 
     if (selectedChip.id === "Postural") {
       document.getElementById("postura-frontal-wrapper").style.display = "block";
-      var ang_inclinacion_hombro_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_hombro_2"));
-      var ang_inclinacion_cadera_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_cadera_2"));
+      var ang_inclinacion_hombro_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_hombro_2"));
+      var ang_inclinacion_cadera_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_cadera_2"));
       document.getElementById("capturas-container").style.marginTop = "-30rem";
       document.getElementById("capturas-container").style.marginLeft = "16rem";
       console.log(ang_inclinacion_hombro_frontal);
@@ -100,10 +100,10 @@ chips.forEach(chip => {
     document.getElementById("capturas-container").style.marginTop = "-20rem";
     document.getElementById("capturas-container").style.marginLeft = "16rem";
     
-    var rot_int_cad_izq_min = JSON.parse(localStorage.getItem("rot_int_cad_izq_min"));
-    var rot_int_cad_izq_max = JSON.parse(localStorage.getItem("rot_int_cad_izq_max"));
-    var rot_int_cad_der_min = JSON.parse(localStorage.getItem("rot_int_cad_der_min"));
-    var rot_int_cad_der_max = JSON.parse(localStorage.getItem("rot_int_cad_der_max"));
+    var rot_int_cad_izq_min = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_min"));
+    var rot_int_cad_izq_max = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_max"));
+    var rot_int_cad_der_min = JSON.parse(sessionStorage.getItem("rot_int_cad_der_min"));
+    var rot_int_cad_der_max = JSON.parse(sessionStorage.getItem("rot_int_cad_der_max"));
   
     if (rot_int_cad_izq_max== "-200.0") {
       
@@ -132,11 +132,11 @@ chips.forEach(chip => {
 
   //Importo los datos para mostrar las variables de la marcha
   // Primero con respecto a los parametros espacio-temporales
-  var zancada = JSON.parse(localStorage.getItem("zancada_cantidad"));
-  var velocidad = JSON.parse(localStorage.getItem("velocidad_camina"));
-  var cadencia = JSON.parse(localStorage.getItem("cadencia_camina"));
-  var longitudPaso = JSON.parse(localStorage.getItem("Longitud_paso"));
-  var longitudZancada = JSON.parse(localStorage.getItem("Longitud_zancada"));
+  
+  var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
+  var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
+  var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
+  var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
 
   if (velocidad === null) {
     document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
@@ -156,9 +156,9 @@ chips.forEach(chip => {
   }
 
       //Segundo para los parametros angulares
-      var ang_izq_cad_grafico = JSON.parse(localStorage.getItem("ang_izq_cad_grafico"));
-      var ang_izq_rod_grafico = JSON.parse(localStorage.getItem("ang_izq_rod_grafico"));
-      var posicion_pie_x_grafico_izq = JSON.parse(localStorage.getItem("posicion_pie_x_grafico_izq"));
+      var ang_izq_cad_grafico = JSON.parse(sessionStorage.getItem("ang_izq_cad_grafico"));
+      var ang_izq_rod_grafico = JSON.parse(sessionStorage.getItem("ang_izq_rod_grafico"));
+      var posicion_pie_x_grafico_izq = JSON.parse(sessionStorage.getItem("posicion_pie_x_grafico_izq"));
       
       
       //Esta funcion lo que hace es devolver varios subarreglos con dos valores cada uno
@@ -226,7 +226,7 @@ chips.forEach(chip => {
       const ang_izq_rod_grafico_divido_sc = ang_izq_rod_grafico_divido.map(subarreglo => {
         return subarreglo.map(elemento => parseInt(elemento));
       });
-
+      console.log(subarreglos_indices_pie_izq);
       //Como los distintos subarreglos que conforman el arreglo de los angulos tienen distintas longitudes
       //va a necesitar que queden homogenizados para poder graficarlos (poner en intervalos y promediarlos)
       //De esa manera devuelve el arreglo con todos los subarreglos del mismo tamano
@@ -398,7 +398,7 @@ chips.forEach(chip => {
         });
       }
       
-    localStorage.setItem("datasets_ci", JSON.stringify(datasets_ci));
+      sessionStorage.setItem("datasets_ci", JSON.stringify(datasets_ci));
 
       new Chart(ctx, {
         type: "line",
@@ -432,56 +432,7 @@ chips.forEach(chip => {
       document.getElementById("myChart").style.display = "block";
       
       
-      
-      //este codigo es para mostrar la mediciones manuales
-                                                  let subarrays_rod_izq = [];
-                                                
-                                                
-                                                      let startIndex_der = 0;
-                                                      for (let i = 0; i < zancada.length; i++) {
-                                                        let endIndex = zancada[i];
-                                                        let subarray_ri = ang_izq_rod_grafico.slice(startIndex_der, endIndex);
-                                                        subarrays_rod_izq.push(subarray_ri);
-                                                        startIndex_der = endIndex;
-                                                      }
-                                                      
-                                                      // Add last subarray after the last zancada index
-                                                      if (startIndex_der < ang_izq_rod_grafico.length) {
-                                                        let subarray_ri = ang_izq_rod_grafico.slice(startIndex_der);
-                                                        subarrays_rod_izq.push(subarray_ri);
-                                                      }
-                                                      
-                                                      let colors = ['green', 'blue', 'red', 'purple', 'orange', 'pink', 'brown', 'gray', 'black'];
-                                                      let datasetsri = [];
-                                                      for (let i = 0; i < subarrays_rod_izq.length; i++) {
-                                                        datasetsri.push({
-                                                          label: `Zancada ${i+1}`,
-                                                          backgroundColor: "rgba(0,0,0,0)",
-                                                          borderColor: colors[i % colors.length],
-                                                          data: subarrays_rod_izq[i]
-                                                        });
-                                                      }
-
-
-                                                  let subarray_mas_largo = Math.max(...subarrays_rod_izq.map(subarray_ri => subarray_ri.length));
-                                                  let xValuesri = [];
-                                                  for (let i = 0; i < subarray_mas_largo; i++) {
-                                                    xValuesri.push((i * 100 / (subarray_mas_largo - 1)).toFixed(0));
-                                                  }
-
-
-                                                  const maxLength = Math.max(...ang_izq_rod_grafico_divido.map(subarray => subarray.length));
-
-                                                  // Creamos un arreglo con los porcentajes relativos del subarreglo más grande
-                                                  const percentages_max = Array.from({ length: maxLength }, (_, i) => (i / (maxLength - 1)) * 100);
-
-                                                  // Creamos un arreglo de objetos que contienen los datos de cada subarreglo
-                                                  const datasets_divido_manual = ang_izq_rod_grafico_divido.map((subarray, index) => ({
-                                                    label: `Subarreglo ${index + 1}`,
-                                                    data: subarray,
-                                                    borderColor: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
-                                                    fill: false,
-                                                  }));
+    
 
 
       //Medir manual: labels: xValuesri, datasets: datasetsri;
@@ -507,7 +458,7 @@ chips.forEach(chip => {
           fill: false,
         });
       }
-      localStorage.setItem("datasets_ri", JSON.stringify(datasets_ri));
+      sessionStorage.setItem("datasets_ri", JSON.stringify(datasets_ri));
      
       new Chart(ctx_ri, {
         type: "line",
@@ -569,11 +520,11 @@ chips.forEach(chip => {
 
           //Importo los datos para mostrar las variables de la marcha
           // Primero con respecto a los parametros espacio-temporales
-          var zancada = JSON.parse(localStorage.getItem("zancada_cantidad"));
-          var velocidad = JSON.parse(localStorage.getItem("velocidad_camina"));
-          var cadencia = JSON.parse(localStorage.getItem("cadencia_camina"));
-          var longitudPaso = JSON.parse(localStorage.getItem("Longitud_paso"));
-          var longitudZancada = JSON.parse(localStorage.getItem("Longitud_zancada"));
+          
+          var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
+          var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
+          var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
+          var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
           if (velocidad === null) {
             document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
             document.getElementById("cadencia").innerHTML = "";
@@ -592,9 +543,9 @@ chips.forEach(chip => {
           }
 
           //Segundo para los parametros angulares
-          var ang_der_cad_grafico = JSON.parse(localStorage.getItem("ang_der_cad_grafico"));
-          var ang_der_rod_grafico = JSON.parse(localStorage.getItem("ang_der_rod_grafico"));
-          var posicion_pie_x_grafico_der = JSON.parse(localStorage.getItem("posicion_pie_x_grafico_der"));
+          var ang_der_cad_grafico = JSON.parse(sessionStorage.getItem("ang_der_cad_grafico"));
+          var ang_der_rod_grafico = JSON.parse(sessionStorage.getItem("ang_der_rod_grafico"));
+          var posicion_pie_x_grafico_der = JSON.parse(sessionStorage.getItem("posicion_pie_x_grafico_der"));
           
           //Esta funcion lo que hace es devolver varios subarreglos con dos valores cada uno
           //El primero representa en que momento el pie empieza a moverse en el eje x
@@ -661,7 +612,7 @@ chips.forEach(chip => {
           const ang_der_rod_grafico_divido_sc = ang_der_rod_grafico_divido.map(subarreglo => {
             return subarreglo.map(elemento => parseInt(elemento));
           });
-
+          
           //Como los distintos subarreglos que conforman el arreglo de los angulos tienen distintas longitudes
           //va a necesitar que queden homogenizados para poder graficarlos (poner en intervalos y promediarlos)
           //De esa manera devuelve el arreglo con todos los subarreglos del mismo tamano
@@ -829,7 +780,7 @@ chips.forEach(chip => {
               fill: false,
             });
           }
-          localStorage.setItem("datasets_cd", JSON.stringify(datasets_cd));
+          sessionStorage.setItem("datasets_cd", JSON.stringify(datasets_cd));
           new Chart(ctxcd, {
             type: "line",
             data: {
@@ -880,7 +831,7 @@ chips.forEach(chip => {
               fill: false,
             });
           }
-          localStorage.setItem("datasets_rd", JSON.stringify(datasets_rd));
+          sessionStorage.setItem("datasets_rd", JSON.stringify(datasets_rd));
           new Chart(ctx_rd, {
             type: "line",
             data: {

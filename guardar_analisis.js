@@ -3,7 +3,7 @@ var dataImage;
 var imgElement, deleteBtnElement, imgContainer;
 
 for (var i = 0; i < 4; i++) {
-  dataImage = localStorage.getItem('imgData' + i);
+  dataImage = sessionStorage.getItem('imgData' + i);
   if (dataImage) {
     imgElement = document.createElement('img');
     imgElement.src = dataImage;
@@ -56,12 +56,12 @@ function printPage() {
 
 document.getElementById("container-izq").style.display = "none";
 document.getElementById("container-der").style.display = "none";
-var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
+var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
 
-		var velocidad = JSON.parse(localStorage.getItem("velocidad_camina"));
-		var cadencia = JSON.parse(localStorage.getItem("cadencia_camina"));
-		var longitudPaso = JSON.parse(localStorage.getItem("Longitud_paso"));
-		var longitudZancada = JSON.parse(localStorage.getItem("Longitud_zancada"));
+		var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
+		var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
+		var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
+		var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
     
 		// Display results if prueba is "Análisis de la marcha humana lado izquierdo" or "Análisis de la marcha humana lado derecho"
 		if (prueba === "Análisis de la marcha humana lado izquierdo" || prueba === "Análisis de la marcha humana lado derecho") {
@@ -82,10 +82,10 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
      
       
     }
-    var rot_int_cad_izq_min = JSON.parse(localStorage.getItem("rot_int_cad_izq_min"));
-    var rot_int_cad_izq_max = JSON.parse(localStorage.getItem("rot_int_cad_izq_max"));
-    var rot_int_cad_der_min = JSON.parse(localStorage.getItem("rot_int_cad_der_min"));
-    var rot_int_cad_der_max = JSON.parse(localStorage.getItem("rot_int_cad_der_max"));
+    var rot_int_cad_izq_min = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_min"));
+    var rot_int_cad_izq_max = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_max"));
+    var rot_int_cad_der_min = JSON.parse(sessionStorage.getItem("rot_int_cad_der_min"));
+    var rot_int_cad_der_max = JSON.parse(sessionStorage.getItem("rot_int_cad_der_max"));
 
 
 
@@ -107,8 +107,8 @@ var prueba = JSON.parse(localStorage.getItem("prueba_realizada"));
      
 
       
-      var ang_inclinacion_hombro_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_hombro_2"));
-      var ang_inclinacion_cadera_frontal = JSON.parse(localStorage.getItem("ang_linea_frontal_cadera_2"));
+      var ang_inclinacion_hombro_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_hombro_2"));
+      var ang_inclinacion_cadera_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_cadera_2"));
       document.getElementById("ang_incl_hombro_frontal_ficha_tecnica").innerHTML = ang_inclinacion_hombro_frontal + "°";
 			document.getElementById("ang_incl_cadera_frontal_ficha_tecnica").innerHTML = ang_inclinacion_cadera_frontal + "°";
       
@@ -126,8 +126,8 @@ if (prueba === "Análisis de la marcha humana lado izquierdo") {
   const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
  
     
-  var datasets_ci = JSON.parse(localStorage.getItem("datasets_ci"));
-  var datasets_ri = JSON.parse(localStorage.getItem("datasets_ri"));
+  var datasets_ci = JSON.parse(sessionStorage.getItem("datasets_ci"));
+  var datasets_ri = JSON.parse(sessionStorage.getItem("datasets_ri"));
   console.log(datasets_ri)
 
   let ctx = document.getElementById("myChart").getContext("2d");
@@ -206,8 +206,8 @@ if (prueba === "Análisis de la marcha humana lado derecho"){
   const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
  
     
-  var datasets_cd = JSON.parse(localStorage.getItem("datasets_cd"));
-  var datasets_rd = JSON.parse(localStorage.getItem("datasets_rd"));
+  var datasets_cd = JSON.parse(sessionStorage.getItem("datasets_cd"));
+  var datasets_rd = JSON.parse(sessionStorage.getItem("datasets_rd"));
   
 
   let ctx_cd = document.getElementById("myChartcd").getContext("2d");
