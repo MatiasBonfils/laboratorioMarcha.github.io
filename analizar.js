@@ -138,23 +138,7 @@ chips.forEach(chip => {
   var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
   var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
 
-  if (velocidad === null) {
-    document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
-    document.getElementById("cadencia").innerHTML = "";
-    document.getElementById("longitud_paso").innerHTML = "";
-    document.getElementById("longitud_zancada").innerHTML = "";
-    document.getElementById("grafico_titulo_ci").style.display = "none";
-    document.getElementById("grafico_titulo_ri").style.display = "none";
-    document.getElementById("container-izq").style.display = "none";
-    document.getElementById("capturas-container").style.marginTop = " -20rem";
-
-  } else {
-    document.getElementById("velocidad").innerHTML ="Velocidad de caminata: " + velocidad + " m/s";
-    document.getElementById("cadencia").innerHTML = "Cadencia de caminata: "  + cadencia + " pasos/minuto";
-    document.getElementById("longitud_paso").innerHTML ="Longitud de paso: "  + longitudPaso + " metros";
-    document.getElementById("longitud_zancada").innerHTML ="Longitud de zancada: " + longitudZancada + " metros";
-  }
-
+  
       //Segundo para los parametros angulares
       var ang_izq_cad_grafico = JSON.parse(sessionStorage.getItem("ang_izq_cad_grafico"));
       var ang_izq_rod_grafico = JSON.parse(sessionStorage.getItem("ang_izq_rod_grafico"));
@@ -226,7 +210,50 @@ chips.forEach(chip => {
       const ang_izq_rod_grafico_divido_sc = ang_izq_rod_grafico_divido.map(subarreglo => {
         return subarreglo.map(elemento => parseInt(elemento));
       });
+      console.log(posicion_pie_x_grafico_izq);
       console.log(subarreglos_indices_pie_izq);
+      console.log(ang_izq_cad_grafico_divido);
+      function fase_de_apoyo(arr) {
+        let resultado = [];
+        let div = arr[0][0] / arr[0][1];
+        resultado.push(div);
+      
+        for (let i = 1; i < arr.length; i++) {
+          let num1 = arr[i][0] - arr[i - 1][1];
+          let num2 = arr[i][1] - arr[i - 1][1];
+          div = num1 / num2;
+          resultado.push(div);
+        }
+      
+        let sumatoria = resultado.reduce((acumulado, actual) => acumulado + actual);
+        let promedio = (sumatoria / resultado.length)*100;
+      
+        return promedio;
+      }
+
+      let fase_apoyo_izq= fase_de_apoyo(subarreglos_indices_pie_izq).toFixed(2);
+      console.log(fase_apoyo_izq);
+      sessionStorage.setItem("fase_apoyo_izq", JSON.stringify(fase_apoyo_izq));
+
+
+      if (velocidad === null) {
+        document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
+        document.getElementById("cadencia").innerHTML = "";
+        document.getElementById("longitud_paso").innerHTML = "";
+        document.getElementById("longitud_zancada").innerHTML = "";
+        document.getElementById("fase_de_apoyo").innerHTML = "";
+        document.getElementById("grafico_titulo_ci").style.display = "none";
+        document.getElementById("grafico_titulo_ri").style.display = "none";
+        document.getElementById("container-izq").style.display = "none";
+        document.getElementById("capturas-container").style.marginTop = " -20rem";
+    
+      } else {
+        document.getElementById("velocidad").innerHTML ="Velocidad de caminata: " + velocidad + " m/s";
+        document.getElementById("cadencia").innerHTML = "Cadencia de caminata: "  + cadencia + " pasos/minuto";
+        document.getElementById("longitud_paso").innerHTML ="Longitud de paso: "  + longitudPaso + " metros";
+        document.getElementById("longitud_zancada").innerHTML ="Longitud de zancada: " + longitudZancada + " metros";
+        document.getElementById("fase_de_apoyo").innerHTML = "Fase de apoyo: " + fase_apoyo_izq + " %" ;
+      }
       //Como los distintos subarreglos que conforman el arreglo de los angulos tienen distintas longitudes
       //va a necesitar que queden homogenizados para poder graficarlos (poner en intervalos y promediarlos)
       //De esa manera devuelve el arreglo con todos los subarreglos del mismo tamano
@@ -525,23 +552,7 @@ chips.forEach(chip => {
           var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
           var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
           var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
-          if (velocidad === null) {
-            document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
-            document.getElementById("cadencia").innerHTML = "";
-            document.getElementById("longitud_paso").innerHTML = "";
-            document.getElementById("longitud_zancada").innerHTML = "";
-            document.getElementById("grafico_titulo_cd").style.display = "none";
-            document.getElementById("grafico_titulo_rd").style.display = "none";
-            document.getElementById("container-der").style.display = "none";
-            document.getElementById("capturas-container").style.marginTop = " -20rem";
-        
-          } else {
-            document.getElementById("velocidad").innerHTML ="Velocidad de caminata: " + velocidad + " m/s";
-            document.getElementById("cadencia").innerHTML = "Cadencia de caminata: "  + cadencia + " pasos/minuto";
-            document.getElementById("longitud_paso").innerHTML ="Longitud de paso: "  + longitudPaso + " metros";
-            document.getElementById("longitud_zancada").innerHTML ="Longitud de zancada: " + longitudZancada + " metros";
-          }
-
+         
           //Segundo para los parametros angulares
           var ang_der_cad_grafico = JSON.parse(sessionStorage.getItem("ang_der_cad_grafico"));
           var ang_der_rod_grafico = JSON.parse(sessionStorage.getItem("ang_der_rod_grafico"));
@@ -555,7 +566,7 @@ chips.forEach(chip => {
           
             for (let i = 1; i < posicion_pie.length; i++) {
               const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
-              if (change_rate_i > 0.01) {
+              if (change_rate_i > 0.015) {
                 positiveChangeRateIndexes.push(i);
               }
             }
@@ -612,7 +623,49 @@ chips.forEach(chip => {
           const ang_der_rod_grafico_divido_sc = ang_der_rod_grafico_divido.map(subarreglo => {
             return subarreglo.map(elemento => parseInt(elemento));
           });
+
+
+          //Calcula el promedio de la fase de apoyo
+          function fase_de_apoyo(arr) {
+            let resultado = [];
+            let div = arr[0][0] / arr[0][1];
+            resultado.push(div);
           
+            for (let i = 1; i < arr.length; i++) {
+              let num1 = arr[i][0] - arr[i - 1][1];
+              let num2 = arr[i][1] - arr[i - 1][1];
+              div = num1 / num2;
+              resultado.push(div);
+            }
+          
+            let sumatoria = resultado.reduce((acumulado, actual) => acumulado + actual);
+            let promedio = (sumatoria / resultado.length)*100;
+          
+            return promedio;
+          }
+          
+     
+          let fase_apoyo_der= fase_de_apoyo(subarreglos_indices_pie_der).toFixed(2);
+          sessionStorage.setItem("fase_apoyo_der", JSON.stringify(fase_apoyo_der));
+          if (velocidad === null) {
+            document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
+            document.getElementById("cadencia").innerHTML = "";
+            document.getElementById("longitud_paso").innerHTML = "";
+            document.getElementById("longitud_zancada").innerHTML = "";
+            document.getElementById("fase_de_apoyo").innerHTML = "";
+            document.getElementById("grafico_titulo_cd").style.display = "none";
+            document.getElementById("grafico_titulo_rd").style.display = "none";
+            document.getElementById("container-der").style.display = "none";
+            document.getElementById("capturas-container").style.marginTop = " -20rem";
+        
+          } else {
+            document.getElementById("velocidad").innerHTML ="Velocidad de caminata: " + velocidad + " m/s";
+            document.getElementById("cadencia").innerHTML = "Cadencia de caminata: "  + cadencia + " pasos/minuto";
+            document.getElementById("longitud_paso").innerHTML ="Longitud de paso: "  + longitudPaso + " metros";
+            document.getElementById("longitud_zancada").innerHTML ="Longitud de zancada: " + longitudZancada + " metros";
+            document.getElementById("fase_de_apoyo").innerHTML = "Fase de apoyo: "+ fase_apoyo_der + " %";
+          }
+
           //Como los distintos subarreglos que conforman el arreglo de los angulos tienen distintas longitudes
           //va a necesitar que queden homogenizados para poder graficarlos (poner en intervalos y promediarlos)
           //De esa manera devuelve el arreglo con todos los subarreglos del mismo tamano
@@ -678,7 +731,9 @@ chips.forEach(chip => {
           }
           
           datos_grafico_cad_der= ang_der_cad_grafico_divido_sc.map(HomogenizarDatos);
-          datos_grafico_cad_der_matriz= ang_der_cad_grafico_divido_sc.map(armarMatriz);
+          console.log(datos_grafico_cad_der);
+          datos_grafico_cad_der_matriz= datos_grafico_cad_der.map(armarMatriz);
+          console.log(datos_grafico_cad_der_matriz);
           datos_grafico_rod_der= ang_der_rod_grafico_divido_sc.map(HomogenizarDatos);
           datos_grafico_rod_der_matriz= ang_der_rod_grafico_divido_sc.map(armarMatriz);
 

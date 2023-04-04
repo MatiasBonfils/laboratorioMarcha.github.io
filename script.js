@@ -642,12 +642,12 @@ function onResults(results) {
             posicion_pie_x_grafico_izq.push(tobillo_i_x);
             p_p_pie_x.push(pie_i_x);
             document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
-            console.log(posicion_pie_x_grafico_izq)
-            console.log(p_p_pie_x);
+            
         }
         else {
             ang_izq_cad_grafico = [];
             posicion_pie_x_grafico_izq= [];
+            p_p_pie_x= [];
             document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
         }
         //b

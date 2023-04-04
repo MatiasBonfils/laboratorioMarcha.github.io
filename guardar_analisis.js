@@ -198,7 +198,7 @@ else{
 }
 
 if (prueba === "Análisis de la marcha humana lado derecho"){
-  document.getElementById("capturas-container").style.marginTop = "-30rem";
+  document.getElementById("capturas-container").style.marginTop = "-25rem";
  
   document.getElementById("container-der").style.display = "block";
  
