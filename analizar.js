@@ -150,15 +150,14 @@ chips.forEach(chip => {
       // y el segundo en que momento deja de moverse
       function indicesPie(posicion_pie) {
         let positiveChangeRateIndexes = [];
-      
+          
         for (let i = 1; i < posicion_pie.length; i++) {
           const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
           if (change_rate_i > 0.01) {
             positiveChangeRateIndexes.push(i);
           }
         }
-        
-
+      
         function divideArray(array) {
           let result = [];
           let subarray = [array[0]];
@@ -175,10 +174,13 @@ chips.forEach(chip => {
         }
         
         let subarrays = divideArray(positiveChangeRateIndexes);
-        
+      
+        // Filter out subarrays with a difference smaller than 2
+        subarrays = subarrays.filter(subarray => (subarray[subarray.length-1] - subarray[0]) >= 2);
         
         return subarrays;
       }
+      
       //Esta funcion devuelve el arreglo con los angulos en distintos subarreglo tomando en cuenta los valores
       // de los subarreglos de la funcion indicesPie. De esa manera queda separado en subarreglos que representa
       //una zancada cada uno
@@ -233,7 +235,7 @@ chips.forEach(chip => {
 
       let fase_apoyo_izq= fase_de_apoyo(subarreglos_indices_pie_izq).toFixed(2);
       console.log(fase_apoyo_izq);
-      sessionStorage.setItem("fase_apoyo_izq", JSON.stringify(fase_apoyo_izq));
+      sessionStorage.setItem("fase_apoyo_der", JSON.stringify(fase_apoyo_izq));
 
 
       if (velocidad === null) {
@@ -563,15 +565,14 @@ chips.forEach(chip => {
           // y el segundo en que momento deja de moverse
           function indicesPie(posicion_pie) {
             let positiveChangeRateIndexes = [];
-          
+              
             for (let i = 1; i < posicion_pie.length; i++) {
               const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
-              if (change_rate_i > 0.015) {
+              if (change_rate_i > 0.03) {
                 positiveChangeRateIndexes.push(i);
               }
             }
-            
-
+          
             function divideArray(array) {
               let result = [];
               let subarray = [array[0]];
@@ -588,10 +589,13 @@ chips.forEach(chip => {
             }
             
             let subarrays = divideArray(positiveChangeRateIndexes);
-            
+          
+            // Filter out subarrays with a difference smaller than 2
+            subarrays = subarrays.filter(subarray => (subarray[subarray.length-1] - subarray[0]) >= 2);
             
             return subarrays;
           }
+          
           //Esta funcion devuelve el arreglo con los angulos en distintos subarreglo tomando en cuenta los valores
           // de los subarreglos de la funcion indicesPie. De esa manera queda separado en subarreglos que representa
           //una zancada cada uno
@@ -613,6 +617,8 @@ chips.forEach(chip => {
           
           //Obtenemos los indice en los cuales hay zancadas
           let subarreglos_indices_pie_der = indicesPie(posicion_pie_x_grafico_der);
+          console.log(posicion_pie_x_grafico_der);
+          console.log(subarreglos_indices_pie_der);
           //Dividimos el arreglo de angulos en base a eso indices
           let ang_der_cad_grafico_divido = divideGraph(ang_der_cad_grafico,subarreglos_indices_pie_der);
           let ang_der_rod_grafico_divido = divideGraph(ang_der_rod_grafico,subarreglos_indices_pie_der);

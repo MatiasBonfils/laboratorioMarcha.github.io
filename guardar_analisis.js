@@ -62,7 +62,7 @@ var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
 		var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
 		var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
 		var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
-    
+    var fase_de_apoyo = JSON.parse(sessionStorage.getItem("fase_apoyo_der"));
 		// Display results if prueba is "Análisis de la marcha humana lado izquierdo" or "Análisis de la marcha humana lado derecho"
 		if (prueba === "Análisis de la marcha humana lado izquierdo" || prueba === "Análisis de la marcha humana lado derecho") {
       document.getElementById("resultados_rotacion").style.display = "none";
@@ -73,6 +73,7 @@ var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
 			document.getElementById("cadencia").innerHTML = cadencia + " pasos/minuto";
 			document.getElementById("longitud_paso").innerHTML = longitudPaso + " metros";
 			document.getElementById("longitud_zancada").innerHTML = longitudZancada + " metros";
+      document.getElementById("fase_apoyo_der").innerHTML = fase_de_apoyo + " %";
       
 		}
     else{
