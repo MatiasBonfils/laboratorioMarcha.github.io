@@ -405,60 +405,63 @@ chips.forEach(chip => {
 
       const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
 
-      let ctx = document.getElementById("myChart").getContext("2d");
 
-      let datasets_ci = ang_izq_cad_grafico_divido_sc.map((_, i) => {
-        return {
-          label: `Zancada ${i + 1}`,
-          data: datos_grafico_cad_izq[i],
-          borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
-          fill: false,
-        };
-      });
+
       
-      if (ang_izq_cad_grafico_divido_sc.length > 1) {
-        datasets_ci.push({
-          label: "Promedio",
-          data: promedio_todos_angulos_cadera_izq,
-          borderColor: "black",
-          borderWidth: 10,
-          pointRadius: 2,
-          fill: false,
+        let ctx = document.getElementById("myChart").getContext("2d");
+
+        let datasets_ci = ang_izq_cad_grafico_divido_sc.map((_, i) => {
+          return {
+            label: `Zancada ${i + 1}`,
+            data: datos_grafico_cad_izq[i],
+            borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
+            fill: false,
+          };
         });
-      }
-      
-      sessionStorage.setItem("datasets_ci", JSON.stringify(datasets_ci));
-
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: porcentajes,
-          datasets: datasets_ci,
-        },
-        options: {
-          scales: {
-            xAxes: [{
-              ticks: {
-                callback: function(value, index, values) {
-                  return value + "%";
-                }
-              },
-              scaleLabel: {
-                display: true,
-                labelString: "Porcentaje del ciclo de la marcha"
-              }
-            }],
-            yAxes: [{
-              scaleLabel: {
-                display: true,
-                labelString: "Ángulo articular en flexión y extensión de cadera izquierda"
-              }
-            }]
-          }
+        
+        if (ang_izq_cad_grafico_divido_sc.length > 1) {
+          datasets_ci.push({
+            label: "Promedio",
+            data: promedio_todos_angulos_cadera_izq,
+            borderColor: "black",
+            borderWidth: 10,
+            pointRadius: 2,
+            fill: false,
+          });
         }
-      });
-      
-      document.getElementById("myChart").style.display = "block";
+        
+        sessionStorage.setItem("datasets_ci", JSON.stringify(datasets_ci));
+
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: porcentajes,
+            datasets: datasets_ci,
+          },
+          options: {
+            scales: {
+              xAxes: [{
+                ticks: {
+                  callback: function(value, index, values) {
+                    return value + "%";
+                  }
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "Porcentaje del ciclo de la marcha"
+                }
+              }],
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: "Ángulo articular en flexión y extensión de cadera izquierda"
+                }
+              }]
+            }
+          }
+        });
+        
+        document.getElementById("myChart").style.display = "block";
       
       
     
@@ -568,7 +571,7 @@ chips.forEach(chip => {
               
             for (let i = 1; i < posicion_pie.length; i++) {
               const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
-              if (change_rate_i > 0.03) {
+              if (change_rate_i > 0.01) {
                 positiveChangeRateIndexes.push(i);
               }
             }

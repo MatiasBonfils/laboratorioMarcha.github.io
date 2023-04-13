@@ -232,6 +232,7 @@ const grid = new LandmarkGrid(landmarkContainer, {
     showHidden: false,
     centered: true,
 });
+
 //
 let activeEffect = 'mask';
 function onResults(results) {
@@ -248,7 +249,7 @@ function onResults(results) {
         if (activeEffect === 'mask' || activeEffect === 'both') {
             canvasCtx.globalCompositeOperation = 'source-in';
             // This can be a color or a texture or whatever...
-            canvasCtx.fillStyle = '#00FF007F';
+            canvasCtx.fillStyle = '#00FFF07F';
             canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
         }
         else {
@@ -287,6 +288,8 @@ function onResults(results) {
         let tobillo_i_y = canvasElement.height * results.poseLandmarks[27].y;
         let tobillo_d_x = canvasElement.width * results.poseLandmarks[28].x;
         let tobillo_d_y = canvasElement.height * results.poseLandmarks[28].y;
+        let talon_i_x   = canvasElement.width * results.poseLandmarks[29].x;
+        let talon_d_x   = canvasElement.width * results.poseLandmarks[30].x;
         let pie_i_x     = canvasElement.height * results.poseLandmarks[31].x;
         //DIBUJAR RECTANGULOS
         //Lineas posturales
@@ -334,7 +337,8 @@ function onResults(results) {
             rectangulo_ard.style.display = "none";
         }
         ;
-       
+        //DIbuja todos los puntos si no esta activada la funcion de la linea postural en el plano sagital
+        if (!solutionOptions.lineaColumna) {
         drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
         drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
             .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#8b2222' });
@@ -342,7 +346,22 @@ function onResults(results) {
             .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#228B22' });
         drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_NEUTRAL)
             .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: 'white' });
-        
+        }
+        else{
+            if( mandibula_i_z < mandibula_d_z ){
+                drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#8b2222' });
+             }
+            else{
+                drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
+           
+                drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_RIGHT)
+                    .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#228B22' });
+                }
+   
+        }
+
         
         //dibujar linea de mandibula
         let mdx = mandibula_d_x;
@@ -428,6 +447,7 @@ function onResults(results) {
             canvasCtx.moveTo(linea_media_punto_incial_x, linea_media_punto_incial_y);
             canvasCtx.lineTo(linea_media_punto_final_x, linea_media_punto_final_y);
             canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([25, 15]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -456,6 +476,7 @@ function onResults(results) {
             canvasCtx.moveTo(linea_sagital_punto_incial_x, linea_sagital_punto_incial_y);
             canvasCtx.lineTo(linea_sagital_punto_final_x, linea_sagital_punto_final_y);
             canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([25, 15]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -639,7 +660,7 @@ function onResults(results) {
         
         if (solutionOptions.guardar_datos) {
             ang_izq_cad_grafico.push(angulo_cadera_i);
-            posicion_pie_x_grafico_izq.push(tobillo_i_x);
+            posicion_pie_x_grafico_izq.push(talon_i_x);
             p_p_pie_x.push(pie_i_x);
             document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
             
@@ -680,7 +701,7 @@ function onResults(results) {
         }   
         if (solutionOptions.guardar_datos) {
             ang_der_cad_grafico.push(angulo_cadera_d);
-            posicion_pie_x_grafico_der.push(tobillo_d_x)
+            posicion_pie_x_grafico_der.push(talon_d_x)
             document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " ° " + "(" + ang_der_cad_grafico.length + ")";
         }
         else {
