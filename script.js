@@ -836,10 +836,10 @@ new controls
         field: 'modelComplexity',
         discrete: ['Lite', 'Full', 'Heavy'],
     }),
-    new controls.Toggle({ title: 'Linea de Valgo/Varo', field: 'valgo_varo' }),
+    new controls.Toggle({ title: 'Línea de Valgo/Varo', field: 'valgo_varo' }),
     new controls.Toggle({ title: 'Postura Frontal', field: 'lineasPosturales' }),
-    new controls.Toggle({ title: 'Linea Media Sagital', field: 'lineaColumna' }),
-    new controls.Toggle({ title: 'Rotacion Interna/Externa', field: 'rotIntExt' }),
+    new controls.Toggle({ title: 'Línea Media Sagital', field: 'lineaColumna' }),
+    new controls.Toggle({ title: 'Rotación Interna/Externa', field: 'rotIntExt' }),
     new controls.Toggle({ title: 'Ángulos de la Marcha', field: 'angulosMarcha' }),
     new controls.Toggle({ title: 'Guardar Datos', field: 'guardar_datos' }),
    
