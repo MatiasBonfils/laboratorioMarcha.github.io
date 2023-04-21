@@ -74,53 +74,49 @@ chips.forEach(chip => {
     selectedChip.classList.add('selected');
     sessionStorage.setItem("prueba_realizada", JSON.stringify(selectedChip.id));
 
-    if (selectedChip.id === "Postural") {
+    if (selectedChip.id === "Postural y rotación interna/externa") {
       document.getElementById("postura-frontal-wrapper").style.display = "block";
+      document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
       var ang_inclinacion_hombro_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_hombro_2"));
       var ang_inclinacion_cadera_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_cadera_2"));
+      var rot_int_cad_izq_min = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_min"));
+      var rot_int_cad_izq_max = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_max"));
+      var rot_int_cad_der_min = JSON.parse(sessionStorage.getItem("rot_int_cad_der_min"));
+      var rot_int_cad_der_max = JSON.parse(sessionStorage.getItem("rot_int_cad_der_max"));
+    
+     
       document.getElementById("capturas-container").style.marginTop = "-30rem";
       document.getElementById("capturas-container").style.marginLeft = "16rem";
       console.log(ang_inclinacion_hombro_frontal);
       if (ang_inclinacion_hombro_frontal.length !== 0 && ang_inclinacion_cadera_frontal.length !== 0) {
-          document.getElementById("ang_lin_fro_hom").innerHTML = "Ángulo de inclinación de hombro: " + ang_inclinacion_hombro_frontal + "°";
-          document.getElementById("ang_lin_fro_cad").innerHTML = "Ángulo de inclinación de cadera: " + ang_inclinacion_cadera_frontal + "°";
+          document.getElementById("ang_lin_fro_hom").innerHTML = "Ángulo de inclinación derecha de hombro: " + ang_inclinacion_hombro_frontal + "°";
+          document.getElementById("ang_lin_fro_cad").innerHTML = "Ángulo de inclinación derecha de cadera: " + ang_inclinacion_cadera_frontal + "°";
       } else {
           document.getElementById("ang_lin_fro_hom").innerHTML = "Debe guardar los datos para poder observar los ángulos";
           document.getElementById("ang_lin_fro_cad").innerHTML = "";
       }
+      if (rot_int_cad_izq_max== "-200.0") {
+        
+        document.getElementById("rot_int_cad_izq_max").innerHTML = "Debe guardar los datos para poder observar el valor de los ángulos";
+        document.getElementById("rot_ext_cad_izq_max").innerHTML ="";
+        document.getElementById("rot_int_cad_der_max").innerHTML ="";
+        document.getElementById("rot_ext_cad_der_max").innerHTML ="";
+      
+      } else {
+        document.getElementById("rot_int_cad_izq_max").innerHTML ="Ángulo externo máximo izquierdo: " +  rot_int_cad_izq_min + "°";
+        document.getElementById("rot_ext_cad_izq_max").innerHTML ="Ángulo interno máximo izquierdo: "+ rot_int_cad_izq_max + "°";
+        document.getElementById("rot_int_cad_der_max").innerHTML ="Ángulo externo máximo derecho: " + rot_int_cad_der_min + "°";
+        document.getElementById("rot_ext_cad_der_max").innerHTML ="Ángulo interno máximo derecho: " + rot_int_cad_der_max + "°";
+      }
   } else {
       document.getElementById("postura-frontal-wrapper").style.display = "none";
+      document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
   }
   
   
   
 
-  if (selectedChip.id === "Rotación interna/externa") {
-    document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
-    document.getElementById("capturas-container").style.marginTop = "-20rem";
-    document.getElementById("capturas-container").style.marginLeft = "16rem";
-    
-    var rot_int_cad_izq_min = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_min"));
-    var rot_int_cad_izq_max = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_max"));
-    var rot_int_cad_der_min = JSON.parse(sessionStorage.getItem("rot_int_cad_der_min"));
-    var rot_int_cad_der_max = JSON.parse(sessionStorage.getItem("rot_int_cad_der_max"));
-  
-    if (rot_int_cad_izq_max== "-200.0") {
-      
-      document.getElementById("rot_int_cad_izq_max").innerHTML = "Debe guardar los datos para poder observar el valor de los ángulos";
-      document.getElementById("rot_ext_cad_izq_max").innerHTML ="";
-      document.getElementById("rot_int_cad_der_max").innerHTML ="";
-      document.getElementById("rot_ext_cad_der_max").innerHTML ="";
-    
-    } else {
-      document.getElementById("rot_int_cad_izq_max").innerHTML ="Ángulo externo máximo izquierdo: " +  rot_int_cad_izq_min + "°";
-      document.getElementById("rot_ext_cad_izq_max").innerHTML ="Ángulo interno máximo izquierdo: "+ rot_int_cad_izq_max + "°";
-      document.getElementById("rot_int_cad_der_max").innerHTML ="Ángulo externo máximo derecho: " + rot_int_cad_der_min + "°";
-      document.getElementById("rot_ext_cad_der_max").innerHTML ="Ángulo interno máximo derecho: " + rot_int_cad_der_max + "°";
-    }
-  } else {
-    document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
-  }
+
   
     
     if (selectedChip.id === "Análisis de la marcha humana lado izquierdo") {

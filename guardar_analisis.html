@@ -4,7 +4,7 @@
   <a href="./analizar.html" style="flex: 1 1 20%; text-align: left;margin-left: 20px;">Volver</a>
   <p style="flex: 1 1 20%; text-align: center; margin-left: 350px;">Ficha Técnica</p>
   <div style="flex: 1 1 20%;"></div>
-  <a href="#" onclick="printPage()" style="flex: 1 1 20%; text-align: right; margin-left: 20px;padding-right: 30px; color: white; text-decoration: none; display: block; line-height: 30px; background-color: rgb(37, 120, 14);">Generar PDF</a>
+  <a href="#" onclick="printPage()" style="flex: 1 1 20%; text-align: right; margin-left: 20px;padding-right: 30px; color: rgb(0, 0, 0); text-decoration: none; display: block; line-height: 30px; background-color: rgb(37, 120, 14);">Generar PDF</a>
 </nav>
  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
  <br>
@@ -20,7 +20,7 @@
         font-weight: bold;
         text-decoration: underline;
         margin-bottom: 10px;
-        color: #fff;
+        color: rgb(0, 0, 0);
         font-size: 24px;
       }
   
@@ -36,17 +36,17 @@
         width: 300px;
         font-weight: bold;
         font-size: 20px;
-        color: #fff;
+        color: rgb(0, 0, 0);
       }
       .text-line input[type="text"] {
       flex: 1;
       margin-left: 10px;
       font-size: 20px;
       border: none;
-      border-bottom: 2px solid #fff;
+      border-bottom: 2px solid rgb(0, 0, 0);
       max-width: 1280px;
       background-color: transparent;
-      color: #fff;
+      color: rgb(0, 0, 0);
       padding: 5px 0;
       outline: none;
       word-wrap: break-word;
@@ -57,11 +57,11 @@
         margin-left: 10px;
         font-size: 20px;
         background-color: transparent;
-        color: #fff;
+        color: rgb(0, 0, 0);
         padding: 5px 0;
         outline: none;
         border: none;
-        border-bottom: 2px solid #fff;
+        border-bottom: 2px solid rgb(0, 0, 0);
       }
   
       .text-line:last-child input, .text-line:last-child span {
@@ -76,10 +76,10 @@
   margin-left: 10px;
   font-size: 20px;
   background-color: transparent;
-  color: #fff;
+  color: rgb(0, 0, 0);
   outline: none;
   border: none;
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid rgb(0, 0, 0);
   resize: none;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -93,19 +93,19 @@
 }
 
 .text-line textarea#observaciones::-webkit-scrollbar-thumb {
-  background-color: #fff;
+  background-color: rgb(0, 0, 0);
   border-radius: 5px;
 }
 
 .text-line textarea#observaciones::placeholder {
-  color: #fff;
+  color: rgb(0, 0, 0);
   font-style: italic;
 }
 
 .text-line textarea#observaciones:focus {
   outline: none;
   border: none;
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid rgb(0, 0, 0);
 }
 
 .text-line textarea#observaciones {
@@ -142,7 +142,7 @@ position: absolute;
 left: 0;
 top: 0;
 pointer-events: none;
-color: #888;
+color: rgb(0, 0, 0);
 font-size: 16px;
 }
     </style>
@@ -170,7 +170,7 @@ font-size: 16px;
     <div class="white-line"></div>
     <h2>Datos de la prueba</h2>
     <div class="text-line">
-      <label>Prueba realizada:</label>
+      <label>Prueba: </label>
       <input type="text" id="prueba" value="" />
     </div>
     <div id="results">
@@ -197,24 +197,6 @@ font-size: 16px;
         </div>
       </div>
     </div>
-    <div id="resultados_rotacion">
-      <div class="text-line">
-        <label>Ángulo externo máximo izquierdo:</label>
-        <span id="rot_ext_max_izq"></span>
-      </div>
-      <div class="text-line">
-        <label>Ángulo interno máximo izquierdo:</label>
-        <span id="rot_int_max_izq"></span>
-      </div>
-      <div class="text-line">
-        <label>Ángulo externo máximo derecho:</label>
-        <span id="rot_ext_max_der"></span>
-      </div>
-      <div class="text-line">
-        <label>Ángulo interno máximo derecho:</label>
-        <span id="rot_int_max_der"></span>
-      </div>
-    </div>
     <div id="resultados_frontales">
       <div class="text-line">
         <label>Ángulo de inclinación hombro frontal: </label>
@@ -225,6 +207,29 @@ font-size: 16px;
         <span id="ang_incl_cadera_frontal_ficha_tecnica"></span>
       </div>
     </div>
+    <div class="text-line">
+      <label>Prueba: </label>
+      <input type="text" id="prueba2" value="" />
+    </div>
+    <div id="resultados_rotacion">
+      <div class="text-line">
+        <label>Ángulo externo de rotación máximo izquierdo:</label>
+        <span id="rot_ext_max_izq"></span>
+      </div>
+      <div class="text-line">
+        <label>Ángulo interno de rotación máximo izquierdo:</label>
+        <span id="rot_int_max_izq"></span>
+      </div>
+      <div class="text-line">
+        <label>Ángulo externo de rotación máximo derecho:</label>
+        <span id="rot_ext_max_der"></span>
+      </div>
+      <div class="text-line">
+        <label>Ángulo interno de rotación máximo derecho:</label>
+        <span id="rot_int_max_der"></span>
+      </div>
+    </div>
+   
       <div  class="text-line">
         <label for="observaciones">Observaciones:</label>
         <textarea id="observaciones" rows="5"></textarea>
@@ -258,7 +263,7 @@ font-size: 16px;
     border-top-right-radius: 20px;
   }
   .graph-header h2 {
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 24px;
     margin: 0;
     text-align: center;

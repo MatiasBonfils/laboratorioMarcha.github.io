@@ -193,7 +193,7 @@ function showPopup() {
 
   
 //Rectangulos que muestran los datos
-const rectangulo_lm = document.getElementById("rectangulo_lm");
+//const rectangulo_lm = document.getElementById("rectangulo_lm");
 const rectangulo_lh = document.getElementById("rectangulo_lh");
 const rectangulo_lc = document.getElementById("rectangulo_lc");
 const rectangulo_arotd = document.getElementById("rectangulo_arotd");
@@ -218,6 +218,11 @@ let p_p_pie_x= [];
 //Variables que guardan los angulos durante la rotacion interna exterma
 let angulo_rot_int_cad_izq=[];
 let angulo_rot_int_cad_der=[];
+let marcador =0; 
+
+///
+let  angulo_inclinacion_cadera_let=[];
+let  angulo_inclinacion_hombro_let= [];
 
 // Optimization: Turn off animated spinner after its hiding animation is done.
 const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
@@ -236,8 +241,6 @@ const grid = new LandmarkGrid(landmarkContainer, {
 //
 let activeEffect = 'mask';
 function onResults(results) {
-    let angulo_inclinacion_hombro_let=[];
-    let angulo_inclinacion_cadera_let=[];
    
     // Update the frame rate.
     fpsControl.tick();
@@ -295,12 +298,12 @@ function onResults(results) {
         //Lineas posturales
         //Mandibula
         if (solutionOptions.lineasPosturales) {
-            rectangulo_lm.style.display = "block";
+           //rectangulo_lm.style.display = "block";
             rectangulo_lh.style.display = "block";
             rectangulo_lc.style.display = "block";
         }
         else {
-            rectangulo_lm.style.display = "none";
+            //rectangulo_lm.style.display = "none";
             rectangulo_lh.style.display = "none";
             rectangulo_lc.style.display = "none";
         }
@@ -373,6 +376,7 @@ function onResults(results) {
             canvasCtx.moveTo(mdx, mdy);
             canvasCtx.lineTo(mix, miy);
             canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([15, 25]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -386,6 +390,7 @@ function onResults(results) {
             canvasCtx.moveTo(cdx, cdy);
             canvasCtx.lineTo(cix, ciy);
             canvasCtx.strokeStyle = "white";
+             canvasCtx.setLineDash([15, 25]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -394,8 +399,10 @@ function onResults(results) {
         let cateto_co_cadera = Math.sqrt(Math.pow((cadera_i_x-cadera_d_x)/2, 2));
         let angulo_inclinacion_cadera = Math.atan(cateto_co_cadera / cateto_ad_cadera);
         angulo_inclinacion_cadera = (angulo_inclinacion_cadera * (180) / Math.PI)-90;
+        if(cadera_i_y< cadera_d_y){
         angulo_inclinacion_cadera = -1*(angulo_inclinacion_cadera.toFixed(0));
-        document.getElementById("ang_linea_cadera").innerHTML = angulo_inclinacion_cadera + " °";
+        }
+        document.getElementById("ang_linea_cadera").innerHTML = angulo_inclinacion_cadera.toFixed(0) + " ° en lado derecho";
         //dibujar linea de hombro
         let hdx = hombro_d_x;
         let hdy = (hombro_d_y - hombro_i_y) / 2 + hombro_i_y;
@@ -406,6 +413,7 @@ function onResults(results) {
             canvasCtx.moveTo(hdx, hdy);
             canvasCtx.lineTo(hix, hiy);
             canvasCtx.strokeStyle = "white";
+             canvasCtx.setLineDash([15, 25]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -414,20 +422,22 @@ function onResults(results) {
         let cateto_co_hombro = Math.sqrt(Math.pow((hombro_i_x-hombro_d_x)/2, 2));
         let angulo_inclinacion_hombro = Math.atan(cateto_co_hombro / cateto_ad_hombro);
         angulo_inclinacion_hombro = (angulo_inclinacion_hombro * (180) / Math.PI)-90;
+        
+        if(hombro_i_y < hombro_d_y){
         angulo_inclinacion_hombro = -1* angulo_inclinacion_hombro.toFixed(0);
+        }
+        document.getElementById("ang_linea_hombro").innerHTML = angulo_inclinacion_hombro.toFixed(0) + " ° en lado derecho";
         
-        document.getElementById("ang_linea_hombro").innerHTML = angulo_inclinacion_hombro + " °";
-        
-        if(solutionOptions.guardar_datos){
+        if(solutionOptions.guardar_datos && solutionOptions.lineasPosturales){
             angulo_inclinacion_hombro_let= angulo_inclinacion_hombro.toFixed(1);
             angulo_inclinacion_cadera_let = angulo_inclinacion_cadera.toFixed(1);
+            console.log(angulo_inclinacion_hombro_let);
         }else{
-            angulo_inclinacion_hombro_let= [];
-            angulo_inclinacion_cadera_let = [];
-            
+            angulo_inclinacion_hombro_let= angulo_inclinacion_hombro_let;
+            angulo_inclinacion_cadera_let= angulo_inclinacion_cadera_let;
         }
 
-
+        console.log(angulo_inclinacion_hombro_let);
         document.getElementById("myButton").addEventListener("click", function() {
             sessionStorage.setItem("ang_linea_frontal_hombro_2", JSON.stringify(angulo_inclinacion_hombro_let));
             sessionStorage.setItem("ang_linea_frontal_cadera_2", JSON.stringify(angulo_inclinacion_cadera_let));  
@@ -476,7 +486,7 @@ function onResults(results) {
             canvasCtx.moveTo(linea_sagital_punto_incial_x, linea_sagital_punto_incial_y);
             canvasCtx.lineTo(linea_sagital_punto_final_x, linea_sagital_punto_final_y);
             canvasCtx.strokeStyle = "white";
-            canvasCtx.setLineDash([25, 15]);
+            canvasCtx.setLineDash([15, 25]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -492,6 +502,7 @@ function onResults(results) {
             canvasCtx.moveTo(vvdx_pi, vvdy_pi);
             canvasCtx.lineTo(vvdx_pf, vvdy_pf);
             canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([15, 30]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -504,6 +515,7 @@ function onResults(results) {
             canvasCtx.moveTo(vvix_pi, vviy_pi);
             canvasCtx.lineTo(vvix_pf, vviy_pf);
             canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([15, 30]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
@@ -576,8 +588,16 @@ function onResults(results) {
         angulo_rot_int_cad_der = angulo_rot_int_cad_der.toFixed(0)* 1;
         document.getElementById("ang_rot_cad_der").innerHTML = angulo_rot_int_cad_der + " °";
         
+      
         //Guarda los valores maximos y minimos de la rotacion int/ext del lado izq y derecho
-        if (solutionOptions.guardar_datos) {
+        if (solutionOptions.guardar_datos && solutionOptions.rotIntExt) {
+            
+            console.log(marcador);
+            if(marcador == 0){
+                min_angulo_rot_int_cad_izq = 200;
+                max_angulo_rot_int_cad_izq =-200;
+            }
+
             //Revisa si hay algun valor menor del lado izq al anterioremente guardado
             if (angulo_rot_int_cad_izq < min_angulo_rot_int_cad_izq) {
                 // Actualiza el valor valor minimo si es necesario
@@ -594,18 +614,21 @@ function onResults(results) {
                 window.location.href = "analizar.html";
             });
            
-            console.log(min_angulo_rot_int_cad_izq);
+           marcador=1;
+           console.log(max_angulo_rot_int_cad_izq);
+       
         }else{
-            min_angulo_rot_int_cad_izq= 200;
-            max_angulo_rot_int_cad_izq= -200;
-            console.log(min_angulo_rot_int_cad_izq);
+            min_angulo_rot_int_cad_izq= min_angulo_rot_int_cad_izq;
+            max_angulo_rot_int_cad_izq= max_angulo_rot_int_cad_izq;
+            marcador =0; 
+            console.log(max_angulo_rot_int_cad_izq);
             document.getElementById("myButton").addEventListener("click", function() {
                 sessionStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
                 sessionStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
                 window.location.href = "analizar.html";
             });
         }   
-        if (solutionOptions.guardar_datos) {
+        if (solutionOptions.guardar_datos && solutionOptions.rotIntExt) {
             if (angulo_rot_int_cad_der < min_angulo_rot_int_cad_der) {
                 // Actualiza el valor valor minimo si es necesario
                 min_angulo_rot_int_cad_der = angulo_rot_int_cad_der;

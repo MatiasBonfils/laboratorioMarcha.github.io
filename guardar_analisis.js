@@ -93,28 +93,30 @@ var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
     if (prueba === "Rotación interna/externa") {
      
      
-			document.getElementById("resultados_rotacion").style.display = "block";
+		
       document.getElementById("results").style.display = "none";
       document.getElementById("resultados_frontales").style.display = "none";
-      document.getElementById("prueba").value = prueba;
-			document.getElementById("rot_ext_max_izq").innerHTML = rot_int_cad_izq_min + "°";
-			document.getElementById("rot_int_max_izq").innerHTML = rot_int_cad_izq_max + "°";
-			document.getElementById("rot_ext_max_der").innerHTML = rot_int_cad_der_min + "°";
-			document.getElementById("rot_int_max_der").innerHTML = rot_int_cad_der_max + "°";
+      
       
 		}
-    if(prueba === "Postural"){
+    if(prueba === "Postural y rotación interna/externa"){
       document.getElementById("resultados_frontales").style.display = "block";
-     
+      document.getElementById("resultados_rotacion").style.display = "block";
+      document.getElementById("prueba").value = "Postural";
 
-      
+			
       var ang_inclinacion_hombro_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_hombro_2"));
       var ang_inclinacion_cadera_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_cadera_2"));
       document.getElementById("ang_incl_hombro_frontal_ficha_tecnica").innerHTML = ang_inclinacion_hombro_frontal + "°";
 			document.getElementById("ang_incl_cadera_frontal_ficha_tecnica").innerHTML = ang_inclinacion_cadera_frontal + "°";
+      document.getElementById("prueba2").value = "Rotación interna/externa";
+      document.getElementById("rot_ext_max_izq").innerHTML = rot_int_cad_izq_min + "°";
+			document.getElementById("rot_int_max_izq").innerHTML = rot_int_cad_izq_max + "°";
+			document.getElementById("rot_ext_max_der").innerHTML = rot_int_cad_der_min + "°";
+			document.getElementById("rot_int_max_der").innerHTML = rot_int_cad_der_max + "°";
       
       document.getElementById("results").style.display = "none";
-      document.getElementById("resultados_rotacion").style.display = "none";
+    
     }
 
 
