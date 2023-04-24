@@ -241,7 +241,8 @@ const grid = new LandmarkGrid(landmarkContainer, {
 //
 let activeEffect = 'mask';
 function onResults(results) {
-   
+
+
     // Update the frame rate.
     fpsControl.tick();
     // Draw the overlays.
@@ -340,6 +341,14 @@ function onResults(results) {
             rectangulo_ard.style.display = "none";
         }
         ;
+
+
+        canvasCtx.fillStyle = '#00cc00';
+		canvasCtx.font = 'bold 45px Arial';
+		canvasCtx.fillText('D', 45, 70);
+        canvasCtx.fillStyle = '#e60000';
+        canvasCtx.font = 'bold 45px Arial';
+        canvasCtx.fillText('I', 110, 70);
         //DIbuja todos los puntos si no esta activada la funcion de la linea postural en el plano sagital
         if (!solutionOptions.lineaColumna) {
         drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
@@ -444,7 +453,7 @@ function onResults(results) {
             window.location.href = "analizar.html";
         });
        
-
+        
 
 
         //dibujar linea de media frontal que divide el cuerpo en dos
@@ -460,6 +469,7 @@ function onResults(results) {
             canvasCtx.setLineDash([25, 15]);
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
+           
         }
         //dibujar linea de media sagital que divide el cuerpo en dos
         let linea_sagital_punto_incial_x = mandibula_i_x;
