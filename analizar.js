@@ -1,3 +1,12 @@
+//------------------------------------------------------------------------------------------------------//
+//Esta parte del código arma las funciones necesarias para elaborar la página de análisis, 
+//la cual permite al usuario ver cuáles fueron los resultados obtenidos por el software.
+//------------------------------------------------------------------------------------------------------//
+
+//------------------------------------------------------------------------------------------------------//
+//En esta parte se muestra en pantalla las capturas tomadas en la página anterior.
+// El usuario puede elegir borrar alguna si no le gusta.
+
 var capturasContainer = document.getElementById('capturas-container');
 var dataImage;
 var imgElement, deleteBtnElement, imgContainer;
@@ -49,18 +58,21 @@ function createDeleteHandler(index) {
     }
   }
 }
+//------------------------------------------------------------------------------------------------------//
+//En esta parte del código se configuran las funcionalidades "visuales".
+// En ellas se va a decidir qué elementos se muestran según la prueba elegida por el usuario.
+//------------------------------------------------------------------------------------------------------//
+//No muestra los datos obtenidos por todas las pruebas, de modo que solo se active la que necesita el usuario
+  document.getElementById("container-izq").style.display = "none"; //Conteiner de las graficas de la marcha del lado izquierdo
+  document.getElementById("container-der").style.display = "none"; //Conteiner de las graficas de la marcha del lado derecho
+  document.getElementById("marcha-humana-wrapper").style.display = "none"; //Bloque donde muestra los parametros espacio-temporales de la marcha
+  document.getElementById("rotacion-int-ext-wrapper").style.display = "none"; //Bloque donde muestra los Ángulos de rotación externa/interna
+  document.getElementById("postura-frontal-wrapper").style.display = "none"; //Bloque donde muestra los Ángulos de ángulo de inclinación del hombro derecho y cadera derecha
+  document.getElementById("capturas-container").style.height = "95vh"; //Conteiner donde se muestran las capturas tomadas
 
-
-
-
-  document.getElementById("container-izq").style.display = "none";
-  document.getElementById("container-der").style.display = "none";
-  document.getElementById("marcha-humana-wrapper").style.display = "none";
-  document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
-  document.getElementById("postura-frontal-wrapper").style.display = "none";
-  document.getElementById("capturas-container").style.height = "95vh";
-
-
+//------------------------------------------------------------------------------------------------------//
+//Esta parte del código configura los chips o botones que van a permitir al usuario elegir los datos de qué prueba quieren ver
+//y, con eso, cambiar la visualización de la página.
 const chips = document.querySelectorAll('.chip');
 let selectedChip;
 
@@ -73,7 +85,9 @@ chips.forEach(chip => {
     selectedChip = event.currentTarget;
     selectedChip.classList.add('selected');
     sessionStorage.setItem("prueba_realizada", JSON.stringify(selectedChip.id));
-
+    //------------------------------------------------------------------------------------------------------//
+    //Muestra de datos de la prueba postural y de rotación rotación interna/externa //
+    //------------------------------------------------------------------------------------------------------//
     if (selectedChip.id === "Postural y rotación interna/externa") {
       document.getElementById("postura-frontal-wrapper").style.display = "block";
       document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
@@ -113,37 +127,33 @@ chips.forEach(chip => {
       document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
   }
   
-  
-  
-
-
-  
+  //------------------------------------------------------------------------------------------------------//
+  //Muestra de datos de la prueba de análisis de la marcha humana lado izquierdo //
+  //------------------------------------------------------------------------------------------------------//
     
     if (selectedChip.id === "Análisis de la marcha humana lado izquierdo") {
 
       //Mostrar y acomodar los elementos que se van a mostrar
-  document.getElementById("capturas-container").style.marginTop = " -60rem";
-  document.getElementById("container-izq").style.display = "block";
-  document.getElementById("marcha-humana-wrapper").style.display = "block";
+      document.getElementById("capturas-container").style.marginTop = " -60rem";
+      document.getElementById("container-izq").style.display = "block";
+      document.getElementById("marcha-humana-wrapper").style.display = "block";
 
-  //Importo los datos para mostrar las variables de la marcha
-  // Primero con respecto a los parametros espacio-temporales
-  
-  var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
-  var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
-  var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
-  var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
-
+      //Importo los datos para mostrar las variables de la marcha
+      // Primero con respecto a los parametros espacio-temporales
+      var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
+      var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
+      var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
+      var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
   
       //Segundo para los parametros angulares
       var ang_izq_cad_grafico = JSON.parse(sessionStorage.getItem("ang_izq_cad_grafico"));
       var ang_izq_rod_grafico = JSON.parse(sessionStorage.getItem("ang_izq_rod_grafico"));
       var posicion_pie_x_grafico_izq = JSON.parse(sessionStorage.getItem("posicion_pie_x_grafico_izq"));
       
-      
-      //Esta funcion lo que hace es devolver varios subarreglos con dos valores cada uno
-      //El primero representa en que momento el pie empieza a moverse en el eje x
-      // y el segundo en que momento deja de moverse
+      //------------------------------------------------------------------------------------------------------//
+      //Esta función devuelve varios subarreglos con dos valores cada uno.
+      //El primero representa en qué momento el pie empieza a moverse en el eje x 
+      //y el segundo en qué momento deja de moverse.
       function indicesPie(posicion_pie) {
         let positiveChangeRateIndexes = [];
           
@@ -171,15 +181,15 @@ chips.forEach(chip => {
         
         let subarrays = divideArray(positiveChangeRateIndexes);
       
-        // Filter out subarrays with a difference smaller than 2
+        //Filtra los subarreglos menores a dos
         subarrays = subarrays.filter(subarray => (subarray[subarray.length-1] - subarray[0]) >= 2);
         
         return subarrays;
       }
-      
-      //Esta funcion devuelve el arreglo con los angulos en distintos subarreglo tomando en cuenta los valores
-      // de los subarreglos de la funcion indicesPie. De esa manera queda separado en subarreglos que representa
-      //una zancada cada uno
+      //------------------------------------------------------------------------------------------------------//
+      //Esta función devuelve el arreglo con los ángulos en distintos subarreglo tomando en cuenta los valores
+      //de los subarreglos de la función indicesPie. De esa manera queda separado en subarreglos que representan
+      //una zancada cada uno.
       function divideGraph(ang_grafico, subarrays) {
         let result = [];
         let lastEnd = 0;
@@ -195,10 +205,10 @@ chips.forEach(chip => {
       
         return result;
       }
-      
+      //------------------------------------------------------------------------------------------------------//
       //Obtenemos los indice en los cuales hay zancadas
       let subarreglos_indices_pie_izq = indicesPie(posicion_pie_x_grafico_izq);
-      //Dividimos el arreglo de angulos en base a eso indices
+      //Dividimos el arreglo de Ángulos en base a eso indices
       let ang_izq_cad_grafico_divido = divideGraph(ang_izq_cad_grafico,subarreglos_indices_pie_izq);
       let ang_izq_rod_grafico_divido = divideGraph(ang_izq_rod_grafico,subarreglos_indices_pie_izq);
       //Le quitamos las comas a los valores (sino no los grafica)
@@ -208,9 +218,7 @@ chips.forEach(chip => {
       const ang_izq_rod_grafico_divido_sc = ang_izq_rod_grafico_divido.map(subarreglo => {
         return subarreglo.map(elemento => parseInt(elemento));
       });
-      console.log(posicion_pie_x_grafico_izq);
-      console.log(subarreglos_indices_pie_izq);
-      console.log(ang_izq_cad_grafico_divido);
+      //Calcula el promedi de la fase de apoyo de cada zancada
       function fase_de_apoyo(arr) {
         let resultado = [];
         let div = arr[0][0] / arr[0][1];
@@ -232,8 +240,9 @@ chips.forEach(chip => {
       let fase_apoyo_izq= fase_de_apoyo(subarreglos_indices_pie_izq).toFixed(2);
       console.log(fase_apoyo_izq);
       sessionStorage.setItem("fase_apoyo_der", JSON.stringify(fase_apoyo_izq));
-
-
+      //------------------------------------------------------------------------------------------------------//
+      //En caso de no haber tomado las variables, se muestra un mensaje pidiendo al usuario que regrese y tome los valores
+      //necesarios para poder mostrar los parámetros de la marcha del lado izquierdo.
       if (velocidad === null) {
         document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
         document.getElementById("cadencia").innerHTML = "";
@@ -245,16 +254,19 @@ chips.forEach(chip => {
         document.getElementById("container-izq").style.display = "none";
         document.getElementById("capturas-container").style.marginTop = " -20rem";
     
-      } else {
+      } 
+      //En caso contrario, se muestra con normalidad los parametros
+      else {
         document.getElementById("velocidad").innerHTML ="Velocidad de caminata: " + velocidad + " m/s";
         document.getElementById("cadencia").innerHTML = "Cadencia de caminata: "  + cadencia + " pasos/minuto";
         document.getElementById("longitud_paso").innerHTML ="Longitud de paso: "  + longitudPaso + " metros";
         document.getElementById("longitud_zancada").innerHTML ="Longitud de zancada: " + longitudZancada + " metros";
         document.getElementById("fase_de_apoyo").innerHTML = "Fase de apoyo: " + fase_apoyo_izq + " %" ;
       }
-      //Como los distintos subarreglos que conforman el arreglo de los angulos tienen distintas longitudes
-      //va a necesitar que queden homogenizados para poder graficarlos (poner en intervalos y promediarlos)
-      //De esa manera devuelve el arreglo con todos los subarreglos del mismo tamano
+      //------------------------------------------------------------------------------------------------------//
+      //Como los distintos subarreglos que conforman el arreglo de los ángulos tienen distintas longitudes,
+      //es necesario homogenizarlos para poder graficarlos (poner en intervalos y promediarlos).
+      //Esta función devuelve el arreglo con todos los subarreglos del mismo tamaño.
       function HomogenizarDatos(arreglo) {
         const n = arreglo.length;
         let subarreglo = [];
@@ -315,19 +327,15 @@ chips.forEach(chip => {
         
         return matriz;
       }
-      
-      
-      
-      
       datos_grafico_cad_izq= ang_izq_cad_grafico_divido_sc.map(HomogenizarDatos);
       datos_grafico_cad_izq_matriz= ang_izq_cad_grafico_divido_sc.map(armarMatriz);
       datos_grafico_rod_izq= ang_izq_rod_grafico_divido_sc.map(HomogenizarDatos);
       datos_grafico_rod_izq_matriz= ang_izq_rod_grafico_divido_sc.map(armarMatriz);
-      //datos_grafico_rod_izq= ang_izq_rod_grafico_divido_sc.map(HomogenizarDatos);
+     //------------------------------------------------------------------------------------------------------//
     
+     //Calculamos el promedio
       
-      
-      
+      //primero de la cadera
       const promedio_todos_angulos_cadera_izq= [];
       
       // Promedio del primer valor
@@ -360,8 +368,8 @@ chips.forEach(chip => {
       const suma_ultimo_ci = temporal_ultimo_ci.reduce((acum, valor) => acum + valor, 0);
       const promedio_ultimo_ci = suma_ultimo_ci / temporal_ultimo_ci.length;
       promedio_todos_angulos_cadera_izq.push(parseFloat(promedio_ultimo_ci.toFixed(2)));
-      
-    
+      //------------------------------------------------------------------------------------------------------//
+      //luego de la rodilla
       
       const promedio_todos_angulos_rodilla_izq = [];
 
@@ -395,10 +403,10 @@ chips.forEach(chip => {
       const suma_ultimo_ri = temporal_ultimo_ri.reduce((acum, valor) => acum + valor, 0);
       const promedio_ultimo_ri = suma_ultimo_ri / temporal_ultimo_ri.length;
       promedio_todos_angulos_rodilla_izq.push(parseFloat(promedio_ultimo_ri.toFixed(2)));
-
-     
-
-
+     //------------------------------------------------------------------------------------------------------//
+     // Se arma las graficas
+     //------------------------------------------------------------------------------------------------------//
+      //Se toma los valores para el eje x, de tal forma que sean 12 valores 
       const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
 
 
@@ -427,7 +435,7 @@ chips.forEach(chip => {
         }
         
         sessionStorage.setItem("datasets_ci", JSON.stringify(datasets_ci));
-
+        //Grafica de la cadera
         new Chart(ctx, {
           type: "line",
           data: {
@@ -458,13 +466,7 @@ chips.forEach(chip => {
         });
         
         document.getElementById("myChart").style.display = "block";
-      
-      
-    
-
-
-      //Medir manual: labels: xValuesri, datasets: datasetsri;
-      //Medir automatico sin homogenizar: labels: percentages_max, datasets: datasets_divido_manual;
+      //Grafica de la rodilla
       let ctx_ri = document.getElementById("myChartri").getContext("2d");
 
       let datasets_ri = ang_izq_rod_grafico_divido_sc.map((_, i) => {
@@ -528,7 +530,10 @@ chips.forEach(chip => {
     });
     });
     
-
+ //------------------------------------------------------------------------------------------------------//
+  //Muestra de datos de la prueba de análisis de la marcha humana lado derecho //
+  //------------------------------------------------------------------------------------------------------//
+    
     chips.forEach(chip => {
       chip.addEventListener('click', event => {
         if (selectedChip) {
@@ -589,15 +594,15 @@ chips.forEach(chip => {
             
             let subarrays = divideArray(positiveChangeRateIndexes);
           
-            // Filter out subarrays with a difference smaller than 2
+            // Filtra los subarreglos menores a 2
             subarrays = subarrays.filter(subarray => (subarray[subarray.length-1] - subarray[0]) >= 2);
             
             return subarrays;
           }
           
-          //Esta funcion devuelve el arreglo con los angulos en distintos subarreglo tomando en cuenta los valores
-          // de los subarreglos de la funcion indicesPie. De esa manera queda separado en subarreglos que representa
-          //una zancada cada uno
+          //Esta funcion lo que hace es devolver varios subarreglos con dos valores cada uno
+          //El primero representa en que momento el pie empieza a moverse en el eje x
+          // y el segundo en que momento deja de moverse
           function divideGraph(ang_grafico, subarrays) {
             let result = [];
             let lastEnd = 0;
@@ -652,6 +657,7 @@ chips.forEach(chip => {
      
           let fase_apoyo_der= fase_de_apoyo(subarreglos_indices_pie_der).toFixed(2);
           sessionStorage.setItem("fase_apoyo_der", JSON.stringify(fase_apoyo_der));
+        //------------------------------------------------------------------------------------------------------//
           if (velocidad === null) {
             document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
             document.getElementById("cadencia").innerHTML = "";
@@ -671,9 +677,9 @@ chips.forEach(chip => {
             document.getElementById("fase_de_apoyo").innerHTML = "Fase de apoyo: "+ fase_apoyo_der + " %";
           }
 
-          //Como los distintos subarreglos que conforman el arreglo de los angulos tienen distintas longitudes
-          //va a necesitar que queden homogenizados para poder graficarlos (poner en intervalos y promediarlos)
-          //De esa manera devuelve el arreglo con todos los subarreglos del mismo tamano
+          //Como los distintos subarreglos que conforman el arreglo de los ángulos tienen distintas longitudes,
+          //es necesario homogenizarlos para poder graficarlos (poner en intervalos y promediarlos).
+          //Esta función devuelve el arreglo con todos los subarreglos del mismo tamaño.
           function HomogenizarDatos(arreglo) {
             const n = arreglo.length;
             let subarreglo = [];
@@ -736,15 +742,10 @@ chips.forEach(chip => {
           }
           
           datos_grafico_cad_der= ang_der_cad_grafico_divido_sc.map(HomogenizarDatos);
-          console.log(datos_grafico_cad_der);
           datos_grafico_cad_der_matriz= datos_grafico_cad_der.map(armarMatriz);
-          console.log(datos_grafico_cad_der_matriz);
           datos_grafico_rod_der= ang_der_rod_grafico_divido_sc.map(HomogenizarDatos);
           datos_grafico_rod_der_matriz= ang_der_rod_grafico_divido_sc.map(armarMatriz);
-
-
-
-
+          //calcula el promedio de la cadera derecha
 
           const promedio_todos_angulos_cadera_der= [];
       
@@ -816,11 +817,11 @@ chips.forEach(chip => {
     
          
     
-    
+          //prepara el eje para las graficas
           const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
     
           let ctxcd = document.getElementById("myChartcd").getContext("2d");
-    
+          //grafica los Ángulos del lado derecho de la cadera
           let datasets_cd = ang_der_cad_grafico_divido_sc.map((_, i) => {
             return {
               label: `Zancada ${i + 1}`,
@@ -871,7 +872,7 @@ chips.forEach(chip => {
           });
           document.getElementById("myChartcd").style.display = "block";
           let ctx_rd = document.getElementById("myChartrd").getContext("2d");
-
+          //grafica los Ángulos del lado derecho de la rodilla
           let datasets_rd = ang_der_rod_grafico_divido_sc.map((_, i) => {
             return {
               label: `Zancada ${i + 1}`,
@@ -920,9 +921,12 @@ chips.forEach(chip => {
               }
             }
           });
+          //Muestra la grafica de la rodilla derecha
           document.getElementById("myChartrd").style.display = "block";
          
-        } else {
+        } 
+        //En caso de que no se haya elegido el chip de analisis del lado derecho de la marcha, no se muestra sus graficas 
+        else {
           document.getElementById("myChartcd").style.display = "none";
           document.getElementById("myChartrd").style.display = "none";
           document.getElementById("container-der").style.display = "none";

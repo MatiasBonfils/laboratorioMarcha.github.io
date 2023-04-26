@@ -1,9 +1,11 @@
+<!-- Definimos una barra de navegación donde va a haber un botón que permite volver a la página anterior y otro que permite avanzar a la siguiente. -->
 <nav class="navbar" style="height: 60px; font-weight: bold;">
   <a href="./index.html" style="flex: 1 1 20%; text-align: left;margin-left: 20px;">Volver</a>
   <p style="flex: 1 1 20%; text-align: center; margin-left: 430px;">Análisis</p>
   <div style="flex: 1 1 20%;"></div>
   <a href="./guardar_analisis.html" style="flex: 1 1 20%; text-align: right; margin-left: 20px;padding-right: 30px; color: white; text-decoration: none; display: block; line-height: 60px; background-color: rgb(37, 120, 14);">Guardar</a>
 </nav>
+<!-- Definimos un conteiner donde van a estar los distintos chips con las opciones de las pruebas -->
 <div class="container">
   <h1 style="color: white;">Elegir la prueba efectuada</h1>
   <div class="chips">
@@ -15,7 +17,8 @@
  <br>
  <br>
 </div>
-
+</nav>
+<!-- Definimos el estilo de los distintos elementos graficos de la página -->
 <style>
   body {
     background-color: rgb(16, 16, 16);
@@ -55,6 +58,7 @@
 </style>
 </head>
 <body>
+  <!-- Definimos marcha-humana-wrapper que es donde se van a mostrar los parametros espacio-temporales de la marcha -->
   <div id="marcha-humana-wrapper">
     <div class="stripe">PARAMETROS DE LA MARCHA</div>
     <ul id="marcha-humana">
@@ -69,7 +73,7 @@
       <span id="fase_de_apoyo"></span>
     </ul>
   </div>
-  
+   <!-- Definimos rotacion-int-ext-wrapper que es donde se van a mostrar los ÁNGULOS DE ROTACIÓN de la prueba de rot interna/externa -->
   <div id="rotacion-int-ext-wrapper">
     <div class="stripe">ÁNGULOS DE ROTACIÓN</div>
     <ul id="rotacion-int-ext">
@@ -82,7 +86,7 @@
       <span id="rot_ext_cad_der_max"></span></li>
     </ul>
   </div>
-
+<!-- Definimos postura-frontal-wrapper que es donde se van a mostrar los Ángulos de inclinación de la prueba postural -->
   <div id="postura-frontal-wrapper">
     <div class="stripe">ÁNGULOS POSTURALES</div>
     <ul id="angulos_posturales">
@@ -93,7 +97,7 @@
   </div>
   
   
-
+<!-- Definimos container-izq que es donde se van a mostrar las graficas relacionadas a la marcha del lado izquierdo -->
   <div id="container-izq">
     <div class="graph-container">
        <div id="grafico_titulo_ci">
@@ -119,7 +123,7 @@
       </div>
     </div>
   </div>
-  
+<!-- Definimos container-der que es donde se van a mostrar las graficas relacionadas a la marcha del lado derecho -->
   <div id="container-der">
     <div class="graph-container">
       <div id="grafico_titulo_cd"></div>
@@ -146,7 +150,7 @@
 
 
   
-
+<!-- Conteiner donde van a mostrarse las distintas capturas tomadas anteriormente-->
   <div id="displayContainer">
     <div id="capturas-container">
       <div id="imageList"></div>
@@ -155,23 +159,23 @@
   
   
 
- 
+ <!-- Importamos la libreria que nos va permitir elaborar las graficas -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
- // code to change the line thickness
+ // Código para cambiar el ancho de las lineas de la grafica
  Chart.defaults.global.elements.line.borderWidth = 4;
 
-  // code to change the label size and color
+// Código para cambiar el color y el tamaño de letra del gráfico.
   Chart.defaults.global.defaultFontColor = 'black';
   Chart.defaults.global.defaultFontSize = 18;
 
-  // code to change the thickness of 0 horizontal axis line
+  // Código para cambiar el grosor de las lineas horizontales
   Chart.scaleService.updateScaleDefaults('linear', {
     gridLines: {
       borderWidth: 4
     }
   });
 </script>
-
+ <!-- vinculo la pagina con los archivos .css y .js -->
 <link rel="stylesheet" href="./analizar.css">
 <script src="analizar.js"></script>

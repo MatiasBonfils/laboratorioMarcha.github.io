@@ -1,6 +1,7 @@
 
 
-
+/*Se modficia el estilo del archivo html lo que incluyen,
+ por ejemplo, la configuración del color de fondo, la fuente y el tamaño del texto, etc. */
 body {
   bottom: 0;
   font-family: "Titillium Web", sans-serif;
@@ -18,7 +19,7 @@ body {
 .square-box {
   display: none;
 }
-
+/*configuracion del video de input*/
 .input_video {
   display: none;
   position: absolute;
@@ -31,6 +32,7 @@ body {
   transform: scale(-1, 1);
 }
 
+/*Configuración de la posición del video.*/
 .container{
   position: absolute;
   left: 19%;
@@ -51,7 +53,7 @@ body {
   justify-content: center;
   top: 0;
 }
-
+/*Configuración de la posición del panel de control.*/
 .control-panel {
   width: 0%;
   height: 100%;
@@ -64,7 +66,7 @@ body {
   align-items: center;
   justify-content: center;
 }
-
+/*Configuración de la posición de los rectangulos.*/
 .rectangles-container {
   width: 33.33%;
   height: 50%;
@@ -77,7 +79,7 @@ body {
   align-items: center;
   justify-content: center;
 }
-
+/*Configuración de los colores y formas de los rectangulos.*/
 .rectangle {
   background-color:  rgb(37, 120, 14);
   color: white;
@@ -113,8 +115,6 @@ body {
   transform: translate(-50%, 0);
   cursor: pointer;
 }
-
-
 .boton_tomar_coord{
   background-color: rgb(37, 120, 14);
   color: white;
