@@ -1,8 +1,9 @@
+/* Se configura el color de fondo de la página. */
 body {
 
   background-color: rgb(16, 16, 16);
   }
-  
+/* Se modifican las características de color y forma de la barra de navegación. */
   .navbar {
     background-color: rgb(37, 120, 14);
     display: flex;
@@ -25,14 +26,14 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
 }
-  
+  /*Posición del conteiner de chips */
   .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 8rem;
   }
-  
+  /*Caracteristicas de los chips como la posición y los colores*/
   .chips {
     display: flex;
     flex-wrap: wrap;
@@ -68,7 +69,7 @@ body {
     font-size: 1.2rem;
   }
   
-
+/* Configuración del contenedor de imágenes. */
   #displayContainer {
     margin-top: 2rem;
     display: flex;
@@ -96,7 +97,7 @@ body {
   .imagePreview img {
     max-width: 100%;
   }
-  
+  /* Configuración del botón de las  imágenes. */
   .imagePreview .deleteButton {
     position: absolute;
     top: 0;
@@ -110,7 +111,7 @@ body {
   }
   
   
-  
+ /* Configuración visual de los distintos wrappers (Marcha humana, rotación de cadera e inclinación de hombro y cadera. */ 
 #marcha-humana-wrapper {
   display: flex;
   
@@ -144,6 +145,7 @@ body {
   border-top-right-radius: 30px;
   
 }
+/*Configuración visual de los encabezados de los graficos */
 .stripe {
   background-color: rgb(37, 120, 14);
   color: #fff;

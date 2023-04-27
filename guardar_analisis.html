@@ -1,20 +1,22 @@
 
- 
+ <!-- Sección de navegación -->
 <nav class="navbar" style="height: 60px; font-weight: bold;">
   <a href="./analizar.html" style="flex: 1 1 20%; text-align: left;margin-left: 20px;">Volver</a>
   <p style="flex: 1 1 20%; text-align: center; margin-left: 350px;">Ficha Técnica</p>
   <div style="flex: 1 1 20%;"></div>
   <a href="#" onclick="printPage()" style="flex: 1 1 20%; text-align: right; margin-left: 20px;padding-right: 30px; color: rgb(0, 0, 0); text-decoration: none; display: block; line-height: 30px; background-color: rgb(37, 120, 14);">Generar PDF</a>
 </nav>
- <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+<!-- Sección de gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
  <br>
  <br>
   <head>
     <title>Ficha Técnica</title>
+    <!-- Sección de título y estilo --> 
     <style>
-     
-     
-     
+      /* Estilo de los encabezados */
      h2 {
         font-size: 28px;
         font-weight: bold;
@@ -23,7 +25,7 @@
         color: rgb(0, 0, 0);
         font-size: 24px;
       }
-  
+      /* Estilo de cada línea de texto */
       .text-line {
         display: flex;
         flex-direction: row;
@@ -31,13 +33,14 @@
         margin-bottom: 10px;
         max-width: 1280px;
       }
-      
+       /* Estilo de la etiqueta de cada línea de texto */
       .text-line label {
         width: 300px;
         font-weight: bold;
         font-size: 20px;
         color: rgb(0, 0, 0);
       }
+       /* Estilo del campo de entrada de texto */
       .text-line input[type="text"] {
       flex: 1;
       margin-left: 10px;
@@ -70,8 +73,7 @@
       .text-line label[for="observaciones"] {
   width: 300px;
 }
-
-.text-line textarea#observaciones {
+/* Estilo del campo de entrada de observaciones (configurado para que cada vez que llegue al final de una oración, pase automáticamente abajo el texto). */.text-line textarea#observaciones {
   flex: 1;
   margin-left: 10px;
   font-size: 20px;
@@ -148,7 +150,7 @@ font-size: 16px;
     </style>
   </head>
   <body>
-    
+    <!-- Sección de textos y completar datos  -->
     <h2>Datos personales</h2>
     <div class="text-line">
       <label>Nombre:</label>
@@ -166,7 +168,7 @@ font-size: 16px;
       <label>Ocupación:</label>
       <input type="text" />
     </div>
-    
+       <!-- Sección de datos de la prueba los cuales se completan solo -->
     <div class="white-line"></div>
     <h2>Datos de la prueba</h2>
     <div class="text-line">
@@ -236,7 +238,7 @@ font-size: 16px;
       </div>
   </body>
   
-  
+ <!-- Sección de estilo de los graficos-->  
 <style>
   body {
     background-color: rgb(16, 16, 16);
@@ -329,32 +331,31 @@ font-size: 16px;
 
 
   
-
+<!-- Conteiner donde van a mostrarse las distintas capturas tomadas anteriormente-->
     <br></br>
     <div id="capturas-container">
       <div id="imageList"></div>
     </div>
  
   
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+ <!-- Importamos la libreria que nos va permitir elaborar las graficas -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
- // code to change the line thickness
+ // Código para cambiar el ancho de las lineas de la grafica
  Chart.defaults.global.elements.line.borderWidth = 4;
 
-  // code to change the label size and color
+// Código para cambiar el color y el tamaño de letra del gráfico.
   Chart.defaults.global.defaultFontColor = 'black';
   Chart.defaults.global.defaultFontSize = 18;
 
-  // code to change the thickness of 0 horizontal axis line
+  // Código para cambiar el grosor de las lineas horizontales
   Chart.scaleService.updateScaleDefaults('linear', {
     gridLines: {
       borderWidth: 4
     }
   });
 </script>
- 
- 
-
+ <!-- vinculo la pagina con los archivos .css y .js -->
 
   <link rel="stylesheet" href="./guardar_analisis.css">
   <script src="guardar_analisis.js"></script>

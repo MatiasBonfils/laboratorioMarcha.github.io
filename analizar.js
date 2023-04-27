@@ -413,7 +413,7 @@ chips.forEach(chip => {
 
       
         let ctx = document.getElementById("myChart").getContext("2d");
-
+       //grafica los Ángulos del lado derecho de la cadera
         let datasets_ci = ang_izq_cad_grafico_divido_sc.map((_, i) => {
           return {
             label: `Zancada ${i + 1}`,
@@ -422,7 +422,7 @@ chips.forEach(chip => {
             fill: false,
           };
         });
-        
+        //Agrega una linea extra en la grafica la cual es el promedio
         if (ang_izq_cad_grafico_divido_sc.length > 1) {
           datasets_ci.push({
             label: "Promedio",
@@ -821,7 +821,7 @@ chips.forEach(chip => {
           const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
     
           let ctxcd = document.getElementById("myChartcd").getContext("2d");
-          //grafica los Ángulos del lado derecho de la cadera
+          //Asigna los colores para las distintas zancadas
           let datasets_cd = ang_der_cad_grafico_divido_sc.map((_, i) => {
             return {
               label: `Zancada ${i + 1}`,
@@ -842,6 +842,7 @@ chips.forEach(chip => {
             });
           }
           sessionStorage.setItem("datasets_cd", JSON.stringify(datasets_cd));
+        //grafica los Ángulos del lado derecho de la cadera
           new Chart(ctxcd, {
             type: "line",
             data: {

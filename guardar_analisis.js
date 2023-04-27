@@ -1,3 +1,11 @@
+//------------------------------------------------------------------------------------------------------//
+//Esta parte del código arma las funciones necesarias para elaborar la página de guardar análisis, 
+//la cual permite al usuario completar los datos finales del usuario y armar una ficha técnica.
+//------------------------------------------------------------------------------------------------------//
+
+//------------------------------------------------------------------------------------------------------//
+//En esta parte se muestra en pantalla las capturas tomadas en la primera página .
+
 var capturasContainer = document.getElementById('capturas-container');
 var dataImage;
 var imgElement, deleteBtnElement, imgContainer;
@@ -49,21 +57,28 @@ function createDeleteHandler(index) {
     }
   }
 }
+//------------------------------------------------------------------------------------------------------//
+// Esta función permite al usuario generar el PDF con los datos.
 
 function printPage() {
   window.print();
 }
-
-document.getElementById("container-izq").style.display = "none";
-document.getElementById("container-der").style.display = "none";
-var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
-
+//------------------------------------------------------------------------------------------------------//
+// En esta parte del código se configura la página para mostrar los datos según la prueba que haya seleccionado
+// el usuario en la página anterior.
+    document.getElementById("container-izq").style.display = "none";
+    document.getElementById("container-der").style.display = "none";
+//------------------------------------------------------------------------------------------------------//
+// Llama a la variable en donde está guardada la prueba que eligió el usuario en la página anterior.
+    var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
+// Llama a los parametros espacio-temporales guardados en el navegador.
 		var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
 		var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
 		var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
 		var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
     var fase_de_apoyo = JSON.parse(sessionStorage.getItem("fase_apoyo_der"));
-		// Display results if prueba is "Análisis de la marcha humana lado izquierdo" or "Análisis de la marcha humana lado derecho"
+		// Muestra los results (que son los datos guardados sobre la marcha) si prueba es igual 
+    //a "Análisis de la marcha humana lado izquierdo" o a "Análisis de la marcha humana lado derecho"
 		if (prueba === "Análisis de la marcha humana lado izquierdo" || prueba === "Análisis de la marcha humana lado derecho") {
       document.getElementById("resultados_rotacion").style.display = "none";
       document.getElementById("resultados_frontales").style.display = "none";
@@ -78,25 +93,18 @@ var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
 		}
     else{
       document.getElementById("prueba").value = prueba;
-      document.getElementById("results").style.display = "none";
-      
-     
-      
+      document.getElementById("results").style.display = "none";  
     }
+    //------------------------------------------------------------------------------------------------------//
+    // Parte del código para configurar la muestra de los datos de la prueba de rotación y postural.
     var rot_int_cad_izq_min = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_min"));
     var rot_int_cad_izq_max = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_max"));
     var rot_int_cad_der_min = JSON.parse(sessionStorage.getItem("rot_int_cad_der_min"));
     var rot_int_cad_der_max = JSON.parse(sessionStorage.getItem("rot_int_cad_der_max"));
 
-
-
     if (prueba === "Rotación interna/externa") {
-     
-     
-		
       document.getElementById("results").style.display = "none";
       document.getElementById("resultados_frontales").style.display = "none";
-      
       
 		}
     if(prueba === "Postural y rotación interna/externa"){
@@ -119,7 +127,8 @@ var prueba = JSON.parse(sessionStorage.getItem("prueba_realizada"));
     
     }
 
-
+//------------------------------------------------------------------------------------------------------//
+//Pregunta si la prueba fue análisis de la marcha humana lado izquierdo y de esa manera coloca sus graficas
 if (prueba === "Análisis de la marcha humana lado izquierdo") {
   document.getElementById("capturas-container").style.marginTop = "-30rem";
  
@@ -199,7 +208,8 @@ else{
   document.getElementById("container-izq").style.display = "none";
 
 }
-
+//------------------------------------------------------------------------------------------------------//
+//Pregunta si la prueba fue análisis de la marcha humana lado derecho y de esa manera coloca sus graficas
 if (prueba === "Análisis de la marcha humana lado derecho"){
   document.getElementById("capturas-container").style.marginTop = "-25rem";
  
