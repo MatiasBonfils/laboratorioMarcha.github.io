@@ -149,21 +149,27 @@ chips.forEach(chip => {
       var ang_izq_cad_grafico = JSON.parse(sessionStorage.getItem("ang_izq_cad_grafico"));
       var ang_izq_rod_grafico = JSON.parse(sessionStorage.getItem("ang_izq_rod_grafico"));
       var posicion_pie_x_grafico_izq = JSON.parse(sessionStorage.getItem("posicion_pie_x_grafico_izq"));
-      
+      console.log(ang_izq_cad_grafico);
+      console.log(posicion_pie_x_grafico_izq);
       //------------------------------------------------------------------------------------------------------//
       //Esta función devuelve varios subarreglos con dos valores cada uno.
       //El primero representa en qué momento el pie empieza a moverse en el eje x 
       //y el segundo en qué momento deja de moverse.
       function indicesPie(posicion_pie) {
         let positiveChangeRateIndexes = [];
-          
+        
+        //Recorremos todos los valores de la posicion del pie, calculamos la tasa de cambio, y aquella que cumpla
+        //con la condicion de ser mayor a tal valor, guardamos su posicion en el relativa en el arreglo
         for (let i = 1; i < posicion_pie.length; i++) {
           const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
+          console.log(change_rate_i);
           if (change_rate_i > 0.01) {
             positiveChangeRateIndexes.push(i);
           }
         }
-      
+        console.log(positiveChangeRateIndexes);
+        //Una vez que sabemos en que posiciones ocurre el comienzo y fin de una zancada, dividimos el arreglo de toda la marcha
+        //en subarreglos que representa cada zancada
         function divideArray(array) {
           let result = [];
           let subarray = [array[0]];
@@ -180,7 +186,7 @@ chips.forEach(chip => {
         }
         
         let subarrays = divideArray(positiveChangeRateIndexes);
-      
+        console.log(subarrays);
         //Filtra los subarreglos menores a dos
         subarrays = subarrays.filter(subarray => (subarray[subarray.length-1] - subarray[0]) >= 2);
         
@@ -210,6 +216,7 @@ chips.forEach(chip => {
       let subarreglos_indices_pie_izq = indicesPie(posicion_pie_x_grafico_izq);
       //Dividimos el arreglo de Ángulos en base a eso indices
       let ang_izq_cad_grafico_divido = divideGraph(ang_izq_cad_grafico,subarreglos_indices_pie_izq);
+      console.log(ang_izq_cad_grafico_divido);
       let ang_izq_rod_grafico_divido = divideGraph(ang_izq_rod_grafico,subarreglos_indices_pie_izq);
       //Le quitamos las comas a los valores (sino no los grafica)
       const ang_izq_cad_grafico_divido_sc = ang_izq_cad_grafico_divido.map(subarreglo => {

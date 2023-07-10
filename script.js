@@ -864,7 +864,7 @@ new controls
     new controls.Slider({
         title: 'Complejidad del Modelo',
         field: 'modelComplexity',
-        discrete: ['Lite', 'Full', 'Heavy'],
+        discrete: ['Light', ' Medium', 'Heavy'],
     }),
     //Genera distintos switchs con distintas funciones 
     new controls.Toggle({ title: 'Línea de Valgo/Varo', field: 'valgo_varo' }),
