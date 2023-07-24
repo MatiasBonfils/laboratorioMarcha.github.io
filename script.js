@@ -32,50 +32,59 @@ const controlsElement = document.getElementsByClassName('control-panel')[0];
 //Esto permitirá el dibujo y la manipulación de los gráficos en el elemento canvasElement usando la API Canvas de HTML5.
 const canvasCtx = canvasElement.getContext('2d');
 //------------------------------------------------------------------------------------------------------//
-
-//Este bloque de código define variables para el panel de control,
-// así como también cambia algunos parámetros de la detección de puntos.
+//Este bloque de código define el estado inicial de las variables en el panel de control.
+//Algunas de estas variables sirven para mostrar los elementos que describe el comentario.
 const solutionOptions = {
-    selfieMode: false, //Alterna en modo espejo del video
-    modelComplexity: 1, 
-    smoothLandmarks: true,
-    lineasPosturales: false,
-    lineaCadera: false,
-    lineaHombro: false,
-    lineaTronco: false,
-    lineaColumna: false,
-    rotIntExt: false,
-    angulosMarcha: false,
-    valgo_varo: false,
-    guardar_datos: false,
-    smoothSegmentation: true,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5,
+selfieMode: false, //Alterna en modo espejo del video.
+modelComplexity: 1, //Define la complejidad del modelo en nivel "Medium".
+lineasPosturales: false, //Genera una línea auxiliar para evaluar la postura en el plano sagital.
+lineaCadera: false, //Genera una línea auxiliar para evaluar la inclinación de la cadera en el plano frontal y muestra en un rectángulo el ángulo.
+lineaHombro: false, //Genera una línea auxiliar para evaluar la inclinación de los hombros en el plano frontal y muestra en un rectángulo el ángulo.
+lineaTronco: false, //Genera una línea auxiliar para evaluar la postura en el plano frontal.
+lineaColumna: false,
+rotIntExt: false, //Genera una serie de líneas auxiliares que sirven para evaluar la rotación interna y externa de la cadera y muestra en dos rectángulos el ángulo de cada pierna.
+angulosMarcha: false, //Genera una serie de rectángulos donde se muestran los ángulos de flexión-extensión de la rodilla y la cadera.
+valgo_varo: false, //Genera un par de líneas auxiliares que sirven para evaluar la presencia de valgo y varo.
+guardar_datos: false, //Habilita el guardado de datos durante la prueba.
+//Variables que modifican el esqueleto.
+smoothSegmentation: true,
+minDetectionConfidence: 0.5,
+minTrackingConfidence: 0.5,
+smoothLandmarks: true,
 };
 
 //------------------------------------------------------------------------------------------------------//
 // Este bloque de codigo realiza las funcionalidades de tomar captura del video
-//Define las variables donde se van a guardar las capturas y contador cuenta la cantidad de imagenes guardadas
+//Define el contador de imagenes guardadas
 var imagesCaptured = [];
 var contador = 0;
 //Define el botón que al presionarlo activa la función de tomar captura
 var captureButton = document.getElementById("capture-button");
 
-//Esta función verifica si hay menos de 4 capturas, que es el máximo permitido, y antes de guardarlas reduce su resolución para poder guardar más.
+//Esta función verifica si hay menos de 4 capturas, que es el máximo permitido, reduce la resolución de la captura y la guarda en la variable imgData .
 captureButton.addEventListener("click", function() {
   if (contador < 4) {
+   // Obtiene la representación de la captura actual en formato de URL de datos JPEG
     var dataURL = canvasElement.toDataURL("image/jpeg", 0.95); // JPEG para ahorrar espacio
+  // Crea una nueva imagen para cargar la captura y realizar operaciones
     var img = new Image();
     img.onload = function() {
-      var canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      var resizedDataUrl = canvas.toDataURL("image/jpeg", 0.5); // Escalar la imagen al 50% del tamaño original
-      sessionStorage.setItem("imgData" + contador, resizedDataUrl.replace(/^data:image\/(png|jpg);base64,/, ""));
-      contador++;
-    }
+    // Crea un lienzo (canvas) con las dimensiones de la imagen
+    var canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    var ctx = canvas.getContext('2d');
+    // Dibuja la imagen en el lienzo con las dimensiones correspondientes
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // Escala la imagen al 50% del tamaño original y obtiene su representación en URL de datos JPEG
+    var resizedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
+    // Almacena la captura en sessionStorage eliminando el prefijo de la URL de datos lo que va permitri guardar las caputras en el navegador para se presentadas en las 
+    //proximas páginas
+    sessionStorage.setItem("imgData" + contador, resizedDataUrl.replace(/^data:image\/(png|jpg);base64,/, ""));
+
+     // Incrementa el contador de imágenes guardadas
+     contador++;
+}
     console.log(dataURL);
     img.src = dataURL;
   }
@@ -103,7 +112,6 @@ let punto_x_zancada_inicial;
 let punto_x_zancada_final;
 let punto_x_referencia_inicial;
 let punto_x_referencia_final;
-
 
 //Función que permite al usuario tomar puntos en la pantalla
 coordBtn.addEventListener('click', toggleSaveCoordinates);
@@ -310,7 +318,7 @@ function onResults(results) {
          //------------------------------------------------------------------------------------------------------//
         //Mostramos RECTANGULOS
         //Lineas posturales
-        //Hombro y cadera
+        //Ángulo de inclinación de hombro y cadera
         if (solutionOptions.lineasPosturales) {
             rectangulo_lh.style.display = "block";
             rectangulo_lc.style.display = "block";
@@ -517,19 +525,29 @@ function onResults(results) {
         //------------------------------------------------------------------------------------------------------//
         //Dibujar linea de valgo y varo
         //Valgo/varo derecho
+        // Se cambió el nombre de las variables que indican las coordenadas de los puntos.
+        // "vv" significa valgo/varo, "d" si es lado derecho o "i" si es izquierdo, "x" o "y" según el eje, "pi" punto inicial y "pf" punto final.
         let vvdx_pi = cadera_d_x;
         let vvdy_pi = cadera_d_y;
         let vvdx_pf = tobillo_d_x;
         let vvdy_pf = tobillo_d_y;
+        // Si el interruptor de valgo/varo está en "Yes", el valor de "solutionOptions.valgo_varo" va a ser verdadero y se dibujarán las líneas.
         if (solutionOptions.valgo_varo) {
             canvasCtx.beginPath();
+            //Desde donde empieza a dibujarse la línea
             canvasCtx.moveTo(vvdx_pi, vvdy_pi);
+            //Hasta donde se dibuja la línea
             canvasCtx.lineTo(vvdx_pf, vvdy_pf);
+            // Características de la línea
+            // Color
             canvasCtx.strokeStyle = "white";
+            //Configura la línea para que sea espaciada 
             canvasCtx.setLineDash([15, 30]);
+            //El ancho 
             canvasCtx.lineWidth = 4;
             canvasCtx.stroke();
         }
+         //Valgo/varo izquierdo
         let vvix_pi = cadera_i_x;
         let vviy_pi = cadera_i_y;
         let vvix_pf = tobillo_i_x;
@@ -685,6 +703,7 @@ function onResults(results) {
         //Ángulos de cadera
         //IZQ
         var angulo_cadera_i = Math.acos((rodilla_i_y - cadera_i_y) / (Math.sqrt(Math.pow(cadera_i_x - rodilla_i_x, 2) + Math.pow(cadera_i_y - rodilla_i_y, 2))));
+       // Convierte el valor del ángulo de radianes a grados
         angulo_cadera_i = angulo_cadera_i * (180) / Math.PI;
         //Chequea si la rodilla esta atras o adelante de la cadera en el eje x y en funcion a eso cambia de signo
         if (cadera_i_x > rodilla_i_x) {
@@ -703,15 +722,14 @@ function onResults(results) {
                 angulo_cadera_i = angulo_cadera_i.toFixed(0); 
             }
         }
-        // Si el interruptor de "Guardar datos" está activado, se van a guardar los valores de los ángulos. 
-        //De caso contrario, borra los datos anteriores.
+        // Si el interruptor de "Guardar datos" está activado, se van a guardar los valores del ángulo de cadera y  posición del pie izquierdo en dos variables diferente.
         if (solutionOptions.guardar_datos) {
             ang_izq_cad_grafico.push(angulo_cadera_i);
             posicion_pie_x_grafico_izq.push(talon_i_x);
             p_p_pie_x.push(pie_i_x);
-            document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
-            
+            document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";  
         }
+        //En caso contrario, si el interruptor está desactivado, se borran los datos anteriores y no se guarda ninguno nuevo hasta que el interruptor vuelva a ser activado.
         else {
             ang_izq_cad_grafico = [];
             posicion_pie_x_grafico_izq= [];
@@ -831,14 +849,18 @@ function onResults(results) {
 const pose = new mpPose.Pose(options);
 pose.setOptions(solutionOptions);
 pose.onResults(onResults);
-// Panel de control que permite mostrar, modificar y guardar parametros del exoesqueleto.
+// Panel de control que permite cambiar de estado distintas variables.
 new controls
     .ControlPanel(controlsElement, solutionOptions)
+    //Modifica los elementos que se muestran en el panel.
     .add([
+    //Título
     new controls.StaticText({ title: 'CONTROLES' }),
+    //Pantalla de FPS
     fpsControl,
+    //Interruptor de modo selfie
     new controls.Toggle({ title: 'Modo Selfie', field: 'selfieMode' }),
-    //Permite elegir que fuente de video tomar (webcam o video guardado)
+    //Controles que permite elegir que fuente de video tomar (webcam o video guardado)
     new controls.SourcePicker({
         onSourceChanged: () => {
             // Se resetea asi anda mejor el codigo
@@ -860,7 +882,7 @@ new controls
             await pose.send({ image: input });
         },
     }),
-    // Cambia la complejidad del modelo y, con eso, la precisión en la detección de los puntos (más complejidad, más precisión pero más lento).
+    //Genera una barra que permite cambiar la complejidad del modelo y, con eso, la precisión en la detección de los puntos (más complejidad, más precisión pero más lento).
     new controls.Slider({
         title: 'Complejidad del Modelo',
         field: 'modelComplexity',

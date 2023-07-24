@@ -7,7 +7,7 @@ Estructura del proyecto
 
 El proyecto se divide en tres partes principales:
 
-    Parte 1 - Análisis: Esta sección del código, compuesta por los archivos script.js, index.html y style.css, se encarga de realizar el análisis biomecánico a partir de videos. Haciendo uso de la biblioteca Mediapipe, se detecta la pose humana y se calculan diversos parámetros como ángulos y capturas de pantalla.
+    Parte 1 - Análisis: Esta sección del código, compuesta por los archivos script.js, index.html y style.css, se encarga de realizar el análisis biomecánico a partir de videos. Haciendo uso de la biblioteca Mediapipe, se detecta la pose humana y se calculan diversos parámetros como ángulos e inclinaciones,  y también toma  capturas de pantalla.
 
     Parte 2 - Visualización: La segunda parte del proyecto, implementada en los archivos analizar.js, analizar.html y analizar.css, permite visualizar los datos obtenidos en la primera parte. Aquí se presentan los ángulos calculados y las capturas de pantalla de manera interactiva.
 

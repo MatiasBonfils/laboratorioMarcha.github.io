@@ -63,12 +63,12 @@ function createDeleteHandler(index) {
 // En ellas se va a decidir qué elementos se muestran según la prueba elegida por el usuario.
 //------------------------------------------------------------------------------------------------------//
 //No muestra los datos obtenidos por todas las pruebas, de modo que solo se active la que necesita el usuario
-  document.getElementById("container-izq").style.display = "none"; //Conteiner de las graficas de la marcha del lado izquierdo
-  document.getElementById("container-der").style.display = "none"; //Conteiner de las graficas de la marcha del lado derecho
+  document.getElementById("container-izq").style.display = "none"; //Bloque de las graficas de la marcha del lado izquierdo
+  document.getElementById("container-der").style.display = "none"; //Bloque de las graficas de la marcha del lado derecho
   document.getElementById("marcha-humana-wrapper").style.display = "none"; //Bloque donde muestra los parametros espacio-temporales de la marcha
   document.getElementById("rotacion-int-ext-wrapper").style.display = "none"; //Bloque donde muestra los Ángulos de rotación externa/interna
-  document.getElementById("postura-frontal-wrapper").style.display = "none"; //Bloque donde muestra los Ángulos de ángulo de inclinación del hombro derecho y cadera derecha
-  document.getElementById("capturas-container").style.height = "95vh"; //Conteiner donde se muestran las capturas tomadas
+  document.getElementById("postura-frontal-wrapper").style.display = "none"; //Bloque donde muestra los Ángulos de inclinación del hombro derecho y cadera derecha
+  document.getElementById("capturas-container").style.height = "95vh"; //Bloque donde se muestran las capturas tomadas
 
 //------------------------------------------------------------------------------------------------------//
 //Esta parte del código configura los chips o botones que van a permitir al usuario elegir los datos de qué prueba quieren ver
@@ -89,8 +89,13 @@ chips.forEach(chip => {
     //Muestra de datos de la prueba postural y de rotación rotación interna/externa //
     //------------------------------------------------------------------------------------------------------//
     if (selectedChip.id === "Postural y rotación interna/externa") {
+      //Muestra los ángulos de cada prueba y las capturas tomadas anteriormente
       document.getElementById("postura-frontal-wrapper").style.display = "block";
       document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
+      document.getElementById("capturas-container").style.marginTop = "-30rem";
+      document.getElementById("capturas-container").style.marginLeft = "16rem";
+
+      //Llama a los datos de tomados en la página anterior y los guarda en nuevas variables  
       var ang_inclinacion_hombro_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_hombro_2"));
       var ang_inclinacion_cadera_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_cadera_2"));
       var rot_int_cad_izq_min = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_min"));
@@ -98,10 +103,8 @@ chips.forEach(chip => {
       var rot_int_cad_der_min = JSON.parse(sessionStorage.getItem("rot_int_cad_der_min"));
       var rot_int_cad_der_max = JSON.parse(sessionStorage.getItem("rot_int_cad_der_max"));
     
-     
-      document.getElementById("capturas-container").style.marginTop = "-30rem";
-      document.getElementById("capturas-container").style.marginLeft = "16rem";
-      console.log(ang_inclinacion_hombro_frontal);
+      //Muestra en el bloque los valores de los ángulos de inclinación  pero antes pregunta si la longitud del arreglo es distinta a 0, en caso de que no lo sea, 
+      //indica que el interruptor de guardar datos no se mantuvo durante la prueba y muestra un mensaje que dice: "Debe guardar los datos para poder observar el valor de los ángulos".
       if (ang_inclinacion_hombro_frontal.length !== 0 && ang_inclinacion_cadera_frontal.length !== 0) {
           document.getElementById("ang_lin_fro_hom").innerHTML = "Ángulo de inclinación derecha de hombro: " + ang_inclinacion_hombro_frontal + "°";
           document.getElementById("ang_lin_fro_cad").innerHTML = "Ángulo de inclinación derecha de cadera: " + ang_inclinacion_cadera_frontal + "°";
@@ -109,6 +112,8 @@ chips.forEach(chip => {
           document.getElementById("ang_lin_fro_hom").innerHTML = "Debe guardar los datos para poder observar los ángulos";
           document.getElementById("ang_lin_fro_cad").innerHTML = "";
       }
+      ////Muestra en el bloque los valores de los ángulos de rotación y
+      //se verifica si el valor de "rot_int_cad_izq_max" no es igual a -200, ya que si lo fuera, implicaría que la prueba no se realizó.
       if (rot_int_cad_izq_max== "-200.0") {
         
         document.getElementById("rot_int_cad_izq_max").innerHTML = "Debe guardar los datos para poder observar el valor de los ángulos";
@@ -123,6 +128,7 @@ chips.forEach(chip => {
         document.getElementById("rot_ext_cad_der_max").innerHTML ="Ángulo interno máximo derecho: " + rot_int_cad_der_max + "°";
       }
   } else {
+      //Si la prueba de postura y rotación no es elegida, ambos bloques desaparecen. 
       document.getElementById("postura-frontal-wrapper").style.display = "none";
       document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
   }
