@@ -1,195 +1,154 @@
-/* Se configura el color de fondo de la página. */
+
+
+/*Se modficia el estilo del archivo html lo que incluyen,
+ por ejemplo, la configuración del color de fondo, la fuente y el tamaño del texto, etc. */
 body {
-
-  background-color: rgb(16, 16, 16);
-  }
-/* Se modifican las características de color y forma de la barra de navegación. */
-  .navbar {
-    background-color: rgb(37, 120, 14);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-    position: fixed;
-    top: 0;
-    left: 0rem;
-    width: 100%;
-    z-index: 1;
-    font-size: 1.8rem;
-    height: 60px;
-    font-weight: bold;
+  bottom: 0;
+  font-family: "Titillium Web", sans-serif;
+  color: white;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform-origin: 0px 0px;
+  overflow: hidden;
 }
 
-.navbar a {
-    color: white;
-    text-decoration: none;
-    font-size: 1.5rem;
-    font-weight: bold;
+
+.square-box {
+  display: none;
 }
-  /*Posición del conteiner de chips */
-  .container {
+/*configuracion del video de input*/
+.input_video {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.input_video.selfie {
+  transform: scale(-1, 1);
+}
+
+/*Configuración de la posición del video.*/
+.container{
+  position: absolute;
+  left: 19%;
+  align-items: center;
+  justify-content: center;
+  
+}
+.input_image {
+  position: absolute;
+}
+
+
+.output_canvas {
+  width: 1200px;
+  height: 900px;
+  display: flex;
+  position: absolute ;
+  justify-content: center;
+  top: 0;
+}
+/*Configuración de la posición del panel de control.*/
+.control-panel {
+  width: 0%;
+  height: 100%;
+  position: absolute;
+  left: 100px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 8rem;
-  }
-  /*Caracteristicas de los chips como la posición y los colores*/
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 2rem;
-    margin-left: 8rem;
-  }
-  
-  .chip {
-    background-color: rgb(37, 120, 14);
-    color: white;
-    font-size: 1.3rem;
-    border-radius: 1.5rem;
-    padding: 1.1rem 2rem;
-    margin: 2rem;
-    text-align: center;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-    border: 6px solid black;
-  }
-  
-  .chip:hover {
-    background-color: rgb(43, 138, 17);
-  }
-  
-  .chip.selected {
-    background-color: rgb(16, 63, 8);
-  }
-  
-  #selectedTest {
-    color: white;
-    margin-top: 2rem;
-    font-size: 1.2rem;
-  }
-  
-/* Configuración del contenedor de imágenes. */
-  #displayContainer {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  #capturas-container {
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-    max-width: 75%;
-    width: 100%;
-  }
-  
-  .imagePreview {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .imagePreview img {
-    max-width: 100%;
-  }
-  /* Configuración del botón de las  imágenes. */
-  .imagePreview .deleteButton {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 5px;
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    font-size: 1.5rem;
-    color: rgb(0, 0, 0);
-    cursor: pointer;
-  }
-  
-  
- /* Configuración visual de los distintos wrappers (Marcha humana, rotación de cadera e inclinación de hombro y cadera. */ 
-#marcha-humana-wrapper {
-  display: flex;
-  
-  align-items: center;
-  height: 500px;
-  width: 750px;
-  margin: 0 auto;
-  background-color: rgba(16, 16, 16, 1);
-  border-top-left-radius: 30px;
-  border-top-right-radius: 30px;
+  justify-content: center;
 }
-#rotacion-int-ext-wrapper {
+/*Configuración de la posición de los rectangulos.*/
+.rectangles-container {
+  width: 33.33%;
+  height: 50%;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  height: 500px;
-  width: 750px;
-  margin: 0 auto;
-  background-color: rgba(16, 16, 16, 1);
-  border-top-left-radius: 30px;
-  border-top-right-radius: 30px;
-  
+  justify-content: center;
 }
-#postura-frontal-wrapper{
-  display: flex;
-  align-items: center;
-  height: 500px;
-  width: 750px;
-  margin: 0 auto;
-  background-color: rgba(16, 16, 16, 1);
-  border-top-left-radius: 30px;
-  border-top-right-radius: 30px;
-  
+/*Configuración de los colores y formas de los rectangulos.*/
+.rectangle {
+  background-color:  rgb(37, 120, 14);
+  color: white;
+  padding: 15px;
+  border: 6px solid black;
+  border-radius: 25px;
+  text-align: center;
+  font-size: 20px;
+  margin: 0;
 }
-/*Configuración visual de los encabezados de los graficos */
-.stripe {
-  background-color: rgb(37, 120, 14);
-  color: #fff;
-  padding: 20px;
+
+.shoutout {
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  text-align: center;
   font-size: 24px;
-  text-align: center;
-  border-top-left-radius: 30px;
-  border-top-right-radius: 30px;
+  position: absolute;
 }
 
-
-#marcha-humana {
-  list-style: none;
-  padding: 60px;
-  background-color: #202020;
-  color: #fff;
-  font-size: 30px;
+.button_tomar_captura {
+  background-color: rgb(37, 120, 14);
+  color: white;
+  padding: 15px;
+  border: 6px solid black;
+  border-radius: 25px;
   text-align: center;
-  margin-top: -1px;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
+  font-size: 20px;
+  margin: 10px 0;
+  position: absolute;
+  bottom: 10%;
+  left: 40%;
+  transform: translate(-50%, 0);
+  cursor: pointer;
+}
+.boton_tomar_coord{
+  background-color: rgb(37, 120, 14);
+  color: white;
+  padding: 15px;
+  border: 6px solid black;
+  border-radius: 25px;
+  text-align: center;
+  font-size: 20px;
+  margin: 10px 0;
+  position: absolute;
+  bottom: 10%;
+  left: 58%;
+  transform: translate(-50%, 0);
+  cursor: pointer;
 }
 
-#rotacion-int-ext {
-  list-style: none;
-  padding: 60px;
-  background-color: #202020;
-  color: #fff;
-  font-size: 30px;
-  text-align: center;
-  margin-top: -1px;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
+button:active {
+  background-color: #0e660e;
 }
-#angulos_posturales {
-  list-style: none;
-  padding: 60px;
-  background-color: #202020;
-  color: #fff;
-  font-size: 30px;
-  text-align: center;
-  margin-top: -1px;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
 
+.boton_pasar_pagina
+{
+  background-color: rgb(37, 120, 14);
+  color: white;
+  padding: 15px;
+  border: 6px solid black;
+  border-radius: 25px;
+  text-align: center;
+  font-size: 20px;
+  margin: 10px 0;
+  position: absolute;
+  bottom: 90%;
+  left: 90%;
+  transform: translate(-50%, 0);
+  cursor: pointer;
 }
 

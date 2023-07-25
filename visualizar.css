@@ -1,0 +1,195 @@
+/* Se configura el color de fondo de la página. */
+body {
+
+  background-color: rgb(16, 16, 16);
+  }
+/* Se modifican las características de color y forma de la barra de navegación. */
+  .navbar {
+    background-color: rgb(37, 120, 14);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0rem;
+    width: 100%;
+    z-index: 1;
+    font-size: 1.8rem;
+    height: 60px;
+    font-weight: bold;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+  /*Posición del conteiner de chips */
+  .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8rem;
+  }
+  /*Caracteristicas de los chips como la posición y los colores*/
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 8rem;
+  }
+  
+  .chip {
+    background-color: rgb(37, 120, 14);
+    color: white;
+    font-size: 1.3rem;
+    border-radius: 1.5rem;
+    padding: 1.1rem 2rem;
+    margin: 2rem;
+    text-align: center;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    border: 6px solid black;
+  }
+  
+  .chip:hover {
+    background-color: rgb(43, 138, 17);
+  }
+  
+  .chip.selected {
+    background-color: rgb(16, 63, 8);
+  }
+  
+  #selectedTest {
+    color: white;
+    margin-top: 2rem;
+    font-size: 1.2rem;
+  }
+  
+/* Configuración del contenedor de imágenes. */
+  #displayContainer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  #capturas-container {
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 75%;
+    width: 100%;
+  }
+  
+  .imagePreview {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .imagePreview img {
+    max-width: 100%;
+  }
+  /* Configuración del botón de las  imágenes. */
+  .imagePreview .deleteButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    font-size: 1.5rem;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+  }
+  
+  
+ /* Configuración visual de los distintos wrappers (Marcha humana, rotación de cadera e inclinación de hombro y cadera. */ 
+#marcha-humana-wrapper {
+  display: flex;
+  
+  align-items: center;
+  height: 500px;
+  width: 750px;
+  margin: 0 auto;
+  background-color: rgba(16, 16, 16, 1);
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+}
+#rotacion-int-ext-wrapper {
+  display: flex;
+  align-items: center;
+  height: 500px;
+  width: 750px;
+  margin: 0 auto;
+  background-color: rgba(16, 16, 16, 1);
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  
+}
+#postura-frontal-wrapper{
+  display: flex;
+  align-items: center;
+  height: 500px;
+  width: 750px;
+  margin: 0 auto;
+  background-color: rgba(16, 16, 16, 1);
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  
+}
+/*Configuración visual de los encabezados de los graficos */
+.stripe {
+  background-color: rgb(37, 120, 14);
+  color: #fff;
+  padding: 20px;
+  font-size: 24px;
+  text-align: center;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+}
+
+
+#marcha-humana {
+  list-style: none;
+  padding: 60px;
+  background-color: #202020;
+  color: #fff;
+  font-size: 30px;
+  text-align: center;
+  margin-top: -1px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+#rotacion-int-ext {
+  list-style: none;
+  padding: 60px;
+  background-color: #202020;
+  color: #fff;
+  font-size: 30px;
+  text-align: center;
+  margin-top: -1px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+#angulos_posturales {
+  list-style: none;
+  padding: 60px;
+  background-color: #202020;
+  color: #fff;
+  font-size: 30px;
+  text-align: center;
+  margin-top: -1px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+
+}
+

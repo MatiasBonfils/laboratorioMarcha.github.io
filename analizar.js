@@ -1,951 +1,907 @@
 //------------------------------------------------------------------------------------------------------//
-//Esta parte del código arma las funciones necesarias para elaborar la página de análisis, 
-//la cual permite al usuario ver cuáles fueron los resultados obtenidos por el software.
-//------------------------------------------------------------------------------------------------------//
-
-//------------------------------------------------------------------------------------------------------//
-//En esta parte se muestra en pantalla las capturas tomadas en la página anterior.
-// El usuario puede elegir borrar alguna si no le gusta.
-
-var capturasContainer = document.getElementById('capturas-container');
-var dataImage;
-var imgElement, deleteBtnElement, imgContainer;
-
-for (var i = 0; i < 4; i++) {
-  dataImage = sessionStorage.getItem('imgData' + i);
-  if (dataImage) {
-    imgElement = document.createElement('img');
-    imgElement.src = dataImage;
-
-    imgContainer = document.createElement('div');
-    imgContainer.className = 'imagePreview';
-    imgContainer.appendChild(imgElement);
-
-    deleteBtnElement = document.createElement('span');
-    deleteBtnElement.className = 'deleteButton';
-    deleteBtnElement.textContent = 'X';
-    deleteBtnElement.addEventListener('click', createDeleteHandler(i));
-
-    imgContainer.appendChild(deleteBtnElement);
-
-    capturasContainer.appendChild(createCapturaElement(imgContainer));
-  }
-}
-
-function createCapturaElement(imgContainer) {
-  var capturaElement = document.createElement('div');
-  capturaElement.className = 'captura';
-  capturaElement.appendChild(imgContainer);
-
-  capturaElement.addEventListener('mouseenter', function() {
-    deleteBtnElement.style.display = 'block';
-  });
-
-  capturaElement.addEventListener('mouseleave', function() {
-    deleteBtnElement.style.display = 'none';
-  });
-
-  return capturaElement;
-}
-
-function createDeleteHandler(index) {
-  return function() {
-    var confirmDelete = confirm('¿Quieres eliminar esta imagen?');
-    if (confirmDelete) {
-      sessionStorage.removeItem('imgData' + index);
-      var capturas = document.getElementsByClassName('captura');
-      capturasContainer.removeChild(capturas[index]);
+//Estas líneas de código definen algunas constantes
+//y una opción necesarias para usar la biblioteca MediaPipe Pose en una aplicación web..
+const controls = window;
+const drawingUtils = window;
+const mpPose = window;
+//importa la libreria de mediapipe pose
+const options = {
+    locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose@${mpPose.VERSION}/${file}`;
     }
-  }
+};
+//------------------------------------------------------------------------------------------------------//
+//Boton que al presionarlo se redirije a la proxima página la cual es visualizar.html
+document.getElementById("myButton").addEventListener("click", function() {
+    window.location.href = "visualizar.html";
+  });
+//------------------------------------------------------------------------------------------------------//
+// Estas líneas de código definen variables para diferentes elementos del DOM (Modelo de Objetos del Documento)
+// que se utilizan para la entrada de video, la salida de video, el contenedor general y los controles de la aplicación.
+// Luego, la variable canvasCtx se utiliza para obtener el contexto de representación en 2D del elemento canvasElement.
+
+//Esta línea de código busca en el documento un elemento que tenga la clase CSS input_video y asigna el primer elemento encontrado a la constante videoElement
+const videoElement = document.getElementsByClassName('input_video')[0];
+//esta línea de código busca un elemento que tenga la clase CSS output_canvas y asigna el primer elemento encontrado a la constante canvasElement.
+const canvasElement = document.getElementsByClassName('output_canvas')[0];
+//, esta línea de código busca un elemento que tenga la clase CSS container y asigna el primer elemento encontrado a la constante containerElement.
+const containerElement = document.getElementsByClassName('container')[0];
+//Esta línea de código busca un elemento que tenga la clase CSS control-panel y asigna el primer elemento encontrado a la constante controlsElement.
+const controlsElement = document.getElementsByClassName('control-panel')[0];
+//sta línea de código obtiene el contexto de representación en 2D del elemento canvasElement y lo asigna a la constante canvasCtx. 
+//Esto permitirá el dibujo y la manipulación de los gráficos en el elemento canvasElement usando la API Canvas de HTML5.
+const canvasCtx = canvasElement.getContext('2d');
+//------------------------------------------------------------------------------------------------------//
+//Este bloque de código define el estado inicial de las variables en el panel de control.
+//Algunas de estas variables sirven para mostrar los elementos que describe el comentario.
+const solutionOptions = {
+selfieMode: false, //Alterna en modo espejo del video.
+modelComplexity: 1, //Define la complejidad del modelo en nivel "Medium".
+lineasPosturales: false, //Genera una línea auxiliar para evaluar la postura en el plano sagital.
+lineaCadera: false, //Genera una línea auxiliar para evaluar la inclinación de la cadera en el plano frontal y muestra en un rectángulo el ángulo.
+lineaHombro: false, //Genera una línea auxiliar para evaluar la inclinación de los hombros en el plano frontal y muestra en un rectángulo el ángulo.
+lineaTronco: false, //Genera una línea auxiliar para evaluar la postura en el plano frontal.
+lineaColumna: false,
+rotIntExt: false, //Genera una serie de líneas auxiliares que sirven para evaluar la rotación interna y externa de la cadera y muestra en dos rectángulos el ángulo de cada pierna.
+angulosMarcha: false, //Genera una serie de rectángulos donde se muestran los ángulos de flexión-extensión de la rodilla y la cadera.
+valgo_varo: false, //Genera un par de líneas auxiliares que sirven para evaluar la presencia de valgo y varo.
+guardar_datos: false, //Habilita el guardado de datos durante la prueba.
+//Variables que modifican el esqueleto.
+smoothSegmentation: true,
+minDetectionConfidence: 0.5,
+minTrackingConfidence: 0.5,
+smoothLandmarks: true,
+};
+
+//------------------------------------------------------------------------------------------------------//
+// Este bloque de codigo realiza las funcionalidades de tomar captura del video
+//Define el contador de imagenes guardadas
+var imagesCaptured = [];
+var contador = 0;
+//Define el botón que al presionarlo activa la función de tomar captura
+var captureButton = document.getElementById("capture-button");
+
+//Esta función verifica si hay menos de 4 capturas, que es el máximo permitido, reduce la resolución de la captura y la guarda en la variable imgData .
+captureButton.addEventListener("click", function() {
+  if (contador < 4) {
+   // Obtiene la representación de la captura actual en formato de URL de datos JPEG
+    var dataURL = canvasElement.toDataURL("image/jpeg", 0.95); // JPEG para ahorrar espacio
+  // Crea una nueva imagen para cargar la captura y realizar operaciones
+    var img = new Image();
+    img.onload = function() {
+    // Crea un lienzo (canvas) con las dimensiones de la imagen
+    var canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    var ctx = canvas.getContext('2d');
+    // Dibuja la imagen en el lienzo con las dimensiones correspondientes
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // Escala la imagen al 50% del tamaño original y obtiene su representación en URL de datos JPEG
+    var resizedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
+    // Almacena la captura en sessionStorage eliminando el prefijo de la URL de datos lo que va permitri guardar las caputras en el navegador para se presentadas en las 
+    //proximas páginas
+    sessionStorage.setItem("imgData" + contador, resizedDataUrl.replace(/^data:image\/(png|jpg);base64,/, ""));
+
+     // Incrementa el contador de imágenes guardadas
+     contador++;
 }
-//------------------------------------------------------------------------------------------------------//
-//En esta parte del código se configuran las funcionalidades "visuales".
-// En ellas se va a decidir qué elementos se muestran según la prueba elegida por el usuario.
-//------------------------------------------------------------------------------------------------------//
-//No muestra los datos obtenidos por todas las pruebas, de modo que solo se active la que necesita el usuario
-  document.getElementById("container-izq").style.display = "none"; //Bloque de las graficas de la marcha del lado izquierdo
-  document.getElementById("container-der").style.display = "none"; //Bloque de las graficas de la marcha del lado derecho
-  document.getElementById("marcha-humana-wrapper").style.display = "none"; //Bloque donde muestra los parametros espacio-temporales de la marcha
-  document.getElementById("rotacion-int-ext-wrapper").style.display = "none"; //Bloque donde muestra los Ángulos de rotación externa/interna
-  document.getElementById("postura-frontal-wrapper").style.display = "none"; //Bloque donde muestra los Ángulos de inclinación del hombro derecho y cadera derecha
-  document.getElementById("capturas-container").style.height = "95vh"; //Bloque donde se muestran las capturas tomadas
+    console.log(dataURL);
+    img.src = dataURL;
+  }
+});
 
 //------------------------------------------------------------------------------------------------------//
-//Esta parte del código configura los chips o botones que van a permitir al usuario elegir los datos de qué prueba quieren ver
-//y, con eso, cambiar la visualización de la página.
-const chips = document.querySelectorAll('.chip');
-let selectedChip;
+// El siguiente bloque de código está diseñado para medir la distancia y 
+//guardar los datos localmente en la sessionStorage del navegador.
+//Se define variables y botones:
+//Muestra en pantalla los datos obtenidos
+let screenLog = document.querySelector('#screen-log');
+//Define el botón que al presionarlo activa la función de tomar datos
+let coordBtn = document.querySelector('#coord-btn');
+//Muestra los guardados
+let showCoordsBtn = document.querySelector('#show-coords-btn');
+//Variable que guarda los puntos tomados en la pantalla
+let savedCoords = [];
+//Variable que avisa al programa que se esta tomando datos o no
+let saveCoordsEnabled = false;
+//Variable que guarda los datos tomados que introdujó el usuario
+let savedData = [];
+let coordsSaved = 0;
+//Nombres de variables donde se van a almacenar las coordenadas de los puntos introducidos por el usuario
+let punto_x_zancada_inicial;
+let punto_x_zancada_final;
+let punto_x_referencia_inicial;
+let punto_x_referencia_final;
 
-chips.forEach(chip => {
-  chip.addEventListener('click', event => {
-    if (selectedChip) {
-      selectedChip.classList.remove('selected');
-    }
-
-    selectedChip = event.currentTarget;
-    selectedChip.classList.add('selected');
-    sessionStorage.setItem("prueba_realizada", JSON.stringify(selectedChip.id));
-    //------------------------------------------------------------------------------------------------------//
-    //Muestra de datos de la prueba postural y de rotación rotación interna/externa //
-    //------------------------------------------------------------------------------------------------------//
-    if (selectedChip.id === "Postural y rotación interna/externa") {
-      //Muestra los ángulos de cada prueba y las capturas tomadas anteriormente
-      document.getElementById("postura-frontal-wrapper").style.display = "block";
-      document.getElementById("rotacion-int-ext-wrapper").style.display = "block";
-      document.getElementById("capturas-container").style.marginTop = "-30rem";
-      document.getElementById("capturas-container").style.marginLeft = "16rem";
-
-      //Llama a los datos de tomados en la página anterior y los guarda en nuevas variables  
-      var ang_inclinacion_hombro_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_hombro_2"));
-      var ang_inclinacion_cadera_frontal = JSON.parse(sessionStorage.getItem("ang_linea_frontal_cadera_2"));
-      var rot_int_cad_izq_min = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_min"));
-      var rot_int_cad_izq_max = JSON.parse(sessionStorage.getItem("rot_int_cad_izq_max"));
-      var rot_int_cad_der_min = JSON.parse(sessionStorage.getItem("rot_int_cad_der_min"));
-      var rot_int_cad_der_max = JSON.parse(sessionStorage.getItem("rot_int_cad_der_max"));
-    
-      //Muestra en el bloque los valores de los ángulos de inclinación  pero antes pregunta si la longitud del arreglo es distinta a 0, en caso de que no lo sea, 
-      //indica que el interruptor de guardar datos no se mantuvo durante la prueba y muestra un mensaje que dice: "Debe guardar los datos para poder observar el valor de los ángulos".
-      if (ang_inclinacion_hombro_frontal.length !== 0 && ang_inclinacion_cadera_frontal.length !== 0) {
-          document.getElementById("ang_lin_fro_hom").innerHTML = "Ángulo de inclinación derecha de hombro: " + ang_inclinacion_hombro_frontal + "°";
-          document.getElementById("ang_lin_fro_cad").innerHTML = "Ángulo de inclinación derecha de cadera: " + ang_inclinacion_cadera_frontal + "°";
-      } else {
-          document.getElementById("ang_lin_fro_hom").innerHTML = "Debe guardar los datos para poder observar los ángulos";
-          document.getElementById("ang_lin_fro_cad").innerHTML = "";
-      }
-      ////Muestra en el bloque los valores de los ángulos de rotación y
-      //se verifica si el valor de "rot_int_cad_izq_max" no es igual a -200, ya que si lo fuera, implicaría que la prueba no se realizó.
-      if (rot_int_cad_izq_max== "-200.0") {
-        
-        document.getElementById("rot_int_cad_izq_max").innerHTML = "Debe guardar los datos para poder observar el valor de los ángulos";
-        document.getElementById("rot_ext_cad_izq_max").innerHTML ="";
-        document.getElementById("rot_int_cad_der_max").innerHTML ="";
-        document.getElementById("rot_ext_cad_der_max").innerHTML ="";
-      
-      } else {
-        document.getElementById("rot_int_cad_izq_max").innerHTML ="Ángulo externo máximo izquierdo: " +  rot_int_cad_izq_min + "°";
-        document.getElementById("rot_ext_cad_izq_max").innerHTML ="Ángulo interno máximo izquierdo: "+ rot_int_cad_izq_max + "°";
-        document.getElementById("rot_int_cad_der_max").innerHTML ="Ángulo externo máximo derecho: " + rot_int_cad_der_min + "°";
-        document.getElementById("rot_ext_cad_der_max").innerHTML ="Ángulo interno máximo derecho: " + rot_int_cad_der_max + "°";
-      }
+//Función que permite al usuario tomar puntos en la pantalla
+coordBtn.addEventListener('click', toggleSaveCoordinates);
+function toggleSaveCoordinates() {
+    //Cambia el estado de la variable para pasar entre "Midiendo distancia" a "Medir distancia" (estado original)
+  saveCoordsEnabled = !saveCoordsEnabled;
+  if (saveCoordsEnabled) {
+    //Si esta en modo "Midiendo distancia" el botón de "Tomar captura" desaparece y el de "Medir distancia" cambia
+    //de color y de texto. El cursor se convierte en una cruz y sale una advertencia para que el usuario seleccione
+    //los puntos de la pantalla 
+    document.getElementById('capture-button').style.display = 'none';
+    savedCoords = [];
+    coordsSaved = 0;
+    coordBtn.style.backgroundColor = "#0E6655";
+    coordBtn.innerText = "Midiendo distancia";
+    document.body.style.cursor = "crosshair";
+    document.documentElement.style.cursor = "crosshair";
+    document.addEventListener('click', saveCoordinates);
+    alert("Seleccione los puntos de referencia de la distancia en la pantalla");
   } else {
-      //Si la prueba de postura y rotación no es elegida, ambos bloques desaparecen. 
-      document.getElementById("postura-frontal-wrapper").style.display = "none";
-      document.getElementById("rotacion-int-ext-wrapper").style.display = "none";
+    //Regresa al estado original una vez presionado los puntos en la pantalla
+    coordBtn.innerText = "Medir distancia";
+    coordBtn.style.backgroundColor = "rgb(37, 120, 14)";
+    document.body.style.cursor = "";
+    document.documentElement.style.cursor = "";
+    document.removeEventListener('click', saveCoordinates);
+    document.getElementById('capture-button').style.display = 'block';
+  }
+}
+//Función que guarda las coordenadas de los distintos puntos en su variables pertinentes 
+function saveCoordinates(e) {
+  if (saveCoordsEnabled && coordsSaved < 4) {
+    if (e.target !== coordBtn && e.target !== showCoordsBtn) {
+      savedCoords.push({x: e.screenX, y: e.screenY});
+      coordsSaved++;
+      if (coordsSaved === 2) {
+        punto_x_referencia_inicial = savedCoords[0].x;
+        punto_x_referencia_final = savedCoords[1].x;
+        alert("Seleccione los puntos de referencia de la zancada en la pantalla");
+      } else if (coordsSaved === 4) {
+        punto_x_zancada_inicial = savedCoords[2].x;
+        punto_x_zancada_final = savedCoords[3].x;
+        document.body.style.cursor = "";
+        document.documentElement.style.cursor = "";
+        showPopup();
+      }
+    }
+  }
+}
+//Función que pide al usuario que introduzca la distancia en metros, el tiempo en segundos y la cantidad de pasos. 
+//También calcula los parámetros espacio-temporales de la marcha con los datos obtenidos y los guarda en sus variables para ser llamados en la próxima página.
+function showPopup() {
+    let distanceInput = prompt("Inserte la distancia en metros:");
+          let timeInput = prompt("Insertar el tiempo en segundos:");
+          let stepsInput = prompt("Cantidad de pasos:");
+          let savedData = {
+            coords: savedCoords,
+            distance: distanceInput,
+            time: timeInput,
+            steps: stepsInput
+            };
+    //Calculo las variables 
+    let distancia_referencia_pixel = Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
+    let distancia_zancada_pixel = Math.abs(punto_x_zancada_final - punto_x_zancada_inicial);
+    let distancia_zancada_metros= (savedData.distance*distancia_zancada_pixel)/distancia_referencia_pixel;
+    let distanceWalked = ((savedData.distance) * Math.abs(punto_x_zancada_final - punto_x_zancada_inicial)) / Math.abs(punto_x_referencia_final - punto_x_referencia_inicial);
+    let stepLength = distanceWalked / savedData.steps;
+    let strideLength = stepLength * 2;
+    let velocity = distanceWalked / savedData.time;
+    let cadencia= (savedData.steps)*60/ savedData.time;
+    //Guardo las variables para pasarlas a la siguiente pagina
+    sessionStorage.setItem("cantidad_pasos", JSON.stringify(stepsInput));
+    sessionStorage.setItem("distancia_caminada", JSON.stringify(distancia_zancada_metros.toFixed(2)));       
+    sessionStorage.setItem("velocidad_camina", JSON.stringify(velocity.toFixed(2)));
+    sessionStorage.setItem("cadencia_camina", JSON.stringify(cadencia.toFixed(2)));
+    sessionStorage.setItem("Longitud_paso", JSON.stringify(stepLength.toFixed(2)));
+    sessionStorage.setItem("Longitud_zancada", JSON.stringify(strideLength.toFixed(2)));
+    //Aviso al usuario de los valores obtenidos 
+    let message = `Distancia caminada: ${distancia_zancada_metros.toFixed(2)} metros\n`;
+    message += `Velocidad: ${velocity.toFixed(2)} m/s\n`;
+    message += `Cadencia: ${cadencia.toFixed(2)} pasos/minutos\n`;
+    message += `Longitud de paso: ${stepLength.toFixed(2)} metros\n`;
+    message += `Longitud de zancada: ${strideLength.toFixed(2)} metros\n\n`;
+    
+    
+  alert(message);
+  //Cambio de formato del botón de medir y la vuelta del botón de "tomar captura"
+  document.getElementById('capture-button').style.display = 'block';
+  coordBtn.innerText = "Medir distancia";
+  coordBtn.style.backgroundColor = "rgb(37, 120, 14)";
+  
   }
   
-  //------------------------------------------------------------------------------------------------------//
-  //Muestra de datos de la prueba de análisis de la marcha humana lado izquierdo //
-  //------------------------------------------------------------------------------------------------------//
-    
-    if (selectedChip.id === "Análisis de la marcha humana lado izquierdo") {
-
-      //Mostrar y acomodar los elementos que se van a mostrar
-      document.getElementById("capturas-container").style.marginTop = " -60rem";
-      document.getElementById("container-izq").style.display = "block";
-      document.getElementById("marcha-humana-wrapper").style.display = "block";
-
-      //Importo los datos para mostrar las variables de la marcha
-      // Primero con respecto a los parametros espacio-temporales
-      var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
-      var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
-      var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
-      var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
+//------------------------------------------------------------------------------------------------------//
   
-      //Segundo para los parametros angulares
-      var ang_izq_cad_grafico = JSON.parse(sessionStorage.getItem("ang_izq_cad_grafico"));
-      var ang_izq_rod_grafico = JSON.parse(sessionStorage.getItem("ang_izq_rod_grafico"));
-      var posicion_pie_x_grafico_izq = JSON.parse(sessionStorage.getItem("posicion_pie_x_grafico_izq"));
-      console.log(ang_izq_cad_grafico);
-      console.log(posicion_pie_x_grafico_izq);
-      //------------------------------------------------------------------------------------------------------//
-      //Esta función devuelve varios subarreglos con dos valores cada uno.
-      //El primero representa en qué momento el pie empieza a moverse en el eje x 
-      //y el segundo en qué momento deja de moverse.
-      function indicesPie(posicion_pie) {
-        let positiveChangeRateIndexes = [];
-        
-        //Recorremos todos los valores de la posicion del pie, calculamos la tasa de cambio, y aquella que cumpla
-        //con la condicion de ser mayor a tal valor, guardamos su posicion en el relativa en el arreglo
-        for (let i = 1; i < posicion_pie.length; i++) {
-          const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
-          console.log(change_rate_i);
-          if (change_rate_i > 0.01) {
-            positiveChangeRateIndexes.push(i);
-          }
+//Rectangulos que muestran los datos durante la marcha. 
+const rectangulo_lh = document.getElementById("rectangulo_lh"); //Muestra el ángulo de inclinación del hombro derecho en el plano frontal.
+const rectangulo_lc = document.getElementById("rectangulo_lc"); // Muestra el ángulo de inclinación de la cadera derecha en el plano frontal.
+const rectangulo_arotd = document.getElementById("rectangulo_arotd"); // Muestra el ángulo de rotación de cadera de la pierna derecha.
+const rectangulo_aroti = document.getElementById("rectangulo_aroti"); // Muestra el ángulo de rotación de cadera de la pierna izquierda.
+const rectangulo_aci = document.getElementById("rectangulo_aci"); // Muestra el ángulo articular de la cadera izquierda durante la marcha.
+const rectangulo_ari = document.getElementById("rectangulo_ari"); // Muestra el ángulo articular de la rodilla izquierda durante la marcha.
+const rectangulo_acd = document.getElementById("rectangulo_acd"); // Muestra el ángulo articular de la cadera derecha durante la marcha.
+const rectangulo_ard = document.getElementById("rectangulo_ard"); // Muestra el ángulo articular de la rodilla derecha durante la marcha.
+//------------------------------------------------------------------------------------------------------//
+
+// Muestra los fps en el panel de control
+const fpsControl = new controls.FPS();
+
+//------------------------------------------------------------------------------------------------------//
+//Bloque para definir variables auxiliares que nos van a servir para las funciones
+//Variables que guardan los angulos durante la marcha
+let ang_izq_cad_grafico = [];
+let ang_der_cad_grafico = [];
+let ang_izq_rod_grafico = [];
+let ang_der_rod_grafico = [];
+let posicion_pie_x_grafico_izq= [];
+let posicion_pie_x_grafico_der= [];
+let p_p_pie_x= [];
+//Variables que guardan los ángulos durante la rotación interna exterma
+let angulo_rot_int_cad_izq=[];
+let angulo_rot_int_cad_der=[];
+let marcador =0; 
+// ángulos inciales para la rotación interna exterma  
+let max_angulo_rot_int_cad_izq = -200; // 
+let min_angulo_rot_int_cad_izq = 200; // 
+let max_angulo_rot_int_cad_der = -200; //
+let min_angulo_rot_int_cad_der = 200; // 
+//Variables que guardan los ángulos de inclinación durante la prueba postural
+let  angulo_inclinacion_cadera_let=[];
+let  angulo_inclinacion_hombro_let= [];
+//------------------------------------------------------------------------------------------------------//
+//Dibuja una caja con el modelo en 3D del esqueleto pero no se muestra  y al borrar salta error
+const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
+const grid = new LandmarkGrid(landmarkContainer, {
+    connectionColor: 0xCCCCCC,
+    definedColors: [{ name: 'LEFT', value: 0xffa500 }, { name: 'RIGHT', value: 0x00ffff }],
+    range: 2,
+    fitToGrid: true,
+    labelSuffix: 'm',
+    landmarkSize: 2,
+    numCellsPerAxis: 4,
+    showHidden: false,
+    centered: true,
+});
+//------------------------------------------------------------------------------------------------------//
+//Entramos en las funcionalidades que hace cuando destecta la pose
+let activeEffect = 'mask';
+function onResults(results) {
+
+
+    // Actulizamos los fotogramas
+    fpsControl.tick();
+    // Dibujamos el esqueleto
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    if (results.segmentationMask) {
+        if (activeEffect === 'mask' || activeEffect === 'both') {
+            canvasCtx.globalCompositeOperation = 'source-in';
+            canvasCtx.fillStyle = '#00FFF07F';
+            canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
         }
-        console.log(positiveChangeRateIndexes);
-        //Una vez que sabemos en que posiciones ocurre el comienzo y fin de una zancada, dividimos el arreglo de toda la marcha
-        //en subarreglos que representa cada zancada
-        function divideArray(array) {
-          let result = [];
-          let subarray = [array[0]];
-          for (let i = 1; i < array.length; i++) {
-            if (array[i] - array[i - 1] > 1) {
-              subarray.push(array[i - 1]);
-              result.push(subarray);
-              subarray = [array[i]];
-            }
-          }
-          subarray.push(array[array.length - 1]);
-          result.push(subarray);
-          return result;
-        }
-        
-        let subarrays = divideArray(positiveChangeRateIndexes);
-        console.log(subarrays);
-        //Filtra los subarreglos menores a dos
-        subarrays = subarrays.filter(subarray => (subarray[subarray.length-1] - subarray[0]) >= 2);
-        
-        return subarrays;
-      }
-      //------------------------------------------------------------------------------------------------------//
-      //Esta función devuelve el arreglo con los ángulos en distintos subarreglo tomando en cuenta los valores
-      //de los subarreglos de la función indicesPie. De esa manera queda separado en subarreglos que representan
-      //una zancada cada uno.
-      function divideGraph(ang_grafico, subarrays) {
-        let result = [];
-        let lastEnd = 0;
-      
-        for (let i = 0; i < subarrays.length; i++) {
-          let subarray = ang_grafico.slice(lastEnd, subarrays[i][subarrays[i].length-1]);
-          if (i === subarrays.length - 1) {
-            subarray.push(ang_grafico[ang_grafico.length - 1]);
-          }
-          result.push(subarray);
-          lastEnd = subarrays[i][subarrays[i].length-1];
-        }
-      
-        return result;
-      }
-      //------------------------------------------------------------------------------------------------------//
-      //Obtenemos los indice en los cuales hay zancadas
-      let subarreglos_indices_pie_izq = indicesPie(posicion_pie_x_grafico_izq);
-      //Dividimos el arreglo de Ángulos en base a eso indices
-      let ang_izq_cad_grafico_divido = divideGraph(ang_izq_cad_grafico,subarreglos_indices_pie_izq);
-      console.log(ang_izq_cad_grafico_divido);
-      let ang_izq_rod_grafico_divido = divideGraph(ang_izq_rod_grafico,subarreglos_indices_pie_izq);
-      //Le quitamos las comas a los valores (sino no los grafica)
-      const ang_izq_cad_grafico_divido_sc = ang_izq_cad_grafico_divido.map(subarreglo => {
-        return subarreglo.map(elemento => parseInt(elemento));
-      });
-      const ang_izq_rod_grafico_divido_sc = ang_izq_rod_grafico_divido.map(subarreglo => {
-        return subarreglo.map(elemento => parseInt(elemento));
-      });
-      //Calcula el promedi de la fase de apoyo de cada zancada
-      function fase_de_apoyo(arr) {
-        let resultado = [];
-        let div = arr[0][0] / arr[0][1];
-        resultado.push(div);
-      
-        for (let i = 1; i < arr.length; i++) {
-          let num1 = arr[i][0] - arr[i - 1][1];
-          let num2 = arr[i][1] - arr[i - 1][1];
-          div = num1 / num2;
-          resultado.push(div);
-        }
-      
-        let sumatoria = resultado.reduce((acumulado, actual) => acumulado + actual);
-        let promedio = (sumatoria / resultado.length)*100;
-      
-        return promedio;
-      }
-
-      let fase_apoyo_izq= fase_de_apoyo(subarreglos_indices_pie_izq).toFixed(2);
-      console.log(fase_apoyo_izq);
-      sessionStorage.setItem("fase_apoyo_der", JSON.stringify(fase_apoyo_izq));
-      //------------------------------------------------------------------------------------------------------//
-      //En caso de no haber tomado las variables, se muestra un mensaje pidiendo al usuario que regrese y tome los valores
-      //necesarios para poder mostrar los parámetros de la marcha del lado izquierdo.
-      if (velocidad === null) {
-        document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
-        document.getElementById("cadencia").innerHTML = "";
-        document.getElementById("longitud_paso").innerHTML = "";
-        document.getElementById("longitud_zancada").innerHTML = "";
-        document.getElementById("fase_de_apoyo").innerHTML = "";
-        document.getElementById("grafico_titulo_ci").style.display = "none";
-        document.getElementById("grafico_titulo_ri").style.display = "none";
-        document.getElementById("container-izq").style.display = "none";
-        document.getElementById("capturas-container").style.marginTop = " -20rem";
-    
-      } 
-      //En caso contrario, se muestra con normalidad los parametros
-      else {
-        document.getElementById("velocidad").innerHTML ="Velocidad de caminata: " + velocidad + " m/s";
-        document.getElementById("cadencia").innerHTML = "Cadencia de caminata: "  + cadencia + " pasos/minuto";
-        document.getElementById("longitud_paso").innerHTML ="Longitud de paso: "  + longitudPaso + " metros";
-        document.getElementById("longitud_zancada").innerHTML ="Longitud de zancada: " + longitudZancada + " metros";
-        document.getElementById("fase_de_apoyo").innerHTML = "Fase de apoyo: " + fase_apoyo_izq + " %" ;
-      }
-      //------------------------------------------------------------------------------------------------------//
-      //Como los distintos subarreglos que conforman el arreglo de los ángulos tienen distintas longitudes,
-      //es necesario homogenizarlos para poder graficarlos (poner en intervalos y promediarlos).
-      //Esta función devuelve el arreglo con todos los subarreglos del mismo tamaño.
-      function HomogenizarDatos(arreglo) {
-        const n = arreglo.length;
-        let subarreglo = [];
-        let subarregloPorcentaje = [];
-        
-     
-        for (let i = 0; i < n; i++) {
-          subarregloPorcentaje.push(((i / (n - 1)) * 100).toFixed(2));
-          subarreglo.push(arreglo[i]);
-        }
-       
-        let temporal = [];
-        let datos_grafico = [];
-        datos_grafico[0] = arreglo[0];
-      
-        for (let i = 0; i < 10; i++) {
-          for (let j = 1; j < n; j++) {
-            if (
-              subarregloPorcentaje[j] >= 10 * i &&
-              subarregloPorcentaje[j] <= 9.999 * (i + 1)
-            ) {
-              temporal.push(subarreglo[j]);
-            }
-          }
-      
-          let suma = temporal.reduce(
-            (acumulador, valorActual) => acumulador + valorActual,
-            0
-          );
-          let promedio = suma / temporal.length;
-          datos_grafico.push(promedio);
-          temporal = [];
-        }
-        datos_grafico.push(arreglo[n - 1]);
-      
-        for (let k = 0; k < 11; k++) {
-          if (isNaN(datos_grafico[k])) {
-            datos_grafico[k] = (datos_grafico[k - 1] + datos_grafico[k + 1]) / 2;
-          }
-        }
-        return datos_grafico;
-      }
-
-      //Arma una matriz con los datos homogenizados para que despues sea mas facil calcular el promedio general
-      function armarMatriz(arreglo) {
-        const n = arreglo.length;
-        let subarregloPorcentaje = [];
-      
-        for (let i = 0; i < n; i++) {
-          subarregloPorcentaje.push(((i / (n - 1)) * 100).toFixed(2));
-        }
-      
-        let matriz = [];
-      
-        for (let i = 0; i < n; i++) {
-          matriz.push([arreglo[i], subarregloPorcentaje[i]]);
-        }
-        
-        return matriz;
-      }
-      datos_grafico_cad_izq= ang_izq_cad_grafico_divido_sc.map(HomogenizarDatos);
-      datos_grafico_cad_izq_matriz= ang_izq_cad_grafico_divido_sc.map(armarMatriz);
-      datos_grafico_rod_izq= ang_izq_rod_grafico_divido_sc.map(HomogenizarDatos);
-      datos_grafico_rod_izq_matriz= ang_izq_rod_grafico_divido_sc.map(armarMatriz);
-     //------------------------------------------------------------------------------------------------------//
-    
-     //Calculamos el promedio
-      
-      //primero de la cadera
-      const promedio_todos_angulos_cadera_izq= [];
-      
-      // Promedio del primer valor
-      const temporal_primero_ci = datos_grafico_cad_izq_matriz.map((fila) => fila[0][0]);
-      const suma_primer_ci = temporal_primero_ci.reduce((acum, valor) => acum + valor, 0);
-      const promedio_primer_ci = suma_primer_ci / temporal_primero_ci.length;
-      promedio_todos_angulos_cadera_izq.push(parseFloat(promedio_primer_ci.toFixed(2)));
-      
-      // Promedios de los valores del segundo al penúltimo
-      for (let i = 0; i < 10; i++) {
-        const temporal_ci = [];
-        datos_grafico_cad_izq_matriz.forEach((fila) => {
-          fila.slice(1, -1).forEach((valor) => {
-            if (valor[1] >= 10 * i && valor[1] <= 9.999 * (i + 1)) {
-              temporal_ci.push(valor[0]);
-            }
-          });
-          if (!temporal_ci.length) {
-            const lar = fila.length;
-            temporal_ci.push((fila[lar - 2][0] + fila[lar - 1][0]) / 2);
-          }
-        });
-        const suma_ci = temporal_ci.reduce((acum, valor) => acum + valor, 0);
-        const promedio_ci = suma_ci / temporal_ci.length;
-        promedio_todos_angulos_cadera_izq.push(parseFloat(promedio_ci.toFixed(2)));
-      }
-      
-      // Promedio del último valor
-      const temporal_ultimo_ci = datos_grafico_cad_izq_matriz.map((fila) => fila[fila.length - 1][0]);
-      const suma_ultimo_ci = temporal_ultimo_ci.reduce((acum, valor) => acum + valor, 0);
-      const promedio_ultimo_ci = suma_ultimo_ci / temporal_ultimo_ci.length;
-      promedio_todos_angulos_cadera_izq.push(parseFloat(promedio_ultimo_ci.toFixed(2)));
-      //------------------------------------------------------------------------------------------------------//
-      //luego de la rodilla
-      
-      const promedio_todos_angulos_rodilla_izq = [];
-
-      // Promedio del primer valor
-      const temporal_primero_ri = datos_grafico_rod_izq_matriz.map((fila) => fila[0][0]);
-      const suma_primer_ri = temporal_primero_ri.reduce((acum, valor) => acum + valor, 0);
-      const promedio_primer_ri = suma_primer_ri / temporal_primero_ri.length;
-      promedio_todos_angulos_rodilla_izq.push(parseFloat(promedio_primer_ri.toFixed(2)));
-
-      // Promedios de los valores del segundo al penúltimo
-      for (let i = 0; i < 10; i++) {
-        const temporal_ri = [];
-        datos_grafico_rod_izq_matriz.forEach((fila) => {
-          fila.slice(1, -1).forEach((valor) => {
-            if (valor[1] >= 10 * i && valor[1] <= 9.999 * (i + 1)) {
-              temporal_ri.push(valor[0]);
-            }
-          });
-          if (!temporal_ri.length) {
-            const lar = fila.length;
-            temporal_ri.push((fila[lar - 2][0] + fila[lar - 1][0]) / 2);
-          }
-        });
-        const suma_ri = temporal_ri.reduce((acum, valor) => acum + valor, 0);
-        const promedio_ri = suma_ri / temporal_ri.length;
-        promedio_todos_angulos_rodilla_izq.push(parseFloat(promedio_ri.toFixed(2)));
-      }
-
-      // Promedio del último valor
-      const temporal_ultimo_ri = datos_grafico_rod_izq_matriz.map((fila) => fila[fila.length - 1][0]);
-      const suma_ultimo_ri = temporal_ultimo_ri.reduce((acum, valor) => acum + valor, 0);
-      const promedio_ultimo_ri = suma_ultimo_ri / temporal_ultimo_ri.length;
-      promedio_todos_angulos_rodilla_izq.push(parseFloat(promedio_ultimo_ri.toFixed(2)));
-     //------------------------------------------------------------------------------------------------------//
-     // Se arma las graficas
-     //------------------------------------------------------------------------------------------------------//
-      //Se toma los valores para el eje x, de tal forma que sean 12 valores 
-      const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
-
-
-
-      
-        let ctx = document.getElementById("myChart").getContext("2d");
-       //grafica los Ángulos del lado derecho de la cadera
-        let datasets_ci = ang_izq_cad_grafico_divido_sc.map((_, i) => {
-          return {
-            label: `Zancada ${i + 1}`,
-            data: datos_grafico_cad_izq[i],
-            borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
-            fill: false,
-          };
-        });
-        //Agrega una linea extra en la grafica la cual es el promedio
-        if (ang_izq_cad_grafico_divido_sc.length > 1) {
-          datasets_ci.push({
-            label: "Promedio",
-            data: promedio_todos_angulos_cadera_izq,
-            borderColor: "black",
-            borderWidth: 10,
-            pointRadius: 2,
-            fill: false,
-          });
-        }
-        
-        sessionStorage.setItem("datasets_ci", JSON.stringify(datasets_ci));
-        //Grafica de la cadera
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: porcentajes,
-            datasets: datasets_ci,
-          },
-          options: {
-            scales: {
-              xAxes: [{
-                ticks: {
-                  callback: function(value, index, values) {
-                    return value + "%";
-                  }
-                },
-                scaleLabel: {
-                  display: true,
-                  labelString: "Porcentaje del ciclo de la marcha"
-                }
-              }],
-              yAxes: [{
-                scaleLabel: {
-                  display: true,
-                  labelString: "Ángulo articular en flexión y extensión de cadera izquierda"
-                }
-              }]
-            }
-          }
-        });
-        
-        document.getElementById("myChart").style.display = "block";
-      //Grafica de la rodilla
-      let ctx_ri = document.getElementById("myChartri").getContext("2d");
-
-      let datasets_ri = ang_izq_rod_grafico_divido_sc.map((_, i) => {
-        return {
-          label: `Zancada ${i + 1}`,
-          data: datos_grafico_rod_izq[i],
-          borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
-          fill: false,
-        };
-      });
-      
-      if (ang_izq_rod_grafico_divido_sc.length > 1) {
-        datasets_ri.push({
-          label: "Promedio",
-          data: promedio_todos_angulos_rodilla_izq,
-          borderColor: "black",
-          borderWidth: 10,
-          pointRadius: 2,
-          fill: false,
-        });
-      }
-      sessionStorage.setItem("datasets_ri", JSON.stringify(datasets_ri));
-     
-      new Chart(ctx_ri, {
-        type: "line",
-        data: {
-          labels: porcentajes,
-          datasets: datasets_ri,
-        },
-        options: {
-          scales: {
-            xAxes: [{
-              ticks: {
-                callback: function(value, index, values) {
-                  return value + "%";
-                }
-              },
-              scaleLabel: {
-                display: true,
-                labelString: "Porcentaje del ciclo de la marcha"
-              }
-            }],
-            yAxes: [{
-              scaleLabel: {
-                display: true,
-                labelString: "Ángulo articular en flexión y extensión de rodilla izquierda"
-              }
-            }]
-          }
-        }
-      });
-      document.getElementById("myChartri").style.display = "block";
-     
-    } else {
-      document.getElementById("myChart").style.display = "none";
-      document.getElementById("myChartri").style.display = "none";
-      document.getElementById("marcha-humana-wrapper").style.display = "none";
-      document.getElementById("container-izq").style.display = "none";
-      document.getElementById("capturas-container").style.height = "90vh";
-    }
-    });
-    });
-    
- //------------------------------------------------------------------------------------------------------//
-  //Muestra de datos de la prueba de análisis de la marcha humana lado derecho //
-  //------------------------------------------------------------------------------------------------------//
-    
-    chips.forEach(chip => {
-      chip.addEventListener('click', event => {
-        if (selectedChip) {
-          selectedChip.classList.remove('selected');
-        }
-    
-        selectedChip = event.currentTarget;
-        selectedChip.classList.add('selected');
-    
-        
-        if (selectedChip.id === "Análisis de la marcha humana lado derecho") {
-          
-          document.getElementById("capturas-container").style.marginTop = " -100rem";
-          document.getElementById("capturas-container").style.height = "8vh";
-          document.getElementById("marcha-humana-wrapper").style.display = "block";
-          document.getElementById("container-der").style.display = "block";
-
-          //Importo los datos para mostrar las variables de la marcha
-          // Primero con respecto a los parametros espacio-temporales
-          
-          var velocidad = JSON.parse(sessionStorage.getItem("velocidad_camina"));
-          var cadencia = JSON.parse(sessionStorage.getItem("cadencia_camina"));
-          var longitudPaso = JSON.parse(sessionStorage.getItem("Longitud_paso"));
-          var longitudZancada = JSON.parse(sessionStorage.getItem("Longitud_zancada"));
-         
-          //Segundo para los parametros angulares
-          var ang_der_cad_grafico = JSON.parse(sessionStorage.getItem("ang_der_cad_grafico"));
-          var ang_der_rod_grafico = JSON.parse(sessionStorage.getItem("ang_der_rod_grafico"));
-          var posicion_pie_x_grafico_der = JSON.parse(sessionStorage.getItem("posicion_pie_x_grafico_der"));
-          
-          //Esta funcion lo que hace es devolver varios subarreglos con dos valores cada uno
-          //El primero representa en que momento el pie empieza a moverse en el eje x
-          // y el segundo en que momento deja de moverse
-          function indicesPie(posicion_pie) {
-            let positiveChangeRateIndexes = [];
-              
-            for (let i = 1; i < posicion_pie.length; i++) {
-              const change_rate_i = Math.abs(posicion_pie[i] - posicion_pie[i - 1]) / posicion_pie[i - 1];
-              if (change_rate_i > 0.01) {
-                positiveChangeRateIndexes.push(i);
-              }
-            }
-          
-            function divideArray(array) {
-              let result = [];
-              let subarray = [array[0]];
-              for (let i = 1; i < array.length; i++) {
-                if (array[i] - array[i - 1] > 1) {
-                  subarray.push(array[i - 1]);
-                  result.push(subarray);
-                  subarray = [array[i]];
-                }
-              }
-              subarray.push(array[array.length - 1]);
-              result.push(subarray);
-              return result;
-            }
-            
-            let subarrays = divideArray(positiveChangeRateIndexes);
-          
-            // Filtra los subarreglos menores a 2
-            subarrays = subarrays.filter(subarray => (subarray[subarray.length-1] - subarray[0]) >= 2);
-            
-            return subarrays;
-          }
-          
-          //Esta funcion lo que hace es devolver varios subarreglos con dos valores cada uno
-          //El primero representa en que momento el pie empieza a moverse en el eje x
-          // y el segundo en que momento deja de moverse
-          function divideGraph(ang_grafico, subarrays) {
-            let result = [];
-            let lastEnd = 0;
-          
-            for (let i = 0; i < subarrays.length; i++) {
-              let subarray = ang_grafico.slice(lastEnd, subarrays[i][subarrays[i].length-1]);
-              if (i === subarrays.length - 1) {
-                subarray.push(ang_grafico[ang_grafico.length - 1]);
-              }
-              result.push(subarray);
-              lastEnd = subarrays[i][subarrays[i].length-1];
-            }
-          
-            return result;
-          }
-          
-          //Obtenemos los indice en los cuales hay zancadas
-          let subarreglos_indices_pie_der = indicesPie(posicion_pie_x_grafico_der);
-          console.log(posicion_pie_x_grafico_der);
-          console.log(subarreglos_indices_pie_der);
-          //Dividimos el arreglo de angulos en base a eso indices
-          let ang_der_cad_grafico_divido = divideGraph(ang_der_cad_grafico,subarreglos_indices_pie_der);
-          let ang_der_rod_grafico_divido = divideGraph(ang_der_rod_grafico,subarreglos_indices_pie_der);
-          //Le quitamos las comas a los valores (sino no los grafica)
-          const ang_der_cad_grafico_divido_sc = ang_der_cad_grafico_divido.map(subarreglo => {
-            return subarreglo.map(elemento => parseInt(elemento));
-          });
-          const ang_der_rod_grafico_divido_sc = ang_der_rod_grafico_divido.map(subarreglo => {
-            return subarreglo.map(elemento => parseInt(elemento));
-          });
-
-
-          //Calcula el promedio de la fase de apoyo
-          function fase_de_apoyo(arr) {
-            let resultado = [];
-            let div = arr[0][0] / arr[0][1];
-            resultado.push(div);
-          
-            for (let i = 1; i < arr.length; i++) {
-              let num1 = arr[i][0] - arr[i - 1][1];
-              let num2 = arr[i][1] - arr[i - 1][1];
-              div = num1 / num2;
-              resultado.push(div);
-            }
-          
-            let sumatoria = resultado.reduce((acumulado, actual) => acumulado + actual);
-            let promedio = (sumatoria / resultado.length)*100;
-          
-            return promedio;
-          }
-          
-     
-          let fase_apoyo_der= fase_de_apoyo(subarreglos_indices_pie_der).toFixed(2);
-          sessionStorage.setItem("fase_apoyo_der", JSON.stringify(fase_apoyo_der));
-        //------------------------------------------------------------------------------------------------------//
-          if (velocidad === null) {
-            document.getElementById("velocidad").innerHTML = "Debe medir distancia para poder observar los parametros espacio-temporales y guardar datos para los ángulos ";
-            document.getElementById("cadencia").innerHTML = "";
-            document.getElementById("longitud_paso").innerHTML = "";
-            document.getElementById("longitud_zancada").innerHTML = "";
-            document.getElementById("fase_de_apoyo").innerHTML = "";
-            document.getElementById("grafico_titulo_cd").style.display = "none";
-            document.getElementById("grafico_titulo_rd").style.display = "none";
-            document.getElementById("container-der").style.display = "none";
-            document.getElementById("capturas-container").style.marginTop = " -20rem";
-        
-          } else {
-            document.getElementById("velocidad").innerHTML ="Velocidad de caminata: " + velocidad + " m/s";
-            document.getElementById("cadencia").innerHTML = "Cadencia de caminata: "  + cadencia + " pasos/minuto";
-            document.getElementById("longitud_paso").innerHTML ="Longitud de paso: "  + longitudPaso + " metros";
-            document.getElementById("longitud_zancada").innerHTML ="Longitud de zancada: " + longitudZancada + " metros";
-            document.getElementById("fase_de_apoyo").innerHTML = "Fase de apoyo: "+ fase_apoyo_der + " %";
-          }
-
-          //Como los distintos subarreglos que conforman el arreglo de los ángulos tienen distintas longitudes,
-          //es necesario homogenizarlos para poder graficarlos (poner en intervalos y promediarlos).
-          //Esta función devuelve el arreglo con todos los subarreglos del mismo tamaño.
-          function HomogenizarDatos(arreglo) {
-            const n = arreglo.length;
-            let subarreglo = [];
-            let subarregloPorcentaje = [];
-            
-        
-            for (let i = 0; i < n; i++) {
-              subarregloPorcentaje.push(((i / (n - 1)) * 100).toFixed(2));
-              subarreglo.push(arreglo[i]);
-            }
-          
-            let temporal = [];
-            let datos_grafico = [];
-            datos_grafico[0] = arreglo[0];
-          
-            for (let i = 0; i < 10; i++) {
-              for (let j = 1; j < n; j++) {
-                if (
-                  subarregloPorcentaje[j] >= 10 * i &&
-                  subarregloPorcentaje[j] <= 9.999 * (i + 1)
-                ) {
-                  temporal.push(subarreglo[j]);
-                }
-              }
-          
-              let suma = temporal.reduce(
-                (acumulador, valorActual) => acumulador + valorActual,
-                0
-              );
-              let promedio = suma / temporal.length;
-              datos_grafico.push(promedio);
-              temporal = [];
-            }
-            datos_grafico.push(arreglo[n - 1]);
-          
-            for (let k = 0; k < 11; k++) {
-              if (isNaN(datos_grafico[k])) {
-                datos_grafico[k] = (datos_grafico[k - 1] + datos_grafico[k + 1]) / 2;
-              }
-            }
-            return datos_grafico;
-          }
-
-          //Arma una matriz con los datos homogenizados para que despues sea mas facil calcular el promedio general
-          function armarMatriz(arreglo) {
-            const n = arreglo.length;
-            let subarregloPorcentaje = [];
-          
-            for (let i = 0; i < n; i++) {
-              subarregloPorcentaje.push(((i / (n - 1)) * 100).toFixed(2));
-            }
-          
-            let matriz = [];
-          
-            for (let i = 0; i < n; i++) {
-              matriz.push([arreglo[i], subarregloPorcentaje[i]]);
-            }
-            
-            return matriz;
-          }
-          
-          datos_grafico_cad_der= ang_der_cad_grafico_divido_sc.map(HomogenizarDatos);
-          datos_grafico_cad_der_matriz= datos_grafico_cad_der.map(armarMatriz);
-          datos_grafico_rod_der= ang_der_rod_grafico_divido_sc.map(HomogenizarDatos);
-          datos_grafico_rod_der_matriz= ang_der_rod_grafico_divido_sc.map(armarMatriz);
-          //calcula el promedio de la cadera derecha
-
-          const promedio_todos_angulos_cadera_der= [];
-      
-          // Promedio del primer valor
-          const temporal_primero_cd = datos_grafico_cad_der_matriz.map((fila) => fila[0][0]);
-          const suma_primer_cd = temporal_primero_cd.reduce((acum, valor) => acum + valor, 0);
-          const promedio_primer_cd = suma_primer_cd / temporal_primero_cd.length;
-          promedio_todos_angulos_cadera_der.push(parseFloat(promedio_primer_cd.toFixed(2)));
-          
-          // Promedios de los valores del segundo al penúltimo
-          for (let i = 0; i < 10; i++) {
-            const temporal_cd = [];
-            datos_grafico_cad_der_matriz.forEach((fila) => {
-              fila.slice(1, -1).forEach((valor) => {
-                if (valor[1] >= 10 * i && valor[1] <= 9.999 * (i + 1)) {
-                  temporal_cd.push(valor[0]);
-                }
-              });
-              if (!temporal_cd.length) {
-                const lar = fila.length;
-                temporal_cd.push((fila[lar - 2][0] + fila[lar - 1][0]) / 2);
-              }
-            });
-            const suma_cd = temporal_cd.reduce((acum, valor) => acum + valor, 0);
-            const promedio_cd = suma_cd / temporal_cd.length;
-            promedio_todos_angulos_cadera_der.push(parseFloat(promedio_cd.toFixed(2)));
-          }
-          
-          // Promedio del último valor
-          const temporal_ultimo_cd = datos_grafico_cad_der_matriz.map((fila) => fila[fila.length - 1][0]);
-          const suma_ultimo_cd = temporal_ultimo_cd.reduce((acum, valor) => acum + valor, 0);
-          const promedio_ultimo_cd = suma_ultimo_cd / temporal_ultimo_cd.length;
-          promedio_todos_angulos_cadera_der.push(parseFloat(promedio_ultimo_cd.toFixed(2)));
-          
-         
-          
-          const promedio_todos_angulos_rodilla_der = [];
-    
-          // Promedio del primer valor
-          const temporal_primero_rd = datos_grafico_rod_der_matriz.map((fila) => fila[0][0]);
-          const suma_primer_rd = temporal_primero_rd.reduce((acum, valor) => acum + valor, 0);
-          const promedio_primer_rd = suma_primer_rd / temporal_primero_rd.length;
-          promedio_todos_angulos_rodilla_der.push(parseFloat(promedio_primer_rd.toFixed(2)));
-    
-          // Promedios de los valores del segundo al penúltimo
-          for (let i = 0; i < 10; i++) {
-            const temporal_rd = [];
-            datos_grafico_rod_der_matriz.forEach((fila) => {
-              fila.slice(1, -1).forEach((valor) => {
-                if (valor[1] >= 10 * i && valor[1] <= 9.999 * (i + 1)) {
-                  temporal_rd.push(valor[0]);
-                }
-              });
-              if (!temporal_rd.length) {
-                const lar = fila.length;
-                temporal_rd.push((fila[lar - 2][0] + fila[lar - 1][0]) / 2);
-              }
-            });
-            const suma_rd = temporal_rd.reduce((acum, valor) => acum + valor, 0);
-            const promedio_rd = suma_rd / temporal_rd.length;
-            promedio_todos_angulos_rodilla_der.push(parseFloat(promedio_rd.toFixed(2)));
-          }
-    
-          // Promedio del último valor
-          const temporal_ultimo_rd = datos_grafico_rod_der_matriz.map((fila) => fila[fila.length - 1][0]);
-          const suma_ultimo_rd = temporal_ultimo_rd.reduce((acum, valor) => acum + valor, 0);
-          const promedio_ultimo_rd = suma_ultimo_rd / temporal_ultimo_rd.length;
-          promedio_todos_angulos_rodilla_der.push(parseFloat(promedio_ultimo_rd.toFixed(2)));
-    
-         
-    
-          //prepara el eje para las graficas
-          const porcentajes = [  0, 9, 18, 27, 36, 45, 55, 64, 73, 82, 91, 100];
-    
-          let ctxcd = document.getElementById("myChartcd").getContext("2d");
-          //Asigna los colores para las distintas zancadas
-          let datasets_cd = ang_der_cad_grafico_divido_sc.map((_, i) => {
-            return {
-              label: `Zancada ${i + 1}`,
-              data: datos_grafico_cad_der[i],
-              borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
-              fill: false,
-            };
-          });
-          
-          if (ang_der_cad_grafico_divido_sc.length > 1) {
-            datasets_cd.push({
-              label: "Promedio",
-              data: promedio_todos_angulos_cadera_der,
-              borderColor: "black",
-              borderWidth: 10,
-              pointRadius: 2,
-              fill: false,
-            });
-          }
-          sessionStorage.setItem("datasets_cd", JSON.stringify(datasets_cd));
-        //grafica los Ángulos del lado derecho de la cadera
-          new Chart(ctxcd, {
-            type: "line",
-            data: {
-              labels: porcentajes,
-              datasets: datasets_cd,
-            },
-            options: {
-              scales: {
-                xAxes: [{
-                  ticks: {
-                    callback: function(value, index, values) {
-                      return value + "%";
-                    }
-                  },
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Porcentaje del ciclo de la marcha"
-                  }
-                }],
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Ángulo articular en flexión y extensión de cadera derecha"
-                  }
-                }]
-              }
-            }
-          });
-          document.getElementById("myChartcd").style.display = "block";
-          let ctx_rd = document.getElementById("myChartrd").getContext("2d");
-          //grafica los Ángulos del lado derecho de la rodilla
-          let datasets_rd = ang_der_rod_grafico_divido_sc.map((_, i) => {
-            return {
-              label: `Zancada ${i + 1}`,
-              data: datos_grafico_rod_der[i],
-              borderColor: `rgb(${i * 20}, ${255 - i * 90}, ${i * 20})`,
-              fill: false,
-            };
-          });
-          
-          if (ang_der_rod_grafico_divido_sc.length > 1) {
-            datasets_rd.push({
-              label: "Promedio",
-              data: promedio_todos_angulos_rodilla_der,
-              borderColor: "black",
-              borderWidth: 10,
-              pointRadius: 2,
-              fill: false,
-            });
-          }
-          sessionStorage.setItem("datasets_rd", JSON.stringify(datasets_rd));
-          new Chart(ctx_rd, {
-            type: "line",
-            data: {
-              labels: porcentajes,
-              datasets: datasets_rd,
-            },
-            options: {
-              scales: {
-                xAxes: [{
-                  ticks: {
-                    callback: function(value, index, values) {
-                      return value + "%";
-                    }
-                  },
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Porcentaje del ciclo de la marcha"
-                  }
-                }],
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Ángulo articular en flexión y extensión de rodilla derecha"
-                  }
-                }]
-              }
-            }
-          });
-          //Muestra la grafica de la rodilla derecha
-          document.getElementById("myChartrd").style.display = "block";
-         
-        } 
-        //En caso de que no se haya elegido el chip de analisis del lado derecho de la marcha, no se muestra sus graficas 
         else {
-          document.getElementById("myChartcd").style.display = "none";
-          document.getElementById("myChartrd").style.display = "none";
-          document.getElementById("container-der").style.display = "none";
-         
+            canvasCtx.globalCompositeOperation = 'source-out';
+            canvasCtx.fillStyle = '#0000FF7F';
+            canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
         }
-        });
-        });
+        // Only overwrite missing pixels.
+        canvasCtx.globalCompositeOperation = 'destination-atop';
+        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.globalCompositeOperation = 'source-over';
+    }
+    else {
+        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+    }
+    //------------------------------------------------------------------------------------------------------//
+    //Si destecta la pose, guardamos las coordenas de cada punto 
+    if (results.poseLandmarks) {
+        let mandibula_i_x = canvasElement.width * results.poseLandmarks[7].x;
+        let mandibula_i_y = canvasElement.height * results.poseLandmarks[7].y;
+        let mandibula_i_z=  results.poseLandmarks[7].z;
+        let mandibula_d_x = canvasElement.width * results.poseLandmarks[8].x;
+        let mandibula_d_y = canvasElement.height * results.poseLandmarks[8].y;
+        let mandibula_d_z= results.poseLandmarks[8].z;
+        let hombro_i_x = canvasElement.width * results.poseLandmarks[11].x;
+        let hombro_i_y = canvasElement.height * results.poseLandmarks[11].y;
+        let hombro_d_x = canvasElement.width * results.poseLandmarks[12].x;
+        let hombro_d_y = canvasElement.height * results.poseLandmarks[12].y;
+        let cadera_i_x = canvasElement.width * results.poseLandmarks[23].x;
+        let cadera_i_y = canvasElement.height * results.poseLandmarks[23].y;
+        let cadera_d_x = canvasElement.width * results.poseLandmarks[24].x;
+        let cadera_d_y = canvasElement.height * results.poseLandmarks[24].y;
+        let rodilla_i_x = canvasElement.width * results.poseLandmarks[25].x;
+        let rodilla_i_y = canvasElement.height * results.poseLandmarks[25].y;
+        let rodilla_d_x = canvasElement.width * results.poseLandmarks[26].x;
+        let rodilla_d_y = canvasElement.height * results.poseLandmarks[26].y;
+        let tobillo_i_x = canvasElement.width * results.poseLandmarks[27].x;
+        let tobillo_i_y = canvasElement.height * results.poseLandmarks[27].y;
+        let tobillo_d_x = canvasElement.width * results.poseLandmarks[28].x;
+        let tobillo_d_y = canvasElement.height * results.poseLandmarks[28].y;
+        let talon_i_x   = canvasElement.width * results.poseLandmarks[29].x;
+        let talon_d_x   = canvasElement.width * results.poseLandmarks[30].x;
+        let pie_i_x     = canvasElement.height * results.poseLandmarks[31].x;
+         //------------------------------------------------------------------------------------------------------//
+        //Mostramos RECTANGULOS
+        //Lineas posturales
+        //Ángulo de inclinación de hombro y cadera
+        if (solutionOptions.lineasPosturales) {
+            rectangulo_lh.style.display = "block";
+            rectangulo_lc.style.display = "block";
+        }
+        else {
+            
+            rectangulo_lh.style.display = "none";
+            rectangulo_lc.style.display = "none";
+        }
+        ;
+        // Ángulo de rotación de cadera
+        if (solutionOptions.rotIntExt) {
+            rectangulo_arotd.style.display = "block";
+            rectangulo_aroti.style.display = "block";
+        }
+        else {
+            rectangulo_arotd.style.display = "none";
+            rectangulo_aroti.style.display = "none";
+        }
+        ;
+        //Ángulos de la marcha
+        //lado izquierdo, Si se da que el lado izquiedo esta mas cerca de la pantalla que el lado derecho (coordenada z)
+        //Muestra los Ángulos del lado izquierdo.
+        if (solutionOptions.angulosMarcha && (mandibula_i_z < mandibula_d_z)) {
+            rectangulo_aci.style.display = "block";
+            rectangulo_ari.style.display = "block";
+        }
+        else {
+            rectangulo_aci.style.display = "none";
+            rectangulo_ari.style.display = "none";
+        }
+        ;
+        //lado derecho
+        if (solutionOptions.angulosMarcha && (mandibula_i_z > mandibula_d_z)) {
+            rectangulo_acd.style.display = "block";
+            rectangulo_ard.style.display = "block";
+        }
+        else {
+            rectangulo_acd.style.display = "none";
+            rectangulo_ard.style.display = "none";
+        }
+        ;
+        //------------------------------------------------------------------------------------------------------//
+        //Colores para los puntos del esqueleto
+        //Se colocan un D verde y una I roja en la esquina superior izquierda
+        // para indicar el color de cada punto del esqueleto (D=derecha color verde, I=Izquierda color rojo)
+        canvasCtx.fillStyle = '#00cc00';
+		canvasCtx.font = 'bold 45px Arial';
+		canvasCtx.fillText('D', 45, 70);
+        canvasCtx.fillStyle = '#e60000';
+        canvasCtx.font = 'bold 45px Arial';
+        canvasCtx.fillText('I', 110, 70);
+        //DIbuja todos los puntos si no esta activada la funcion de la linea postural en el plano sagital
+        if (!solutionOptions.lineaColumna) {
+        drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#8b2222' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_RIGHT)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#228B22' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_NEUTRAL)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: 'white' });
+        }
+        // En caso de estar activada la función de línea postural en el plano sagital, 
+        //lo que se hace es ocultar los puntos del esqueleto que están más alejados de la cámara, 
+        //para lograr que no se superpongan los puntos innecesarios.
+        else{
+            if( mandibula_i_z < mandibula_d_z ){
+                drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
+        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
+            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#8b2222' });
+             }
+            else{
+                drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.35, color: 'black' });
+           
+                drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_RIGHT)
+                    .map(index => results.poseLandmarks[index]), { visibilityMin: 0.45, color: 'black', fillColor: '#228B22' });
+                }
+   
+        }
 
+        //------------------------------------------------------------------------------------------------------//
+        //Bloque para dibujar lineas auxiliares de la pose frontal.
+        //dibujar linea de mandibula
+        let mdx = mandibula_d_x;
+        let mdy = (mandibula_d_y - mandibula_i_y) / 2 + mandibula_i_y;
+        let mix = mandibula_i_x;
+        let miy = (mandibula_d_y - mandibula_i_y) / 2 + mandibula_i_y;
+        if (solutionOptions.lineasPosturales) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(mdx, mdy);
+            canvasCtx.lineTo(mix, miy);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([15, 25]);
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //dibujar linea de cadera
+        let cdx = cadera_d_x;
+        let cdy = (cadera_d_y - cadera_i_y) / 2 + cadera_i_y;
+        let cix = cadera_i_x;
+        let ciy = (cadera_d_y - cadera_i_y) / 2 + cadera_i_y;
+        if (solutionOptions.lineasPosturales) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(cdx, cdy);
+            canvasCtx.lineTo(cix, ciy);
+            canvasCtx.strokeStyle = "white";
+             canvasCtx.setLineDash([15, 25]);
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //Ángulo cadera
+        let cateto_ad_cadera = Math.sqrt(Math.pow((cadera_i_y-ciy), 2));
+        let cateto_co_cadera = Math.sqrt(Math.pow((cadera_i_x-cadera_d_x)/2, 2));
+        let angulo_inclinacion_cadera = Math.atan(cateto_co_cadera / cateto_ad_cadera);
+        angulo_inclinacion_cadera = (angulo_inclinacion_cadera * (180) / Math.PI)-90;
+        if(cadera_i_y< cadera_d_y){
+        angulo_inclinacion_cadera = -1*(angulo_inclinacion_cadera.toFixed(0));
+        }
+        document.getElementById("ang_linea_cadera").innerHTML = angulo_inclinacion_cadera.toFixed(0) + " ° en lado derecho";
+        //dibujar linea de hombro
+        let hdx = hombro_d_x;
+        let hdy = (hombro_d_y - hombro_i_y) / 2 + hombro_i_y;
+        let hix = hombro_i_x;
+        let hiy = (hombro_d_y - hombro_i_y) / 2 + hombro_i_y;
+        if (solutionOptions.lineasPosturales) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(hdx, hdy);
+            canvasCtx.lineTo(hix, hiy);
+            canvasCtx.strokeStyle = "white";
+             canvasCtx.setLineDash([15, 25]);
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //Ángulo de hombro
+        let cateto_ad_hombro = Math.sqrt(Math.pow((hombro_i_y-hiy), 2));
+        let cateto_co_hombro = Math.sqrt(Math.pow((hombro_i_x-hombro_d_x)/2, 2));
+        let angulo_inclinacion_hombro = Math.atan(cateto_co_hombro / cateto_ad_hombro);
+        angulo_inclinacion_hombro = (angulo_inclinacion_hombro * (180) / Math.PI)-90;
+        
+        if(hombro_i_y < hombro_d_y){
+        angulo_inclinacion_hombro = -1* angulo_inclinacion_hombro.toFixed(0);
+        }
+        document.getElementById("ang_linea_hombro").innerHTML = angulo_inclinacion_hombro.toFixed(0) + " ° en lado derecho";
+        
+        if(solutionOptions.guardar_datos && solutionOptions.lineasPosturales){
+            angulo_inclinacion_hombro_let= angulo_inclinacion_hombro.toFixed(1);
+            angulo_inclinacion_cadera_let = angulo_inclinacion_cadera.toFixed(1);
+            console.log(angulo_inclinacion_hombro_let);
+        }else{
+            angulo_inclinacion_hombro_let= angulo_inclinacion_hombro_let;
+            angulo_inclinacion_cadera_let= angulo_inclinacion_cadera_let;
+        }
+
+        console.log(angulo_inclinacion_hombro_let);
+        document.getElementById("myButton").addEventListener("click", function() {
+            sessionStorage.setItem("ang_linea_frontal_hombro_2", JSON.stringify(angulo_inclinacion_hombro_let));
+            sessionStorage.setItem("ang_linea_frontal_cadera_2", JSON.stringify(angulo_inclinacion_cadera_let));  
+            window.location.href = "visualizar.html";
+        });
+        //dibujar linea de media frontal que divide el cuerpo en dos
+        let linea_media_punto_incial_x = (hombro_d_x - hombro_i_x) / 2 + hombro_i_x;
+        let linea_media_punto_incial_y = ((hombro_d_y - hombro_i_y) / 2 + hombro_i_y)-220;
+        let linea_media_punto_final_x = (cadera_d_x - cadera_i_x) / 2 + cadera_i_x;
+        let linea_media_punto_final_y = (tobillo_d_y - tobillo_i_y) / 2 + tobillo_i_y;
+        if (solutionOptions.lineasPosturales) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(linea_media_punto_incial_x, linea_media_punto_incial_y);
+            canvasCtx.lineTo(linea_media_punto_final_x, linea_media_punto_final_y);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([25, 15]);
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+           
+        }
+        //------------------------------------------------------------------------------------------------------//
+        //dibujar linea de media sagital que divide el cuerpo en dos
+        let linea_sagital_punto_incial_x = mandibula_i_x;
+        let linea_sagital_punto_incial_y = mandibula_i_y;
+        let linea_sagital_punto_final_x = tobillo_i_x;
+        let linea_sagital_punto_final_y  = tobillo_i_y;
+        //Chequeo de qué lado se analiza: si el punto izquierdo de la mandíbula está más cerca de la cámara que el punto derecho, 
+        //quiere decir que se van a tomar los puntos del lado izquierdo para trazar la línea.
+        if( mandibula_i_z < mandibula_d_z ){
+        linea_sagital_punto_incial_x = mandibula_i_x;
+        linea_sagital_punto_incial_y = mandibula_i_y;
+        linea_sagital_punto_final_x = tobillo_i_x;
+        linea_sagital_punto_final_y  = tobillo_i_y;
+        }else{
+        linea_sagital_punto_incial_x = mandibula_d_x;
+        linea_sagital_punto_incial_y = mandibula_d_y;
+        linea_sagital_punto_final_x = tobillo_d_x;
+        linea_sagital_punto_final_y  = tobillo_d_y;
+        }
+
+        if (solutionOptions.lineaColumna) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(linea_sagital_punto_incial_x, linea_sagital_punto_incial_y);
+            canvasCtx.lineTo(linea_sagital_punto_final_x, linea_sagital_punto_final_y);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([15, 25]);
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //------------------------------------------------------------------------------------------------------//
+        //Dibujar linea de valgo y varo
+        //Valgo/varo derecho
+        // Se cambió el nombre de las variables que indican las coordenadas de los puntos.
+        // "vv" significa valgo/varo, "d" si es lado derecho o "i" si es izquierdo, "x" o "y" según el eje, "pi" punto inicial y "pf" punto final.
+        let vvdx_pi = cadera_d_x;
+        let vvdy_pi = cadera_d_y;
+        let vvdx_pf = tobillo_d_x;
+        let vvdy_pf = tobillo_d_y;
+        // Si el interruptor de valgo/varo está en "Yes", el valor de "solutionOptions.valgo_varo" va a ser verdadero y se dibujarán las líneas.
+        if (solutionOptions.valgo_varo) {
+            canvasCtx.beginPath();
+            //Desde donde empieza a dibujarse la línea
+            canvasCtx.moveTo(vvdx_pi, vvdy_pi);
+            //Hasta donde se dibuja la línea
+            canvasCtx.lineTo(vvdx_pf, vvdy_pf);
+            // Características de la línea
+            // Color
+            canvasCtx.strokeStyle = "white";
+            //Configura la línea para que sea espaciada 
+            canvasCtx.setLineDash([15, 30]);
+            //El ancho 
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+         //Valgo/varo izquierdo
+        let vvix_pi = cadera_i_x;
+        let vviy_pi = cadera_i_y;
+        let vvix_pf = tobillo_i_x;
+        let vviy_pf = tobillo_i_y;
+        if (solutionOptions.valgo_varo) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(vvix_pi, vviy_pi);
+            canvasCtx.lineTo(vvix_pf, vviy_pf);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.setLineDash([15, 30]);
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //------------------------------------------------------------------------------------------------------//
+        //dibujar linea de rotación inter/exter
+        //Derecha
+        //Linea Horizontal
+        let punto_inicial_x_d = ((rodilla_d_x + (rodilla_i_y - tobillo_d_y) * 0.80));
+        let punto_inicial_y_d = (rodilla_d_y);
+        let punto_final_x_d = ((rodilla_d_x - (rodilla_i_y - tobillo_d_y) * 0.80));
+        let punto_final_y_d = (rodilla_d_y);
+        if (solutionOptions.rotIntExt) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(punto_inicial_x_d, punto_inicial_y_d);
+            canvasCtx.lineTo(punto_final_x_d, punto_final_y_d);
+            canvasCtx.setLineDash([5, 5]);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //Linea Vertical
+        let punto_inicial_x_d_v = (rodilla_d_x);
+        let punto_inicial_y_d_v = (rodilla_d_y);
+        let punto_final_x_d_v = (rodilla_d_x);
+        let punto_final_y_d_v = (tobillo_d_y);
+        if (solutionOptions.rotIntExt) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(punto_inicial_x_d_v, punto_inicial_y_d_v);
+            canvasCtx.lineTo(punto_final_x_d_v, punto_final_y_d_v);
+            canvasCtx.setLineDash([5, 5]);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //Izquierda
+        //Linea Horizontal
+        // Linea Horizontal
+        let punto_inicial_x_i = ((rodilla_i_x + (rodilla_d_y - tobillo_i_y) * 0.80));
+        let punto_inicial_y_i = (rodilla_i_y);
+        let punto_final_x_i = ((rodilla_i_x - (rodilla_d_y - tobillo_i_y) * 0.80));
+        let punto_final_y_i = (rodilla_i_y);
+        if (solutionOptions.rotIntExt) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(punto_inicial_x_i, punto_inicial_y_i);
+            canvasCtx.lineTo(punto_final_x_i, punto_final_y_i);
+            canvasCtx.setLineDash([5, 5]);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        // Linea Vertical
+        let punto_inicial_x_i_v = (rodilla_i_x);
+        let punto_inicial_y_i_v = (rodilla_i_y);
+        let punto_final_x_i_v = (rodilla_i_x);
+        let punto_final_y_i_v = (tobillo_i_y);
+        if (solutionOptions.rotIntExt) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(punto_inicial_x_i_v, punto_inicial_y_i_v);
+            canvasCtx.lineTo(punto_final_x_i_v, punto_final_y_i_v);
+            canvasCtx.setLineDash([5, 5]);
+            canvasCtx.strokeStyle = "white";
+            canvasCtx.lineWidth = 4;
+            canvasCtx.stroke();
+        }
+        //Ángulos
+        //Ángulos de rotación interna y externa de cadera
+         angulo_rot_int_cad_izq = (180 * Math.acos((tobillo_i_x - rodilla_i_x) / (Math.sqrt(Math.pow((tobillo_i_x - rodilla_i_x), 2) + Math.pow((tobillo_i_y - rodilla_i_y), 2)))) / Math.PI) - 90;
+        angulo_rot_int_cad_izq = angulo_rot_int_cad_izq.toFixed(0) * -1;
+        document.getElementById("ang_rot_cad_izq").innerHTML = angulo_rot_int_cad_izq  + " °";
+         angulo_rot_int_cad_der = (180 * Math.acos((tobillo_d_x - rodilla_d_x) / (Math.sqrt(Math.pow((tobillo_d_x - rodilla_d_x), 2) + Math.pow((tobillo_d_y - rodilla_d_y), 2)))) / Math.PI) - 90;
+        angulo_rot_int_cad_der = angulo_rot_int_cad_der.toFixed(0)* 1;
+        document.getElementById("ang_rot_cad_der").innerHTML = angulo_rot_int_cad_der + " °";
+        
+      
+        //Guarda los valores maximos y minimos de la rotación int/ext del lado izq y derecho
+        if (solutionOptions.guardar_datos && solutionOptions.rotIntExt) {
+            
+            console.log(marcador);
+            if(marcador == 0){
+                min_angulo_rot_int_cad_izq = 200;
+                max_angulo_rot_int_cad_izq =-200;
+            }
+
+            //Revisa si hay algun valor menor del lado izq al anterioremente guardado
+            if (angulo_rot_int_cad_izq < min_angulo_rot_int_cad_izq) {
+                // Actualiza el valor valor minimo si es necesario
+                min_angulo_rot_int_cad_izq = angulo_rot_int_cad_izq;
+              }
+            //Revisa si hay algun valor mayor del lado izq al anterioremente guardado
+            if (angulo_rot_int_cad_izq > max_angulo_rot_int_cad_izq) {
+                 // Actualiza el valor valor maximo si es necesario
+                max_angulo_rot_int_cad_izq = angulo_rot_int_cad_izq;
+              }
+              document.getElementById("myButton").addEventListener("click", function() {
+                sessionStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
+                sessionStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
+                window.location.href = "visualizar.html";
+            });
+           
+           marcador=1;
+           console.log(max_angulo_rot_int_cad_izq);
+       
+        }else{
+            min_angulo_rot_int_cad_izq= min_angulo_rot_int_cad_izq;
+            max_angulo_rot_int_cad_izq= max_angulo_rot_int_cad_izq;
+            marcador =0; 
+            console.log(max_angulo_rot_int_cad_izq);
+            document.getElementById("myButton").addEventListener("click", function() {
+                sessionStorage.setItem("rot_int_cad_izq_min", JSON.stringify(min_angulo_rot_int_cad_izq.toFixed(1)));
+                sessionStorage.setItem("rot_int_cad_izq_max", JSON.stringify(max_angulo_rot_int_cad_izq.toFixed(1)));  
+                window.location.href = "visualizar.html";
+            });
+        }   
+        if (solutionOptions.guardar_datos && solutionOptions.rotIntExt) {
+            if (angulo_rot_int_cad_der < min_angulo_rot_int_cad_der) {
+                // Actualiza el valor valor minimo si es necesario
+                min_angulo_rot_int_cad_der = angulo_rot_int_cad_der;
+            }
+            //Revisa si hay algun valor mayor del lado der al anterioremente guardado
+            if (angulo_rot_int_cad_der > max_angulo_rot_int_cad_der) {
+                // Actualiza el valor valor maximo si es necesario
+                max_angulo_rot_int_cad_der = angulo_rot_int_cad_der;
+            }  
+             //b
+        document.getElementById("myButton").addEventListener("click", function() {
+            sessionStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
+            sessionStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
+            window.location.href = "visualizar.html";
+        });
+      
+        }else{
+            min_angulo_rot_int_cad_der= 200;
+            max_angulo_rot_int_cad_der= -200;
+            document.getElementById("myButton").addEventListener("click", function() {
+                sessionStorage.setItem("rot_int_cad_der_min", JSON.stringify(min_angulo_rot_int_cad_der.toFixed(1)));
+                sessionStorage.setItem("rot_int_cad_der_max", JSON.stringify(max_angulo_rot_int_cad_der.toFixed(1)));
+                window.location.href = "visualizar.html";
+            });
+            
+        }           
+        //------------------------------------------------------------------------------------------------------//        
+        // Ángulos de la marcha
+        //Ángulos de cadera
+        //IZQ
+        var angulo_cadera_i = Math.acos((rodilla_i_y - cadera_i_y) / (Math.sqrt(Math.pow(cadera_i_x - rodilla_i_x, 2) + Math.pow(cadera_i_y - rodilla_i_y, 2))));
+       // Convierte el valor del ángulo de radianes a grados
+        angulo_cadera_i = angulo_cadera_i * (180) / Math.PI;
+        //Chequea si la rodilla esta atras o adelante de la cadera en el eje x y en funcion a eso cambia de signo
+        if (cadera_i_x > rodilla_i_x) {
+            if(solutionOptions.selfieMode){
+            angulo_cadera_i = angulo_cadera_i.toFixed(0);
+            }
+            else{
+                angulo_cadera_i =-1* angulo_cadera_i.toFixed(0); 
+            }
+        }
+        else {
+            if(solutionOptions.selfieMode){
+                angulo_cadera_i = -1*angulo_cadera_i.toFixed(0);
+                }
+            else{
+                angulo_cadera_i = angulo_cadera_i.toFixed(0); 
+            }
+        }
+        // Si el interruptor de "Guardar datos" está activado, se van a guardar los valores del ángulo de cadera y  posición del pie izquierdo en dos variables diferente.
+        if (solutionOptions.guardar_datos) {
+            ang_izq_cad_grafico.push(angulo_cadera_i);
+            posicion_pie_x_grafico_izq.push(talon_i_x);
+            p_p_pie_x.push(pie_i_x);
+            document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";  
+        }
+        //En caso contrario, si el interruptor está desactivado, se borran los datos anteriores y no se guarda ninguno nuevo hasta que el interruptor vuelva a ser activado.
+        else {
+            ang_izq_cad_grafico = [];
+            posicion_pie_x_grafico_izq= [];
+            p_p_pie_x= [];
+            document.getElementById("ang_cad_iz").innerHTML = angulo_cadera_i + " ° " + "(" + ang_izq_cad_grafico.length + ")";
+        }
+        // Vincula el botón que lleva al usuario a la próxima página con los datos guardados.
+        document.getElementById("myButton").addEventListener("click", function() {
+            sessionStorage.setItem("ang_izq_cad_grafico", JSON.stringify(ang_izq_cad_grafico));
+            sessionStorage.setItem("posicion_pie_x_grafico_izq", JSON.stringify(posicion_pie_x_grafico_izq));
+            window.location.href = "visualizar.html";
+        });
+         
+        //DER
+        var angulo_cadera_d = Math.acos((rodilla_d_y - cadera_d_y) / (Math.sqrt(Math.pow(cadera_d_x - rodilla_d_x, 2) + Math.pow(cadera_d_y - rodilla_d_y, 2))));
+        angulo_cadera_d = angulo_cadera_d * (180) / Math.PI;
+        angulo_cadera_d.toFixed(0); 
+        if (cadera_d_x < rodilla_d_x) {
+            if(solutionOptions.selfieMode){
+                angulo_cadera_d = -1*angulo_cadera_d.toFixed(0);
+                }
+                else{
+                    angulo_cadera_d = angulo_cadera_d.toFixed(0); 
+                }
+        }
+        else {
+
+            if(solutionOptions.selfieMode){
+                angulo_cadera_d = angulo_cadera_d.toFixed(0);
+                }
+            else{
+                angulo_cadera_d = -1*angulo_cadera_d.toFixed(0); 
+            }
+        }   
+        // Si el interruptor de "Guardar datos" está activado, se van a guardar los valores de los ángulos.
+        //De caso contrario, borra los datos anteriores.
+        if (solutionOptions.guardar_datos) {
+            ang_der_cad_grafico.push(angulo_cadera_d);
+            posicion_pie_x_grafico_der.push(talon_d_x)
+            document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " ° " + "(" + ang_der_cad_grafico.length + ")";
+        }
+        else {
+            ang_der_cad_grafico = [];
+            posicion_pie_x_grafico_der = [];
+            document.getElementById("ang_cad_de").innerHTML = angulo_cadera_d + " ° " + "(" + ang_der_cad_grafico.length + ")";
+        }
+        // Vincula el botón que lleva al usuario a la próxima página con los datos guardados.
+        document.getElementById("myButton").addEventListener("click", function() {
+            sessionStorage.setItem("ang_der_cad_grafico", JSON.stringify(ang_der_cad_grafico));
+            sessionStorage.setItem("posicion_pie_x_grafico_der", JSON.stringify(posicion_pie_x_grafico_der));
+            window.location.href = "visualizar.html";
+        });
+       
+        //Ángulos de rodilla
+        //Izq
+        var femur_iz = Math.sqrt(Math.pow(cadera_i_x - rodilla_i_x, 2) + Math.pow(cadera_i_y - rodilla_i_y, 2));
+        var tibia_iz = Math.sqrt(Math.pow(rodilla_i_x - tobillo_i_x, 2) + Math.pow(rodilla_i_y - tobillo_i_y, 2));
+        var fem_tob_iz = Math.sqrt(Math.pow(cadera_i_x - tobillo_i_x, 2) + Math.pow(cadera_i_y - tobillo_i_y, 2));
+        var sigma_rod_iz = Math.acos((-Math.pow(femur_iz, 2) - Math.pow(tibia_iz, 2) + Math.pow(fem_tob_iz, 2)) / (-2 * femur_iz * tibia_iz)) * (180) / Math.PI;
+        var angulo_rodilla_iz = sigma_rod_iz;
+        angulo_rodilla_iz = 180 - angulo_rodilla_iz.toFixed(0);
+        // Si el interruptor de "Guardar datos" está activado, se van a guardar los valores de los ángulos.
+        //De caso contrario, borra los datos anteriores.
+        if (solutionOptions.guardar_datos) {
+            ang_izq_rod_grafico.push(angulo_rodilla_iz);
+            document.getElementById("ang_rod_iz").innerHTML = angulo_rodilla_iz + " ° " + "(" + ang_izq_rod_grafico.length + ")";
+        }
+        else {
+            ang_izq_rod_grafico = [];
+            document.getElementById("ang_rod_iz").innerHTML = angulo_rodilla_iz + " ° " + "(" + ang_izq_rod_grafico.length + ")";
+        }
+        // Vincula el botón que lleva al usuario a la próxima página con los datos guardados.
+        document.getElementById("myButton").addEventListener("click", function() {
+            sessionStorage.setItem("ang_izq_rod_grafico", JSON.stringify(ang_izq_rod_grafico));
+            window.location.href = "visualizar.html";   
+        });
+ 
+
+
+        //Rodilla Derecha
+        var femur_de = Math.sqrt(Math.pow(cadera_d_x - rodilla_d_x, 2) + Math.pow(cadera_d_y - rodilla_d_y, 2));
+        var tibia_de = Math.sqrt(Math.pow(rodilla_d_x - tobillo_d_x, 2) + Math.pow(rodilla_d_y - tobillo_d_y, 2));
+        var fem_tob_de = Math.sqrt(Math.pow(cadera_d_x - tobillo_d_x, 2) + Math.pow(cadera_d_y - tobillo_d_y, 2));
+        var sigma_rod_de = Math.acos((-Math.pow(femur_de, 2) - Math.pow(tibia_de, 2) + Math.pow(fem_tob_de, 2)) / (-2 * femur_de * tibia_de)) * (180) / Math.PI;
+        var angulo_rodilla_de = sigma_rod_de;
+        angulo_rodilla_de = 180-angulo_rodilla_de.toFixed(0);
+         // Si el interruptor de "Guardar datos" está activado, se van a guardar los valores de los ángulos.
+        //De caso contrario, borra los datos anteriores.
+        if (solutionOptions.guardar_datos) {
+            ang_der_rod_grafico.push(angulo_rodilla_de);
+            document.getElementById("ang_rod_de").innerHTML = angulo_rodilla_de + " ° " + "(" + ang_der_rod_grafico.length + ")";
+        }
+        else {
+            ang_der_rod_grafico = [];
+            document.getElementById("ang_rod_de").innerHTML = angulo_rodilla_de + " ° " + "(" + ang_der_rod_grafico.length + ")";
+           
+        }
+        // Vincula el botón que lleva al usuario a la próxima página con los datos guardados.
+        document.getElementById("myButton").addEventListener("click", function() {
+            sessionStorage.setItem("ang_der_rod_grafico", JSON.stringify(ang_der_rod_grafico));
+            window.location.href = "visualizar.html";
+        });
+       
+    }
+    canvasCtx.restore();
+    if (results.poseWorldLandmarks) {
+        grid.updateLandmarks(results.poseWorldLandmarks, mpPose.POSE_CONNECTIONS, [
+            { list: Object.values(mpPose.POSE_LANDMARKS_LEFT), color: 'LEFT' },
+            { list: Object.values(mpPose.POSE_LANDMARKS_RIGHT), color: 'RIGHT' },
+        ]);
+    }
+    else {
+        grid.updateLandmarks([]);
+    }
+}
+
+const pose = new mpPose.Pose(options);
+pose.setOptions(solutionOptions);
+pose.onResults(onResults);
+// Panel de control que permite cambiar de estado distintas variables.
+new controls
+    .ControlPanel(controlsElement, solutionOptions)
+    //Modifica los elementos que se muestran en el panel.
+    .add([
+    //Título
+    new controls.StaticText({ title: 'CONTROLES' }),
+    //Pantalla de FPS
+    fpsControl,
+    //Interruptor de modo selfie
+    new controls.Toggle({ title: 'Modo Selfie', field: 'selfieMode' }),
+    //Controles que permite elegir que fuente de video tomar (webcam o video guardado)
+    new controls.SourcePicker({
+        onSourceChanged: () => {
+            // Se resetea asi anda mejor el codigo
+            pose.reset();
+        },
+        onFrame: async (input, size) => {
+            const aspect = size.height / size.width;
+            let width, height;
+            if (window.innerWidth > window.innerHeight) {
+                height = window.innerHeight;
+                width = height / aspect;
+            }
+            else {
+                width = window.innerWidth;
+                height = width * aspect;
+            }
+            canvasElement.width = width;
+            canvasElement.height = height;
+            await pose.send({ image: input });
+        },
+    }),
+    //Genera una barra que permite cambiar la complejidad del modelo y, con eso, la precisión en la detección de los puntos (más complejidad, más precisión pero más lento).
+    new controls.Slider({
+        title: 'Complejidad del Modelo',
+        field: 'modelComplexity',
+        discrete: ['Light', ' Medium', 'Heavy'],
+    }),
+    //Genera distintos switchs con distintas funciones 
+    new controls.Toggle({ title: 'Línea de Valgo/Varo', field: 'valgo_varo' }),
+    new controls.Toggle({ title: 'Postura Frontal', field: 'lineasPosturales' }),
+    new controls.Toggle({ title: 'Línea Media Sagital', field: 'lineaColumna' }),
+    new controls.Toggle({ title: 'Rotación Interna/Externa', field: 'rotIntExt' }),
+    new controls.Toggle({ title: 'Ángulos de la Marcha', field: 'angulosMarcha' }),
+    new controls.Toggle({ title: 'Guardar Datos', field: 'guardar_datos' }),
+   
+])
+    .on(x => {
+    const options = x;
+    videoElement.classList.toggle('selfie', options.selfieMode);
+    activeEffect = x['effect'];
+    pose.setOptions(options);
+});
+
+capture
