@@ -2,7 +2,15 @@ Prototipo de software para el estudio de la postura y la marcha humana
 
 Este repositorio contiene el código fuente del prototipo de software desarrollado como parte del proyecto integrador de la carrera de Ingeniería Biomédica de la Universidad Nacional de Córdoba. El software, escrito en JavaScript, tiene como objetivo analizar la postura y la marcha humana a partir de videos.
 
+//------------------------------------------------------------------------------------------------------------------------------------//
+## Licencia / Términos de Uso
 
+Este código no está bajo una licencia de código abierto o de libre uso. El uso y la distribución de este código están restringidos y solo se permite a personas específicas o para fines particulares. No otorgamos permiso para utilizar, modificar o distribuir este código a menos que se obtenga una autorización explícita por escrito de los propietarios o mantenedores del proyecto.
+
+Para más detalles sobre los términos de uso, por favor contactarnos a matias.bonfils@mi.unc.edu.ar .
+
+® Matías Bonfils - 2023
+//------------------------------------------------------------------------------------------------------------------------------------//
 Estructura del proyecto
 
 El proyecto se divide en tres partes principales:
@@ -105,7 +113,3 @@ En la tercera parte del código, se han organizado los siguientes módulos:
     Funcionalidades de valores: Este módulo se encarga de mostrar los valores obtenidos en la página anterior, como los ángulos o la distancia medida. Proporciona una presentación clara y legible de estos datos para que el usuario pueda interpretarlos de manera efectiva. Estos valores se incluirán en el informe generado para brindar información detallada sobre los resultados obtenidos.
 
 
-
-Contacto
-
-   Si tienes alguna pregunta o sugerencia sobre este proyecto, no dudes en ponerte en contacto conmigo. Puedes enviar un correo electrónico a matias.bonfils@mi.unc.edu.ar. ¡Espero tus comentarios!
